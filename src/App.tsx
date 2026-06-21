@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { DATA } from "./dmk_data";
 
 /* ============================================================
    DMK RECORD CHECKER (English)  —  2021–2026
