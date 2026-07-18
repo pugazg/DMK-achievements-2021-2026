@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useT } from "../lib/theme.js";
 import { DATA, CAT } from "../data/records.js";
 import { PROMISES } from "../data/promises.js";
@@ -44,7 +44,6 @@ function PromiseRow({ p, onPickRecord }) {
       {open && hasNote && (
         <p style={{ margin: "10px 0 2px", padding: "10px 12px", background: t.panel2, border: `1px solid ${t.line2}`, borderRadius: 8, color: t.textDim, fontSize: 12.5, lineHeight: 1.65 }}>
           {p.note}
-          <span style={{ display: "block", marginTop: 8, color: t.mute, fontSize: 10.5, fontFamily: "ui-monospace,monospace", letterSpacing: ".04em" }}>SOURCE · Pudhiyavan DMK Manifesto 2021 Tracker</span>
         </p>
       )}
     </div>
@@ -74,6 +73,13 @@ export default function Manifesto({ onPickRecord }) {
 
   const order = [], byTheme = {};
   list.forEach((p) => { if (!byTheme[p.theme]) { byTheme[p.theme] = []; order.push(p.theme); } byTheme[p.theme].push(p); });
+
+  // collapsible theme groups. Default collapsed; auto-open while filtering/searching.
+  const [openThemes, setOpenThemes] = useState({});
+  const autoOpen = tokens.length > 0 || status !== "all";
+  useEffect(() => { setOpenThemes({}); }, [query, status]);
+  const isThemeOpen = (theme) => (theme in openThemes ? openThemes[theme] : autoOpen);
+  const setAll = (v) => setOpenThemes(Object.fromEntries(order.map((th) => [th, v])));
 
   const FILTERS = [
     { id: "all", label: `All ${total}`, color: t.gold },
@@ -111,16 +117,37 @@ export default function Manifesto({ onPickRecord }) {
         ))}
       </div>
 
-      <div style={{ color: t.wisp, fontSize: 10.5, fontFamily: "ui-monospace,monospace", letterSpacing: ".14em", marginBottom: 12 }}>{list.length} PROMISE{list.length === 1 ? "" : "S"}{query ? ` · "${query}"` : ""}</div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 12 }}>
+        <span style={{ color: t.wisp, fontSize: 10.5, fontFamily: "ui-monospace,monospace", letterSpacing: ".14em" }}>{list.length} PROMISE{list.length === 1 ? "" : "S"}{query ? ` · "${query}"` : ""} · {order.length} THEME{order.length === 1 ? "" : "S"}</span>
+        {order.length > 0 && (
+          <span style={{ display: "flex", gap: 6 }}>
+            <button onClick={() => setAll(true)} style={{ padding: "4px 10px", fontSize: 11, background: "transparent", border: `1px solid ${t.line}`, color: t.mute, borderRadius: 14, cursor: "pointer", fontFamily: "ui-monospace,monospace" }}>expand all</button>
+            <button onClick={() => setAll(false)} style={{ padding: "4px 10px", fontSize: 11, background: "transparent", border: `1px solid ${t.line}`, color: t.mute, borderRadius: 14, cursor: "pointer", fontFamily: "ui-monospace,monospace" }}>collapse all</button>
+          </span>
+        )}
+      </div>
 
       {order.length === 0 && <div style={{ background: t.panel, border: `1px solid ${t.line}`, borderRadius: 12, padding: 18, color: t.faint, fontSize: 14 }}>No promise matches — try other words or a promise number.</div>}
 
-      {order.map((theme) => (
-        <div key={theme} style={{ marginBottom: 18 }}>
-          <div style={{ color: t.gold, fontSize: 11.5, fontFamily: "ui-monospace,monospace", letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 5, borderBottom: `1px solid ${t.line}` }}>{theme} · {byTheme[theme].length}</div>
-          {byTheme[theme].map((p) => <PromiseRow key={p.num} p={p} onPickRecord={onPickRecord} />)}
-        </div>
-      ))}
+      {order.map((theme) => {
+        const opened = isThemeOpen(theme);
+        return (
+          <div key={theme} style={{ marginBottom: 10 }}>
+            <button onClick={() => setOpenThemes((s) => ({ ...s, [theme]: !opened }))} aria-expanded={opened} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, background: t.panel, border: `1px solid ${opened ? t.gold + "55" : t.line}`, borderRadius: 10, padding: "12px 14px", cursor: "pointer", textAlign: "left" }}>
+              <span style={{ color: t.gold, fontSize: 11.5, fontFamily: "ui-monospace,monospace", letterSpacing: ".1em", textTransform: "uppercase" }}>{theme}</span>
+              <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span style={{ color: t.mute, fontSize: 11.5, fontFamily: "ui-monospace,monospace" }}>{byTheme[theme].length}</span>
+                <span style={{ color: t.faint, fontSize: 12, display: "inline-block", transform: opened ? "rotate(180deg)" : "none", transition: "transform .2s" }}>▼</span>
+              </span>
+            </button>
+            {opened && (
+              <div style={{ marginTop: 8, marginLeft: 2 }}>
+                {byTheme[theme].map((p) => <PromiseRow key={p.num} p={p} onPickRecord={onPickRecord} />)}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </Section>
   );
 }
