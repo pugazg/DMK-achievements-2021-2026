@@ -28,7 +28,7 @@ export default function Nav({ onSearch, theme, onToggleTheme }) {
       <div style={{ maxWidth: 1080, margin: "0 auto", padding: "10px 18px", display: "flex", alignItems: "center", gap: 14 }}>
         <button onClick={() => scrollToId("overview")} style={{ display: "flex", alignItems: "center", gap: 9, background: "transparent", border: "none", cursor: "pointer", padding: 0 }}>
           <RisingSun size={26} glow />
-          <span style={{ color: t.text, fontWeight: 800, fontSize: 14.5, letterSpacing: "-.01em", whiteSpace: "nowrap" }}>The Dravidian Record</span>
+          <span style={{ color: t.text, fontWeight: 800, fontSize: 14.5, letterSpacing: "-.01em", whiteSpace: "nowrap" }}>The Dravidian Model</span>
         </button>
 
         <nav style={{ display: "flex", gap: 2, marginLeft: 8, flex: 1, overflowX: "auto" }} className="nav-desk">

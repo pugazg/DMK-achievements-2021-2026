@@ -27,7 +27,7 @@ export default function Footer() {
         <div style={{ background: t.panel2, border: `1px solid ${t.line2}`, borderRadius: 16, padding: "24px 22px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
             <RisingSun size={28} glow />
-            <span style={{ color: t.text, fontWeight: 800, fontSize: 15 }}>The Dravidian Record · 2021–2026</span>
+            <span style={{ color: t.text, fontWeight: 800, fontSize: 15 }}>The Dravidian Model · 2021–2026</span>
           </div>
           <p style={{ color: t.textSoft, fontSize: 12, lineHeight: 1.75, margin: "0 0 14px", maxWidth: 760 }}>
             Every fact in this report comes only from the Tamil Nadu Government 2021–26 achievement record, the Economic Survey of Tamil Nadu 2025–26 and the DMK 2021 manifesto. There is no AI answering here and no live internet call — the tool cannot invent a fact, and where a source itself gives differing figures, the record notes both. Built to be shared, checked and disputed against its own sources.

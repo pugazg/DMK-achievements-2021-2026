@@ -1,4 +1,4 @@
-# The Dravidian Record · Tamil Nadu 2021–2026
+# The Dravidian Model · Tamil Nadu 2021–2026
 
 An interactive, **fully-offline** report on the DMK government's five-year record in
 Tamil Nadu. It began life as the *DMK Record Checker* — a search-and-fact-check tool over
