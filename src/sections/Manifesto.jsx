@@ -16,6 +16,41 @@ const PSTATUS = {
 const STATUS_ORDER = ["fulfilled", "modified", "progress", "stalled", "not-fulfilled"];
 const RECBYID = Object.fromEntries(DATA.map((r) => [r.id, r]));
 
+function PromiseRow({ p, onPickRecord }) {
+  const t = useT();
+  const [open, setOpen] = useState(false);
+  const st = PSTATUS[p.status];
+  const hasNote = !!(p.note && p.note.trim());
+  const recs = p.records.map((id) => RECBYID[id]).filter(Boolean);
+  return (
+    <div style={{ background: t.panel, border: `1px solid ${t.line2}`, borderLeft: `3px solid ${st.color}`, borderRadius: 10, padding: "11px 13px", marginBottom: 8 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
+        <div style={{ flex: 1 }}>
+          <span style={{ color: t.mute, fontSize: 12, fontFamily: "ui-monospace,monospace" }}>#{p.num}</span>
+          <span style={{ color: t.text, fontSize: 13.5, lineHeight: 1.5, marginLeft: 7 }}>{p.text}</span>
+        </div>
+        <div style={{ color: st.color, fontSize: 10, fontFamily: "ui-monospace,monospace", border: `1px solid ${st.color}55`, borderRadius: 5, padding: "2px 6px", whiteSpace: "nowrap" }}>{st.mark} {st.label}</div>
+      </div>
+      {(recs.length > 0 || hasNote) && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 9, alignItems: "center" }}>
+          {recs.map((r) => (
+            <button key={r.id} onClick={() => onPickRecord(r)} style={{ fontSize: 11, padding: "3px 9px", background: "transparent", border: `1px solid ${(CAT[r.cat] || {}).color || t.gold}55`, color: (CAT[r.cat] || {}).color || t.gold, borderRadius: 14, cursor: "pointer" }}>{r.name} →</button>
+          ))}
+          {hasNote && (
+            <button onClick={() => setOpen((o) => !o)} aria-expanded={open} style={{ fontSize: 11, padding: "3px 10px", background: open ? `${st.color}18` : "transparent", border: `1px solid ${st.color}44`, color: st.color, borderRadius: 14, cursor: "pointer", fontFamily: "ui-monospace,monospace" }}>{open ? "▾ hide" : "ⓘ details"}</button>
+          )}
+        </div>
+      )}
+      {open && hasNote && (
+        <p style={{ margin: "10px 0 2px", padding: "10px 12px", background: t.panel2, border: `1px solid ${t.line2}`, borderRadius: 8, color: t.textDim, fontSize: 12.5, lineHeight: 1.65 }}>
+          {p.note}
+          <span style={{ display: "block", marginTop: 8, color: t.mute, fontSize: 10.5, fontFamily: "ui-monospace,monospace", letterSpacing: ".04em" }}>SOURCE · Pudhiyavan DMK Manifesto 2021 Tracker</span>
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function Manifesto({ onPickRecord }) {
   const t = useT();
   const [status, setStatus] = useState("all");
@@ -33,7 +68,7 @@ export default function Manifesto({ onPickRecord }) {
   const list = PROMISES.filter((p) => {
     if (status !== "all" && p.status !== status) return false;
     if (!tokens.length) return true;
-    const hay = (p.text + " " + p.num + " " + p.theme).toLowerCase();
+    const hay = (p.text + " " + p.num + " " + p.theme + " " + (p.note || "")).toLowerCase();
     return tokens.every((tk) => hay.includes(tk));
   });
 
@@ -83,27 +118,7 @@ export default function Manifesto({ onPickRecord }) {
       {order.map((theme) => (
         <div key={theme} style={{ marginBottom: 18 }}>
           <div style={{ color: t.gold, fontSize: 11.5, fontFamily: "ui-monospace,monospace", letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 8, paddingBottom: 5, borderBottom: `1px solid ${t.line}` }}>{theme} · {byTheme[theme].length}</div>
-          {byTheme[theme].map((p) => {
-            const st = PSTATUS[p.status];
-            return (
-              <div key={p.num} style={{ background: t.panel, border: `1px solid ${t.line2}`, borderLeft: `3px solid ${st.color}`, borderRadius: 10, padding: "11px 13px", marginBottom: 8 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
-                  <div style={{ flex: 1 }}>
-                    <span style={{ color: t.mute, fontSize: 12, fontFamily: "ui-monospace,monospace" }}>#{p.num}</span>
-                    <span style={{ color: t.text, fontSize: 13.5, lineHeight: 1.5, marginLeft: 7 }}>{p.text}</span>
-                  </div>
-                  <div style={{ color: st.color, fontSize: 10, fontFamily: "ui-monospace,monospace", border: `1px solid ${st.color}55`, borderRadius: 5, padding: "2px 6px", whiteSpace: "nowrap" }}>{st.mark} {st.label}</div>
-                </div>
-                {p.records.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 9 }}>
-                    {p.records.map((id) => RECBYID[id] && (
-                      <button key={id} onClick={() => onPickRecord(RECBYID[id])} style={{ fontSize: 11, padding: "3px 9px", background: "transparent", border: `1px solid ${(CAT[RECBYID[id].cat] || {}).color || t.gold}55`, color: (CAT[RECBYID[id].cat] || {}).color || t.gold, borderRadius: 14, cursor: "pointer" }}>{RECBYID[id].name} →</button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {byTheme[theme].map((p) => <PromiseRow key={p.num} p={p} onPickRecord={onPickRecord} />)}
         </div>
       ))}
     </Section>

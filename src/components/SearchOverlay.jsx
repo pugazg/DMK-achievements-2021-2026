@@ -24,7 +24,7 @@ export default function SearchOverlay({ open, onClose, onPickRecord }) {
   const promises = useMemo(() => {
     if (!q.trim()) return [];
     const toks = q.toLowerCase().split(/\s+/).filter(Boolean);
-    return PROMISES.filter((p) => toks.every((tk) => (p.text + " " + p.theme + " " + p.num).toLowerCase().includes(tk))).slice(0, 5);
+    return PROMISES.filter((p) => toks.every((tk) => (p.text + " " + p.theme + " " + p.num + " " + (p.note || "")).toLowerCase().includes(tk))).slice(0, 5);
   }, [q]);
 
   if (!open) return null;
