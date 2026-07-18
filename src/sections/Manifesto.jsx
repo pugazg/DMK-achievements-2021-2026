@@ -91,7 +91,7 @@ export default function Manifesto({ onPickRecord }) {
       <SectionHead
         eyebrow="Promises, tracked honestly"
         title="The 2021 manifesto, kept to account"
-        lede="All 505 promises from the DMK's 2021 election manifesto, with each promise's status mirrored from the independent Pudhiyavan DMK Manifesto 2021 Tracker. Where this tool holds a matching verified record, it is linked beneath the promise."
+        lede="All 505 promises from the DMK's 2021 election manifesto, tracked promise by promise. Where this tool holds a matching verified record, it is linked beneath the promise."
       />
 
       <Reveal>
