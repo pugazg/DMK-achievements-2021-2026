@@ -21,6 +21,7 @@ explorer, a fact-checker, and the 2021 manifesto tracked promise by promise.
 | **Explore** | All 438 verified records, filterable by 12 domains, searchable, each turnable into a shareable card. |
 | **Fact-check** | Paste a forwarded claim; the deterministic engine matches it to the record and says *who actually started it*. |
 | **Manifesto** | All 505 promises from the 2021 manifesto, in collapsible theme groups, each with a status (Fulfilled / Modified / In progress / Stalled / Not fulfilled) and an expandable detail; where this tool holds a matching record it is linked beneath. |
+| **Debates** | An index of all 138 verbatim debate transcripts of the 16th Assembly (May 2021 – Oct 2025), grouped by session, each sitting linking to its official page on the TNLA Digital Library. |
 
 Plus chrome: sticky scroll-spy nav, global search (`⌘/Ctrl-K` or `/`), light/dark theme,
 reading-progress bar, back-to-top, shareable cards, and full reduced-motion support.
@@ -56,4 +57,5 @@ src/
 
 Tamil Nadu Government 2021–26 achievement record (souvenir + minister-by-minister volumes);
 Economic Survey of Tamil Nadu 2025–26; DMK Election Manifesto 2021; SRS 2021–23;
-StartupTN / TANSIM published data.
+StartupTN / TANSIM published data; Tamil Nadu Legislative Assembly Digital Library
+(16th Assembly debates, 2021–2026).

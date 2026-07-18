@@ -10,6 +10,7 @@ export const SECTIONS = [
   { id: "explore", label: "Explore" },
   { id: "claim", label: "Fact-check" },
   { id: "manifesto", label: "Manifesto" },
+  { id: "debates", label: "Debates" },
 ];
 
 export default function Nav({ onSearch, theme, onToggleTheme }) {
