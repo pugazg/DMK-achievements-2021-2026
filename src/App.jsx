@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ThemeCtx, THEMES } from "./lib/theme.js";
+import { ThemeCtx, THEMES, useT } from "./lib/theme.js";
 import { usePersisted, useScrollProgress } from "./lib/hooks.js";
 
 import Nav from "./components/Nav.jsx";
@@ -15,11 +15,12 @@ import Manifesto from "./sections/Manifesto.jsx";
 import Footer from "./sections/Footer.jsx";
 
 function BackToTop() {
+  const t = useT();
   const p = useScrollProgress();
   if (p < 0.08) return null;
   return (
     <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Back to top"
-      style={{ position: "fixed", right: 18, bottom: 18, zIndex: 300, width: 44, height: 44, borderRadius: "50%", border: "none", cursor: "pointer", background: "#c9a84c", color: "#1a1206", fontSize: 18, boxShadow: "0 8px 24px -8px rgba(0,0,0,.6)" }}>↑</button>
+      style={{ position: "fixed", right: 18, bottom: 18, zIndex: 300, width: 44, height: 44, borderRadius: "50%", border: "none", cursor: "pointer", background: t.gold, color: t.name === "dark" ? "#1a1206" : "#fff", fontSize: 18, boxShadow: "0 8px 24px -8px rgba(0,0,0,.6)" }}>↑</button>
   );
 }
 

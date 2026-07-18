@@ -54,8 +54,10 @@ const LIGHT = {
   mute: "#7c6d49",
   ghost: "#9a8a63",
   wisp: "#b6a884",
-  gold: "#9a7c22",
-  goldSoft: "#7d6316",
+  // Light theme uses RED as its primary accent (dark keeps gold).
+  // #b0261a on the cream/white surfaces clears WCAG AA for text.
+  gold: "#b0261a",
+  goldSoft: "#8c1a11",
   red: "#a5301f",
   green: "#158a3e",
   amber: "#b26a08",
