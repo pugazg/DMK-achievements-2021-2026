@@ -5,12 +5,15 @@ import { PROMISES } from "../data/promises.js";
 import { Section, SectionHead, Reveal } from "../components/layout.jsx";
 import { ProgressRing } from "../components/charts.jsx";
 
+// Five-status taxonomy, mirroring the independent Pudhiyavan DMK Manifesto 2021 Tracker.
 const PSTATUS = {
-  kept:       { label: "Kept",             color: "#22c55e", mark: "✓" },
-  progress:   { label: "In progress",      color: "#c9a84c", mark: "◐" },
-  unverified: { label: "Not yet verified", color: "#8a8aa0", mark: "·" },
-  "not-done": { label: "Not done",         color: "#c0392b", mark: "✕" },
+  fulfilled:       { label: "Fulfilled",     color: "#22c55e", mark: "✓" },
+  modified:        { label: "Modified",      color: "#0891b2", mark: "↺" },
+  progress:        { label: "In progress",   color: "#c9a84c", mark: "◐" },
+  stalled:         { label: "Stalled",       color: "#8a8aa0", mark: "‖" },
+  "not-fulfilled": { label: "Not fulfilled", color: "#c0392b", mark: "✕" },
 };
+const STATUS_ORDER = ["fulfilled", "modified", "progress", "stalled", "not-fulfilled"];
 const RECBYID = Object.fromEntries(DATA.map((r) => [r.id, r]));
 
 export default function Manifesto({ onPickRecord }) {
@@ -19,12 +22,12 @@ export default function Manifesto({ onPickRecord }) {
   const [query, setQuery] = useState("");
 
   const counts = useMemo(() => {
-    const c = { kept: 0, progress: 0, unverified: 0, "not-done": 0 };
+    const c = Object.fromEntries(STATUS_ORDER.map((k) => [k, 0]));
     PROMISES.forEach((p) => { c[p.status] = (c[p.status] || 0) + 1; });
     return c;
   }, []);
   const total = PROMISES.length;
-  const done = counts.kept + counts.progress;
+  const fulfilled = counts.fulfilled;
 
   const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
   const list = PROMISES.filter((p) => {
@@ -39,28 +42,25 @@ export default function Manifesto({ onPickRecord }) {
 
   const FILTERS = [
     { id: "all", label: `All ${total}`, color: t.gold },
-    { id: "kept", label: `Kept ${counts.kept}`, color: PSTATUS.kept.color },
-    { id: "progress", label: `In progress ${counts.progress}`, color: PSTATUS.progress.color },
-    { id: "unverified", label: `Not yet verified ${counts.unverified}`, color: PSTATUS.unverified.color },
+    ...STATUS_ORDER.map((k) => ({ id: k, label: `${PSTATUS[k].label} ${counts[k]}`, color: PSTATUS[k].color })),
   ];
-  if (counts["not-done"]) FILTERS.push({ id: "not-done", label: `Not done ${counts["not-done"]}`, color: PSTATUS["not-done"].color });
 
   return (
     <Section id="manifesto" style={{ paddingBottom: 40 }}>
       <SectionHead
         eyebrow="Promises, tracked honestly"
         title="The 2021 manifesto, kept to account"
-        lede="All 505 promises from the DMK's 2021 election manifesto. Kept and in-progress promises are each linked to a verified record. 'Not yet verified' means the achievement isn't in this tool yet — often a central-government matter or a later document batch — not that the promise was broken."
+        lede="All 505 promises from the DMK's 2021 election manifesto, with each promise's status mirrored from the independent Pudhiyavan DMK Manifesto 2021 Tracker. Where this tool holds a matching verified record, it is linked beneath the promise."
       />
 
       <Reveal>
         <div style={{ display: "flex", gap: 24, alignItems: "center", flexWrap: "wrap", background: t.panel, border: `1px solid ${t.line}`, borderRadius: 16, padding: "22px 24px", marginBottom: 18, boxShadow: t.cardShadow }}>
-          <ProgressRing value={done} total={total} color={t.gold} label="linked to a record" />
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", flex: 1, minWidth: 220 }}>
-            {[["kept", counts.kept], ["progress", counts.progress], ["unverified", counts.unverified]].map(([k, n]) => (
-              <div key={k} style={{ flex: 1, minWidth: 90, textAlign: "center", background: `${PSTATUS[k].color}14`, border: `1px solid ${PSTATUS[k].color}44`, borderRadius: 10, padding: "12px 8px" }}>
-                <div style={{ color: PSTATUS[k].color, fontSize: 24, fontWeight: 800, lineHeight: 1 }}>{n}</div>
-                <div style={{ color: PSTATUS[k].color, fontSize: 10.5, fontFamily: "ui-monospace,monospace", letterSpacing: ".05em", marginTop: 6 }}>{PSTATUS[k].label}</div>
+          <ProgressRing value={fulfilled} total={total} color={PSTATUS.fulfilled.color} label="fulfilled" />
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", flex: 1, minWidth: 220 }}>
+            {STATUS_ORDER.map((k) => (
+              <div key={k} style={{ flex: 1, minWidth: 82, textAlign: "center", background: `${PSTATUS[k].color}14`, border: `1px solid ${PSTATUS[k].color}44`, borderRadius: 10, padding: "12px 6px" }}>
+                <div style={{ color: PSTATUS[k].color, fontSize: 22, fontWeight: 800, lineHeight: 1 }}>{counts[k]}</div>
+                <div style={{ color: PSTATUS[k].color, fontSize: 10, fontFamily: "ui-monospace,monospace", letterSpacing: ".03em", marginTop: 6 }}>{PSTATUS[k].label}</div>
               </div>
             ))}
           </div>

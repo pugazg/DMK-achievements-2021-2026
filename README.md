@@ -20,7 +20,7 @@ explorer, a fact-checker, and the 2021 manifesto tracked promise by promise.
 | **The Method** | The Dravidian arc — Dignity → Ownership → Access → Innovation — with thematic essays and a term timeline. |
 | **Explore** | All 438 verified records, filterable by 12 domains, searchable, each turnable into a shareable card. |
 | **Fact-check** | Paste a forwarded claim; the deterministic engine matches it to the record and says *who actually started it*. |
-| **Manifesto** | All 505 promises from the 2021 manifesto, each linked to a verified record, tracked honestly. |
+| **Manifesto** | All 505 promises from the 2021 manifesto. Each promise's status (Fulfilled / Modified / In progress / Stalled / Not fulfilled) is mirrored from the independent [Pudhiyavan DMK Manifesto 2021 Tracker](https://dmk-manifesto-2021-tracker.pudhiyavan.com); where this tool holds a matching record it is linked beneath. |
 
 Plus chrome: sticky scroll-spy nav, global search (`⌘/Ctrl-K` or `/`), light/dark theme,
 reading-progress bar, back-to-top, shareable cards, and full reduced-motion support.
