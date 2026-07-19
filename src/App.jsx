@@ -13,6 +13,7 @@ import Explore from "./sections/Explore.jsx";
 import Claim from "./sections/Claim.jsx";
 import Manifesto from "./sections/Manifesto.jsx";
 import Legislation from "./sections/Legislation.jsx";
+import GovOrders from "./sections/GovOrders.jsx";
 import Debates from "./sections/Debates.jsx";
 import Footer from "./sections/Footer.jsx";
 
@@ -73,6 +74,7 @@ export default function App() {
         <Claim onCard={setCard} />
         <Manifesto onPickRecord={setCard} />
         <Legislation onPickRecord={setCard} />
+        <GovOrders onPickRecord={setCard} />
         <Debates />
         <Footer />
       </div>
