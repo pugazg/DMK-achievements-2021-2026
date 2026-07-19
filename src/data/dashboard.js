@@ -223,6 +223,7 @@ export const REFERENCES = [
   { t: "Economic Survey of Tamil Nadu 2025–26", meta: "GSDP, per-capita income, exports, sectoral growth." },
   { t: "DMK Election Manifesto 2021 (English)", meta: "The 505 promises tracked in the Manifesto section." },
   { t: "Tamil Nadu Legislative Assembly Digital Library — 16th Assembly debates (2021–2026)", meta: "138 verbatim sitting-day transcripts, indexed in the Debates section." },
+  { t: "Tamil Nadu Government Gazette (Extraordinary), Part IV — Dept. of Stationery & Printing", meta: "Acts, Bills and Ordinances 2021–2026, in the Laws section." },
   { t: "Sample Registration System (SRS) 2021–23", meta: "Maternal mortality and fertility figures." },
   { t: "StartupTN / TANSIM published data", meta: "Startup registrations, incubators, seed fund." },
 ];
