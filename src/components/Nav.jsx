@@ -11,6 +11,7 @@ export const SECTIONS = [
   { id: "claim", label: "Fact-check" },
   { id: "manifesto", label: "Manifesto" },
   { id: "legislation", label: "Laws" },
+  { id: "govorders", label: "Orders" },
   { id: "debates", label: "Debates" },
 ];
 
