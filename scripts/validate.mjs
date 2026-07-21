@@ -132,6 +132,16 @@ check(EVIDENCE_PILOT.every((r) => r.assessment.confidence && r.assessment.confid
   `evidence pilot: grade and confidence are separate judgements`);
 check(EVIDENCE_PILOT.every((r) => r.sources.every((s) => !s.quote || s.document?.extraction_status === "success")),
   `evidence pilot: no quote rests on a failed extraction`);
+// Phase C0.6 — the adversarial review's own integrity.
+const { SECOND_PASS } = await import("../src/data/evidenceReview.js");
+const { PACKETS, assertNoLeak } = await import("../scripts/reviewer_packets.mjs");
+const { STATS: reviewStats } = await import("../scripts/reviewer_compare.mjs");
+const leaks = assertNoLeak(PACKETS, EVIDENCE_PILOT);
+check(leaks.length === 0, `reviewer packets are blinded (${leaks.length} leaks)`);
+check(SECOND_PASS.length === EVIDENCE_PILOT.length, `second pass covers every subject (${SECOND_PASS.length}/${EVIDENCE_PILOT.length})`);
+check(reviewStats.rollUpFailures.length === 0, `second pass obeys its own roll-up rules (${reviewStats.rollUpFailures.length} violations)`);
+console.log(`  ..  : adversarial review — ${reviewStats.exactMatches}/${reviewStats.total} exact, ${reviewStats.total - reviewStats.exactMatches} disagreements ${JSON.stringify(reviewStats.byClass)}`);
+
 const ps = pilotSummary(EVIDENCE_PILOT);
 console.log(`  ..  : pilot v2 — ${ps.components} components across ${ps.total} subjects, ${ps.compound} compound, ${ps.notGradeable} not gradeable`);
 

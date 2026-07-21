@@ -31,6 +31,12 @@
       inferred from a related order" are both D and are not equally
       certain.
 
+   6. REVIEWER NOTES (v2.1, from the C0.6 adversarial review). Where
+      the rules do not determine an answer, the judgement is recorded
+      at the point it is made. 8 of 25 subjects diverged between two
+      passes; in almost every case the divergence was an undocumented
+      judgement rather than a factual disagreement.
+
    5. DOCUMENT LIFECYCLE. The pilot's fallback PDF parser produced
       convincing-looking garbage rather than failing. Every document
       now tracks download and extraction separately, with a method,
@@ -221,6 +227,17 @@ export function validateComponent(c, path, sourceIds) {
   if (c.grade === "NG" && !NG_REASONS.includes(c.ng_reason)) {
     errs.push(`${path}: grade NG requires ng_reason one of ${NG_REASONS.join("|")}`);
   }
+  /* v2.1 — reviewerNotes. The C0.6 adversarial review found that where two
+     passes diverged, the divergence was almost always a judgement the rules did
+     not determine. Those judgements must be written down where they are made.
+     Required whenever a component's grade is not the one its own evidence
+     mechanically supports, or when NG is used. */
+  if (c.reviewerNotes !== undefined && String(c.reviewerNotes).trim().length < 20) {
+    errs.push(`${path}: reviewerNotes present but too short to explain anything`);
+  }
+  if (c.grade === "NG" && !c.reviewerNotes && !c.limitations.some((l) => l.length > 40)) {
+    errs.push(`${path}: NG needs reviewerNotes or a substantive limitation explaining why no evidence could settle it`);
+  }
   return errs;
 }
 
@@ -297,6 +314,12 @@ export function validateEvidenceRecord(r) {
 
   if (!Array.isArray(r.missing) || r.missing.length === 0) {
     errs.push(`${id}: "missing" must list what evidence is unavailable (an empty list means nobody looked)`);
+  }
+  /* v2.1 — record-level reviewerNotes, for judgement calls that span components:
+     why this split rather than another, why a source was treated as contextual,
+     why a defensible alternative reading was rejected. */
+  if (r.reviewerNotes !== undefined && String(r.reviewerNotes).trim().length < 20) {
+    errs.push(`${id}: reviewerNotes present but too short to explain anything`);
   }
   return errs;
 }

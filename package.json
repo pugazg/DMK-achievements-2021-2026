@@ -15,9 +15,11 @@
     "remediation-queue": "node scripts/remediation_queue.mjs",
     "coverage-matrix": "node scripts/source_coverage_matrix.mjs",
     "quality-doc": "node scripts/data_quality_doc.mjs",
-    "docs": "npm run coverage-matrix && npm run quality-doc && npm run remediation-queue && npm run reconcile && npm run evidence-queue",
+    "docs": "npm run coverage-matrix && npm run quality-doc && npm run remediation-queue && npm run reconcile && npm run evidence-queue && npm run reviewer-packets && npm run reviewer-compare",
     "reconcile": "node scripts/post_change_reconciliation.mjs",
-    "evidence-queue": "node scripts/evidence_queue.mjs"
+    "evidence-queue": "node scripts/evidence_queue.mjs",
+    "reviewer-packets": "node scripts/reviewer_packets.mjs",
+    "reviewer-compare": "node scripts/reviewer_compare.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
