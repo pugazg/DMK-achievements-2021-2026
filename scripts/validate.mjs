@@ -16,7 +16,7 @@ const { DERIVED, reconcile, checkInvariants } = await import("../src/lib/publicM
 // mutation slipped through before.
 const { HERO_STRIP } = await import("../src/data/dashboard.js");
 const { EVIDENCE_PILOT } = await import("../src/data/evidencePilot.js");
-const { validateEvidenceRecord, gradeMismatches } = await import("../src/lib/evidenceRecord.js");
+const { validateEvidenceRecord, gradeMismatches, rollUpMismatches, componentMismatches, summarise: pilotSummary } = await import("../src/lib/evidenceRecord.js");
 
 let fail = 0;
 const check = (cond, msg) => { if (!cond) { console.error("  FAIL:", msg); fail++; } else { console.log("  ok  :", msg); } };
@@ -120,6 +120,20 @@ check(EVIDENCE_PILOT.every((r) => r.assessment.verification_status === "unverifi
   `evidence pilot: no record is marked verified`);
 check(EVIDENCE_PILOT.every((r) => Array.isArray(r.missing) && r.missing.length > 0),
   `evidence pilot: every record states what evidence is missing`);
+// Phase C0.5 hardening invariants.
+const rollMism = rollUpMismatches(EVIDENCE_PILOT);
+check(rollMism.length === 0, `evidence pilot: no parent inherits its strongest component (${rollMism.length} mismatches)`);
+rollMism.slice(0, 5).forEach((m) => console.error(`        ${m.id}: parent ${m.parent}, weakest ${m.rolled}`));
+const compMism = componentMismatches(EVIDENCE_PILOT);
+check(compMism.length === 0, `evidence pilot: no component claims more than its evidence supports (${compMism.length})`);
+check(EVIDENCE_PILOT.every((r) => r.sources.every((s) => s.relationship?.supports && s.relationship?.does_not_prove !== undefined)),
+  `evidence pilot: every source carries a relationship note`);
+check(EVIDENCE_PILOT.every((r) => r.assessment.confidence && r.assessment.confidence_rationale),
+  `evidence pilot: grade and confidence are separate judgements`);
+check(EVIDENCE_PILOT.every((r) => r.sources.every((s) => !s.quote || s.document?.extraction_status === "success")),
+  `evidence pilot: no quote rests on a failed extraction`);
+const ps = pilotSummary(EVIDENCE_PILOT);
+console.log(`  ..  : pilot v2 — ${ps.components} components across ${ps.total} subjects, ${ps.compound} compound, ${ps.notGradeable} not gradeable`);
 
 console.log(fail === 0 ? "\nVALIDATION PASSED" : `\nVALIDATION FAILED (${fail})`);
 process.exit(fail === 0 ? 0 : 1);

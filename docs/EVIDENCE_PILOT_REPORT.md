@@ -1,5 +1,11 @@
 # Evidence Pilot Report — Phase C0
 
+> **Superseded in part by Phase C0.5.** The four blocking changes in §6 have been
+> implemented; the model is now v2 ([`EVIDENCE_MODEL_V2.md`](EVIDENCE_MODEL_V2.md))
+> and the same 25 subjects were migrated to it. Componentisation demoted four of them
+> from D to E and moved three promises to NG — see §9 of the v2 document. The findings
+> below are preserved as the record of what the pilot discovered.
+
 **Pilot version 1.0** · Compiled 21 July 2026 · Methodology v1.0
 **Corpus:** `src/data/evidencePilot.js` · **Schema:** `src/lib/evidenceRecord.js`
 **Tests:** `test/evidencePilot.test.mjs` (23 tests) · **UI:** `#evidence-pilot`

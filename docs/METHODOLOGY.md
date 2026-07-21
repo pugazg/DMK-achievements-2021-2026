@@ -75,10 +75,12 @@ Every automatic grade carries `auto: true` and
 
 ### What is not built yet
 
-The structured `EvidenceRecord[]` store — one row per document with source
-title, issuing authority, document date, page reference, stage and authority
-class — is **designed but not populated**. Today the grade is computed at render
-time from the GO/Act link. Consequences, stated plainly:
+The structured `EvidenceRecord[]` store is **designed and piloted, not populated
+at scale**. A 25-subject pilot exists under the v2 schema
+([`EVIDENCE_MODEL_V2.md`](EVIDENCE_MODEL_V2.md)) covering claim components,
+grade-versus-confidence, non-gradeable claims and full document lifecycle. The
+other 413 records still carry only the grade computed at render time from their
+GO/Act link. Consequences for those records, stated plainly:
 
 - **0%** of records carry a source authority, source URL, document title, or
   evidence stage.

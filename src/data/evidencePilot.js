@@ -1,107 +1,142 @@
 /* ============================================================
-   EVIDENCE PILOT CORPUS — Phase C0.
+   EVIDENCE PILOT CORPUS — v2 (Phase C0.5 hardening)
 
-   25 subjects: 10 achievements (one per domain), 10 manifesto
-   promises across maturity levels, 5 contested high-impact claims.
+   The same 25 subjects as the C0 pilot, migrated to the hardened
+   schema. NO NEW RECORDS were added in this phase.
 
-   HONESTY RULES OBSERVED WHILE BUILDING THIS FILE
-   - Every `url`, `document_no`, `date` and `quote` below is either
-     already held in this repo's datasets, or was fetched on
-     2026-07-21 and hashed into sources/pilot_c0/manifest.tsv.
-   - Where a document was fetched but not read, extraction is
-     "retrieved", not "parsed". Where it was never opened,
-     "identified". Nothing is upgraded on the strength of a
-     plausible-sounding title.
-   - `missing` is filled in for every record. An empty `missing`
-     would mean nobody looked, which is worse than a long list.
-   - CAG quotes are verbatim from the Executive Summary of the
-     State Finances Audit Report 2023-24 (Report No. 2 of 2025),
-     retrieved and text-extracted on 2026-07-21.
+   What migration added to every record:
+   - a mandatory `relationship` on each source: what it supports,
+     what it does NOT prove, and its effect on the grade;
+   - a `document` lifecycle block: download and extraction tracked
+     separately, with method, text hash, confidence and review state;
+   - `components[]`, so compound claims are graded part by part;
+   - `assessment.confidence` with its own rationale, separate from
+     the grade;
+   - NG where a claim has no measurable criterion.
 
-   The CAG findings are STATE-LEVEL fiscal observations. They are
-   attached as `contextual` or `contrary` where they bear on the
-   claim's class (delivery assurance, spend-versus-outcome), and
-   are explicitly NOT presented as findings about the individual
-   scheme — no CAG paragraph in this pilot names any of these
-   schemes. That distinction is recorded in each source's `note`.
+   HONESTY RULES (unchanged from C0)
+   - Every url/document_no/date/quote is either already held in this
+     repo's datasets or was fetched on 2026-07-21 and hashed into
+     sources/pilot_c0/manifest.tsv.
+   - CAG quotes are verbatim from the Executive Summary of the State
+     Finances Audit Report 2023-24 (Report No. 2 of 2025). They are
+     STATE-LEVEL findings and name none of these schemes; every use
+     says so in its relationship note.
    ============================================================ */
 
 export const PILOT_META = {
-  version: "1.0",
+  version: "2.0",
+  schema: "evidenceRecord v2",
   compiled: "2026-07-21",
   methodology: "1.0",
   purpose:
-    "Validate that the evidence model can represent a complete picture — supporting and adverse — before any bulk ingestion.",
+    "Validate the hardened evidence model against the same 25 subjects before any bulk ingestion.",
   fetch_manifest: "sources/pilot_c0/manifest.tsv",
+  migrated_from: "pilot v1.0 (Phase C0) — same subjects, no additions",
 };
 
-/* Sources reused across records. Defined once so a document's
-   metadata cannot drift between the records that cite it. */
-const CAG_SFAR = {
+// ---- document lifecycle helpers -------------------------------------
+
+/* A document nobody has attempted to fetch (paper volumes, records we
+   only know exist). Never quotable. */
+const docNotFetched = () => ({
+  download_status: "not_attempted",
+  extraction_status: "not_attempted",
+  extraction_method: "none",
+  text_sha256: null,
+  extraction_confidence: null,
+  human_review: "unreviewed",
+});
+
+/* A document that was sought and could not be obtained. */
+const docUnavailable = () => ({
+  download_status: "not_attempted",
+  extraction_status: "not_attempted",
+  extraction_method: "none",
+  text_sha256: null,
+  extraction_confidence: null,
+  human_review: "reviewed", // a human confirmed it could not be located
+});
+
+/* The CAG Executive Summary: fetched, extracted with pdftotext, read. */
+const docCagExecSummary = () => ({
+  download_status: "success",
+  extraction_status: "success",
+  extraction_method: "pdftotext",
+  text_sha256: "743f3315b730d67b80235579f118ae68702b7debed8a48ab30debbd36b536db0",
+  extraction_confidence: "high",
+  human_review: "reviewed",
+  retrieved_at: "2026-07-21",
+  note: "pdftotext -layout produced clean text; passages below were read and transcribed verbatim.",
+});
+
+const rel = (supports, does_not_prove, grade_impact, component_id) => ({
+  supports, does_not_prove, grade_impact, ...(component_id ? { component_id } : {}),
+});
+
+// ---- shared CAG sources (relationship supplied per use) --------------
+
+const CAG_BASE = {
   source_type: "audit",
   authority: "audit",
   title:
     "Report of the Comptroller and Auditor General of India on State Finances for the year ended 31 March 2024 (Report No. 2 of 2025), Executive Summary",
-  issuing_authority: "Comptroller and Auditor General of India / Principal Accountant General (Audit-I), Tamil Nadu",
+  issuing_authority:
+    "Comptroller and Auditor General of India / Principal Accountant General (Audit-I), Tamil Nadu",
   document_no: "Report No. 2 of 2025",
   date: "2025",
   url: "https://cag.gov.in/uploads/download_audit_report/2025/5_Executive-Summary-068f705993d63b5.26103778.pdf",
   sha256: "3cab4ca020bcfc98d82f2294ff5ed6ccdf59edc991ad927184a5b618be023a21",
-  retrieved_at: "2026-07-21",
   stage: "independent_audit",
   extraction: "quoted",
 };
 
-const cagUC = {
-  ...CAG_SFAR,
+const cagUC = (relationship) => ({
+  ...CAG_BASE, document: docCagExecSummary(),
   reference: "Executive Summary — Outstanding Utilisation Certificates",
   stance: "contrary",
   quote:
     "Despite the requirement of submitting Utilisation Certificates (UCs) against conditional grants within a stipulated time period, 111 outstanding UCs of ₹2,805.94 crore were pending as on 31 March 2024. Non-submission of UCs indicates the failure of the departmental officers to comply with the rules to ensure accountability.",
-  note:
-    "State-level finding. Does not name this scheme. Attached because it is direct independent evidence that, in this state and period, released funds do not reliably evidence delivery — which is exactly the inference a reader might otherwise draw from a sanction document.",
-};
+  relationship,
+});
 
-const cagUnspent = {
-  ...CAG_SFAR,
+const cagUnspent = (relationship) => ({
+  ...CAG_BASE, document: docCagExecSummary(),
   reference: "Executive Summary — Single Nodal Agency accounts",
   stance: "contrary",
   quote:
     "As of 31 March 2024, the unspent amounts lying in the SNA Accounts was ₹10,083.87 crore. There were delays ranged between one day and 106 days in release of GOI share and State Government share to SNA in seven schemes.",
-  note:
-    "State-level finding; does not name this scheme. Evidence that allocation and release are not the same as expenditure, and that release delays are systemic rather than exceptional.",
-};
+  relationship,
+});
 
-const cagFiscal = {
-  ...CAG_SFAR,
+const cagFiscal = (relationship) => ({
+  ...CAG_BASE, document: docCagExecSummary(),
   reference: "Executive Summary — Receipt-Expenditure Mismatch",
   stance: "contextual",
   quote:
     "The continuous mismatch between receipts and expenditure indicates rising fiscal stress. Revenue deficit increased from ₹36,215 crore to ₹45,121 crore registering 24.59 per cent increase over 2022-23, while fiscal deficit increased significantly from ₹81,886 crore in 2022-23 to ₹90,430 crore in 2023-24.",
-  note: "Fiscal context for any large spending commitment in this period. Names no scheme.",
-};
+  relationship,
+});
 
-const cagGsdp = {
-  ...CAG_SFAR,
+const cagGsdp = (relationship) => ({
+  ...CAG_BASE, document: docCagExecSummary(),
   reference: "Executive Summary — GSDP",
   stance: "contrary",
   quote:
     "Gross State Domestic Product (GSDP) (at current prices) grew at an average growth rate of 10.92 per cent from ₹17,43,144 crore in 2019-20 to ₹27,21,571 crore in 2023-24. There was 13.71 per cent growth in GSDP over 2022-23.",
-  note:
-    "State-level figure; names no scheme. Independent official GSDP number, on a different base year from the claim it is attached to. Marked contrary because it is the only independent figure available against which this project's GSDP claims can be sanity-checked, and the two are not directly comparable — which is itself the finding.",
-};
+  relationship,
+});
 
-const cagOffBudget = {
-  ...CAG_SFAR,
+const cagOffBudget = (relationship) => ({
+  ...CAG_BASE, document: docCagExecSummary(),
   reference: "Executive Summary — Off-Budget Borrowings and Guarantees",
   stance: "contrary",
   quote:
     "The State Government, through Public Sector Undertaking, raised ₹1,672.01 crore as off-budget borrowings, which did not flow into the Consolidated Fund of the State but are required to be repaid and serviced through budget. The total outstanding guarantees of the State Government were ₹1,22,269.91 crore as on 31 March 2024.",
-  note:
-    "State-level finding. Relevant wherever a headline investment or infrastructure figure may be financed off-budget; names no scheme.",
-};
+  relationship,
+});
 
-const souvenir = (page) => ({
+const souvenir = (page, relationship) => ({
   source_type: "announcement",
   authority: "primary_official",
   title: "Tamil Nadu Government 2021–26 achievements record (souvenir / minister-by-minister volumes)",
@@ -109,14 +144,13 @@ const souvenir = (page) => ({
   date: "2026",
   page: page ?? null,
   stage: "announcement",
-  extraction: page ? "identified" : "identified",
+  extraction: "identified",
   stance: "supporting",
-  note: page
-    ? `Page ${page} recorded, so the claim can be located in the volume. The volume itself is not digitised in this repository.`
-    : "No page reference recorded — this claim cannot be spot-checked by a reader against the source volume.",
+  document: docNotFetched(),
+  relationship,
 });
 
-const NOT_SOUGHT = (what, why) => ({
+const notLocated = (what, why, relationship) => ({
   source_type: "other",
   authority: "other",
   title: `${what} — not located`,
@@ -124,55 +158,92 @@ const NOT_SOUGHT = (what, why) => ({
   stage: "context_only",
   extraction: "unavailable",
   stance: "contextual",
-  note: why,
+  document: docUnavailable(),
+  relationship: { ...relationship, does_not_prove: why },
 });
 
-// ---------------------------------------------------------------
-// 1. ACHIEVEMENTS — one per requested domain, varied evidence maturity
-// ---------------------------------------------------------------
+const go = (title, dept, date, url, relationship, document_no) => ({
+  source_type: "go",
+  authority: "primary_official",
+  title, issuing_authority: dept, date, url,
+  ...(document_no ? { document_no } : {}),
+  stage: "administrative_sanction",
+  extraction: "identified",
+  stance: "supporting",
+  document: docNotFetched(),
+  relationship,
+});
+
+const law = (title, document_no, date, url, relationship, stage = "administrative_sanction", stance = "supporting") => ({
+  source_type: "legislation",
+  authority: "legislative",
+  title, issuing_authority: "Tamil Nadu Legislative Assembly / Dept. of Stationery & Printing",
+  document_no, date, url, stage, extraction: "identified", stance,
+  document: docNotFetched(),
+  relationship,
+});
+
+// ===============================================================
+// 1. ACHIEVEMENTS
+// ===============================================================
 
 const ACHIEVEMENTS = [
   {
-    id: "ev_hea4",
-    subject_type: "achievement",
-    subject_id: "hea4",
-    domain: "health",
+    id: "ev_hea4", subject_type: "achievement", subject_id: "hea4", domain: "health",
     claim: "Kalaignar Super-Speciality Hospital — a 1,000-bed hospital with 15 operating theatres at Guindy, opened 15 June 2023 for ₹240 cr plus ₹146 cr of equipment.",
     sources: [
-      souvenir(null),
-      {
-        source_type: "go", authority: "primary_official",
-        title: "Pay Ward — Formation of Pay wards in Kalaignar Centenary Super Speciality Hospital, Guindy",
-        issuing_authority: "Health and Family Welfare Department, Government of Tamil Nadu",
-        date: "18-03-2025",
-        url: "https://cms.tn.gov.in/cms_migrated/document/GO/hfw_e_69_2025.pdf",
-        stage: "administrative_sanction", extraction: "identified", stance: "supporting",
-        note: "Confirms the hospital exists and is operating in 2025. Does NOT evidence the bed count, the opening date, or the construction cost — it is about pay-ward formation.",
-      },
-      {
-        source_type: "go", authority: "primary_official",
-        title: "Establishment — Further continuance of 217 temporary posts attached to the hospital",
-        issuing_authority: "Health and Family Welfare Department, Government of Tamil Nadu",
-        date: "11-09-2025",
-        url: "https://cms.tn.gov.in/cms_migrated/document/GO/hfw_e_1016_2025_D.pdf",
-        stage: "administrative_sanction", extraction: "identified", stance: "supporting",
-        note: "Staffing continuance. Independent of the capacity claim.",
-      },
-      cagUC,
-      NOT_SOUGHT("Completion certificate / commissioning record", "No work-completion or commissioning document has been located. The 1,000-bed figure rests on the government's own summary."),
+      souvenir(null, rel(
+        "The existence of the hospital and every figure in the claim: bed count, theatre count, opening date and cost.",
+        "Nothing independently — it is the government's own summary of its own work, with no page reference recorded so a reader cannot even locate it in the volume.",
+        "caps", "existence")),
+      go("Pay Ward — Formation of Pay wards in Kalaignar Centenary Super Speciality Hospital, Guindy",
+        "Health and Family Welfare Department, Government of Tamil Nadu", "18-03-2025",
+        "https://cms.tn.gov.in/cms_migrated/document/GO/hfw_e_69_2025.pdf",
+        rel("That the hospital exists and was operating as a functioning facility by March 2025 — a pay-ward order presupposes wards in use.",
+          "The 1,000-bed capacity, the 15 theatres, the 15 June 2023 opening date, or the ₹240 cr cost. This order is about pay-ward formation and touches none of them.",
+          "raises", "existence")),
+      go("Establishment — Further continuance of 217 temporary posts attached to the hospital",
+        "Health and Family Welfare Department, Government of Tamil Nadu", "11-09-2025",
+        "https://cms.tn.gov.in/cms_migrated/document/GO/hfw_e_1016_2025_D.pdf",
+        rel("That the hospital is staffed and continuing to operate into late 2025.",
+          "Any element of the capacity or cost claim. Staffing continuance is independent of how many beds exist.",
+          "supports_current", "existence")),
+      cagUC(rel(
+        "Nothing about this hospital. It is attached as independent evidence about the class of assurance this claim needs.",
+        "It does not name this hospital, this department's spending on it, or any defect in this project. It is a state-level finding that released funds do not reliably evidence delivery.",
+        "caps", "capacity")),
+      notLocated("Completion certificate / commissioning record",
+        "Without it, the 1,000-bed figure and the opening date rest solely on the government's own summary. No work-completion or commissioning document has been located.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "capacity")),
+    ],
+    components: [
+      { id: "existence", text: "A super-speciality hospital exists at Guindy and is operating.",
+        status: "documented", grade: "D", confidence: "high", evidence: [0, 1, 2],
+        limitations: ["Both GOs are identified but unread — the inference rests on their titles and abstracts."] },
+      { id: "capacity", text: "It has 1,000 beds and 15 operating theatres.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 3, 4],
+        limitations: ["No bed-strength notification, licensing record or completion certificate located.",
+          "No page reference to the source volume."] },
+      { id: "cost", text: "It was built for ₹240 cr plus ₹146 cr of equipment.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 4],
+        limitations: ["No budget line, tender, contract or expenditure record located for either figure."] },
+      { id: "opening_date", text: "It opened on 15 June 2023.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0],
+        limitations: ["No inauguration order, press release or gazette notice located."] },
     ],
     assessment: {
-      grade: "D",
+      grade: "E", confidence: "low",
       rationale:
-        "Two Government Orders confirm the hospital exists and is staffed and operating, so an administrative sanction and ongoing operation are documented. Neither GO evidences the headline claim itself — bed count, opening date and cost all come from the government's own summary volume. Sanction is proven; capacity and cost are asserted.",
+        "The hospital's existence and operation are genuinely documented — two Government Orders presuppose a working facility. But every number in the claim (beds, theatres, cost, date) is asserted by the government's own summary alone. Because the parent takes its weakest component, the record grades E despite one component reaching D.",
+      confidence_rationale:
+        "Low: three of four components rest on a single unread source, and the two GOs that do exist were read only as titles.",
       limitations: [
         "No GO or completion record attests the 1,000-bed figure.",
-        "The ₹240 cr construction and ₹146 cr equipment figures have no located budget or expenditure document.",
-        "Record is flagged mixedStatus: its own detail text mixes delivered with planned components.",
-        "No page reference to the source volume, so a reader cannot spot-check the claim.",
+        "The ₹240 cr / ₹146 cr split has no located financial document.",
+        "Record is flagged mixedStatus in the main dataset.",
+        "No page reference, so the claim cannot be spot-checked.",
       ],
-      verification_status: "unverified",
-      assessed_on: "2026-07-21",
+      verification_status: "unverified", assessed_on: "2026-07-21",
     },
     missing: [
       "Work completion certificate or commissioning order",
@@ -182,30 +253,50 @@ const ACHIEVEMENTS = [
       "Occupancy or patient-throughput data proving the beds are in use",
     ],
   },
+
   {
-    id: "ev_edu3",
-    subject_type: "achievement",
-    subject_id: "edu3",
-    domain: "education",
+    id: "ev_edu3", subject_type: "achievement", subject_id: "edu3", domain: "education",
     claim: "10 lakh free laptops distributed to students, with 10 lakh more planned; a college laptop scheme launched 5 January 2026.",
     sources: [
-      souvenir(null),
-      NOT_SOUGHT("Procurement tender for laptop supply", "No tender or contract-award document has been located for a procurement of this scale."),
-      NOT_SOUGHT("Distribution/beneficiary records", "No district-wise or institution-wise distribution record has been located."),
-      cagUnspent,
+      souvenir(null, rel(
+        "Both halves of the claim: the 10 lakh delivered and the 10 lakh planned.",
+        "Any distinction between delivered and planned, and any procurement or delivery fact. No page reference recorded.",
+        "caps", "delivered")),
+      notLocated("Procurement tender for laptop supply",
+        "One of the largest single hardware purchases a state could make, and no tender or contract-award document has been located.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "delivered")),
+      notLocated("Distribution / beneficiary records",
+        "No district-wise or institution-wise distribution record has been located, so the 10 lakh figure cannot be checked at any level.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "delivered")),
+      cagUnspent(rel(
+        "Nothing about this scheme. Attached as independent evidence that allocation and release are not the same as expenditure in this period.",
+        "It does not name this scheme or any laptop procurement. State-level finding only.",
+        "caps", "delivered")),
+    ],
+    components: [
+      { id: "delivered", text: "10 lakh laptops have been distributed to students.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 1, 2, 3],
+        limitations: ["No procurement, delivery or beneficiary document of any kind located.",
+          "A purchase of this scale would normally leave a large documentary trail."] },
+      { id: "planned", text: "A further 10 lakh laptops are planned.",
+        status: "announced", grade: "E", confidence: "medium", evidence: [0],
+        limitations: ["A statement of intent, not a delivery claim. Included so the headline cannot present it as delivered."] },
+      { id: "college_scheme", text: "A college laptop scheme launched on 5 January 2026.",
+        status: "announced", grade: "E", confidence: "low", evidence: [0],
+        limitations: ["Post-dates the 18 July 2026 data cut-off for any outcome purpose.", "No launch order located."] },
     ],
     assessment: {
-      grade: "E",
+      grade: "E", confidence: "low",
       rationale:
-        "No Government Order, tender, contract or delivery record has been located for a procurement that would be one of the largest single hardware purchases in the state. The claim rests entirely on the government's own summary volume, and the record's own text mixes 10 lakh delivered with 10 lakh planned.",
+        "No Government Order, tender, contract or delivery record was located for a procurement that would be among the largest the state has made. All three components rest on the government's own summary, and the headline conflates 10 lakh delivered with 10 lakh planned.",
+      confidence_rationale:
+        "Low: a single unread source supports all three components, and the most checkable one (procurement) has no document at all.",
       limitations: [
         "Nothing beyond the government's own publication supports this.",
-        "The headline conflates delivered (10 lakh) with planned (10 lakh more).",
-        "The January 2026 college scheme post-dates the data cut-off for outcome purposes.",
+        "The headline conflates delivered with planned.",
         "No page reference to the source volume.",
       ],
-      verification_status: "unverified",
-      assessed_on: "2026-07-21",
+      verification_status: "unverified", assessed_on: "2026-07-21",
     },
     missing: [
       "Procurement tender and contract award",
@@ -215,37 +306,50 @@ const ACHIEVEMENTS = [
       "Any independent count of laptops received by students",
     ],
   },
+
   {
-    id: "ev_soc_b7_hostels",
-    subject_type: "achievement",
-    subject_id: "soc_b7_hostels",
-    domain: "welfare",
+    id: "ev_soc_b7_hostels", subject_type: "achievement", subject_id: "soc_b7_hostels", domain: "welfare",
     claim: "Hostels and buildings for Backward, Most Backward, Denotified, SC/ST and minority students built, maintained and upgraded across the state.",
     sources: [
-      souvenir(287),
-      {
-        source_type: "legislation", authority: "legislative",
-        title: "An Act to repeal the Tamil Nadu Building and Construction Workers (Conditions of Employment) Act",
-        issuing_authority: "Tamil Nadu Legislative Assembly / Dept. of Stationery & Printing",
-        document_no: "Act 3 of 2023", date: "2023",
-        url: "https://www.stationeryprinting.tn.gov.in/extraordinary/2023/",
-        stage: "context_only", extraction: "identified", stance: "contextual",
-        note: "Linked in the dataset to this record, but it is a construction-labour statute. It provides legislative context, NOT evidence that any hostel was built. Recorded as context_only for that reason.",
-      },
-      cagUC,
-      NOT_SOUGHT("Hostel-wise completion records", "The claim is quantified only as 'hundreds', with no located list of works."),
+      souvenir(287, rel(
+        "That a hostel construction and upgrade programme was reported by the government, locatable at page 287 of the volume.",
+        "Any count, location or completion of any individual hostel. The claim is unquantified in the source itself.",
+        "caps", "programme")),
+      law("An Act to repeal the Tamil Nadu Building and Construction Workers (Conditions of Employment) Act",
+        "Act 3 of 2023", "2023", "https://www.stationeryprinting.tn.gov.in/extraordinary/2023/",
+        rel("Legislative context on construction labour regulation during the period.",
+          "That any hostel was built, upgraded or occupied. This is a construction-labour statute wrongly suggestive of delivery evidence by its presence in the link list.",
+          "none", "programme"),
+        "context_only", "contextual"),
+      cagUC(rel(
+        "Nothing about this programme. Independent evidence on the reliability of delivery assurance generally.",
+        "It does not name this programme, these hostels or this department. State-level finding.",
+        "caps", "programme")),
+      notLocated("Hostel-wise completion records",
+        "The claim is quantified only as 'hundreds', with no located list of works, so it cannot be verified even in principle as stated.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "programme")),
+    ],
+    components: [
+      { id: "programme", text: "A hostel construction/upgrade programme for BC, MBC, DNC, SC/ST and minority students was run.",
+        status: "asserted_only", grade: "E", confidence: "medium", evidence: [0, 1, 2, 3],
+        limitations: ["Page reference makes it locatable, which is more than most records offer.",
+          "The only linked statute is a construction-labour Act, unrelated to hostel delivery."] },
+      { id: "quantum", text: "The programme covered 'hundreds' of hostels.",
+        status: "unquantified", grade: "E", confidence: "low", evidence: [0, 3],
+        limitations: ["'Hundreds' is not a verifiable quantity.", "No list of works exists to count against."] },
     ],
     assessment: {
-      grade: "E",
+      grade: "E", confidence: "low",
       rationale:
-        "The page reference makes the claim locatable in the source volume, which is more than most records offer. But the only linked legal instrument is a construction-labour statute unrelated to hostel delivery, and the claim itself is unquantified ('hundreds'). No sanction document specific to these works has been located.",
+        "The page reference makes the claim locatable, which is genuinely better than most. But the only linked legal instrument is a construction-labour statute unrelated to hostel delivery, and the claim is unquantified, so no amount of evidence could confirm it as worded.",
+      confidence_rationale:
+        "Low: the quantum component cannot be assessed at all, and the linked Act is misleading rather than supportive.",
       limitations: [
-        "The linked Act is contextual only and does not evidence any construction.",
-        "The claim is unquantified, so it cannot be verified even in principle as stated.",
-        "Record status is 'ongoing', but the summary framing reads as completed work.",
+        "The linked Act is contextual only and evidences no construction.",
+        "The claim is unquantified.",
+        "Record status is 'ongoing' but the framing reads as completed work.",
       ],
-      verification_status: "unverified",
-      assessed_on: "2026-07-21",
+      verification_status: "unverified", assessed_on: "2026-07-21",
     },
     missing: [
       "A specific count of hostels built versus upgraded",
@@ -255,45 +359,56 @@ const ACHIEVEMENTS = [
       "Any independent inspection of hostel condition",
     ],
   },
+
   {
-    id: "ev_inf_b15_cumta",
-    subject_type: "achievement",
-    subject_id: "inf_b15_cumta",
-    domain: "transport",
+    id: "ev_inf_b15_cumta", subject_type: "achievement", subject_id: "inf_b15_cumta", domain: "transport",
     claim: "CUMTA — Chennai Unified Metropolitan Transport Authority integrating city transport; 5 lakh+ 'Chennai One' users.",
     sources: [
-      souvenir(452),
-      {
-        source_type: "legislation", authority: "legislative",
-        title: "The Chennai Unified Metropolitan Transport Authority Act",
-        issuing_authority: "Tamil Nadu Legislative Assembly / Dept. of Stationery & Printing",
-        document_no: "Act of 2024", date: "2024",
-        url: "https://www.stationeryprinting.tn.gov.in/extraordinary/2024/",
-        stage: "administrative_sanction", extraction: "identified", stance: "supporting",
-        note: "Directly on point: this statute creates the authority the claim describes. Strong evidence that CUMTA exists in law.",
-      },
-      {
-        source_type: "legislation", authority: "legislative",
-        title: "The Chennai Unified Metropolitan Transport Authority Bill",
-        issuing_authority: "Tamil Nadu Legislative Assembly",
-        document_no: "Bill 13 of 2024", date: "2024",
-        url: "https://www.stationeryprinting.tn.gov.in/extraordinary/2024/",
-        stage: "administrative_sanction", extraction: "identified", stance: "contextual",
-        note: "The Bill preceding the Act — evidences the legislative stage, not delivery.",
-      },
-      NOT_SOUGHT("Chennai One ridership dataset", "The 5 lakh user figure has no located independent or departmental dataset behind it."),
+      souvenir(452, rel(
+        "Both the creation of CUMTA and the 5 lakh Chennai One user figure, locatable at page 452.",
+        "The user figure independently — no ridership system output is cited by the volume.",
+        "caps", "adoption")),
+      law("The Chennai Unified Metropolitan Transport Authority Act", "Act of 2024", "2024",
+        "https://www.stationeryprinting.tn.gov.in/extraordinary/2024/",
+        rel("That CUMTA exists in law as a statutory authority — directly on point for the first half of the claim.",
+          "That transport is actually integrated in practice, or anything about Chennai One adoption. A statute creates a body; it does not operate one.",
+          "raises", "authority")),
+      law("The Chennai Unified Metropolitan Transport Authority Bill", "Bill 13 of 2024", "2024",
+        "https://www.stationeryprinting.tn.gov.in/extraordinary/2024/",
+        rel("The legislative pathway that produced the Act.",
+          "Anything beyond the legislative stage — a Bill is a step, not an outcome.",
+          "supports_current", "authority"),
+        "administrative_sanction", "contextual"),
+      notLocated("Chennai One ridership dataset",
+        "The 5 lakh user figure has no located departmental or independent dataset behind it, so adoption cannot be checked.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "adoption")),
+    ],
+    components: [
+      { id: "authority", text: "CUMTA was created as a statutory transport authority.",
+        status: "documented", grade: "D", confidence: "high", evidence: [0, 1, 2],
+        limitations: ["The Act is identified but unread; the inference rests on its title.",
+          "Legal creation is not operational integration."] },
+      { id: "integration", text: "City transport is integrated under CUMTA.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0],
+        limitations: ["'Integration' is undefined in the claim, so there is no criterion to test.",
+          "No operational evidence located."] },
+      { id: "adoption", text: "Chennai One has 5 lakh or more users.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 3],
+        limitations: ["No ridership or registration data located.",
+          "Registered users and active users are different measures; the claim does not say which."] },
     ],
     assessment: {
-      grade: "D",
+      grade: "E", confidence: "low",
       rationale:
-        "A gazetted Act creates the authority, which is the strongest documentary position any record in this pilot reaches. That evidences legal existence and administrative sanction. It says nothing about the 5 lakh 'Chennai One' user figure, which is a delivery/adoption claim with no located source.",
+        "The gazetted Act is the strongest documentary position any subject in this pilot reaches, and it genuinely evidences CUMTA's legal creation (component grade D). But the claim also asserts operational integration and a 5 lakh user figure, neither of which has any source. The weakest component governs.",
+      confidence_rationale:
+        "Low: two of three components have no supporting document, and the strongest one rests on an unread statute.",
       limitations: [
-        "The Act evidences CUMTA's creation, not transport integration in practice.",
+        "The Act evidences creation, not integration in practice.",
         "The 5 lakh user figure is unsupported by any located dataset.",
-        "'Integration' is not defined in the claim, so there is no criterion to test.",
+        "'Integration' is not defined in the claim.",
       ],
-      verification_status: "unverified",
-      assessed_on: "2026-07-21",
+      verification_status: "unverified", assessed_on: "2026-07-21",
     },
     missing: [
       "Chennai One registration or active-user data",
@@ -302,30 +417,51 @@ const ACHIEVEMENTS = [
       "Any independent assessment of the authority's functioning",
     ],
   },
+
   {
-    id: "ev_rur_b2_housing",
-    subject_type: "achievement",
-    subject_id: "rur_b2_housing",
-    domain: "urban development",
+    id: "ev_rur_b2_housing", subject_type: "achievement", subject_id: "rur_b2_housing", domain: "urban development",
     claim: "Kalaignar Kanavu Illam rural housing — 2 lakh houses, ₹6,600 cr; in 2024-25 the full one lakh sanctioned houses were completed within the ₹3,500 cr allocation.",
     sources: [
-      souvenir(269),
-      cagUnspent,
-      cagUC,
-      NOT_SOUGHT("Scheme Government Order", "No GO for this flagship scheme is present in the embedded GO dataset."),
-      NOT_SOUGHT("Completion certificates for the claimed one lakh houses", "No completion or physical-progress record located."),
+      souvenir(269, rel(
+        "The scheme's existence, the 2 lakh / ₹6,600 cr headline and the 2024-25 completion claim, locatable at page 269.",
+        "Any completion, expenditure or beneficiary fact independently. It is the government reporting on its own flagship scheme.",
+        "caps", "completion_2425")),
+      cagUnspent(rel(
+        "Nothing about this scheme. Independent evidence that, in this period, funds released to implementing agencies were substantially unspent and releases were delayed.",
+        "It does not name this scheme, and does not assert that these particular houses were unbuilt. State-level finding.",
+        "caps", "completion_2425")),
+      cagUC(rel(
+        "Nothing about this scheme. Independent evidence that utilisation certificates — the standard proof that sanctioned money was spent as intended — were substantially outstanding.",
+        "It does not name this scheme. It establishes a general assurance gap, not a specific failure here.",
+        "caps", "completion_2425")),
+      notLocated("Scheme Government Order",
+        "No GO for this flagship scheme is present in the embedded GO dataset, so even the sanction is undocumented here.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "scheme")),
+      notLocated("Completion certificates for the claimed one lakh houses",
+        "A specific completion claim with no completion or physical-progress record located.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "completion_2425")),
+    ],
+    components: [
+      { id: "scheme", text: "A rural housing scheme (2 lakh houses, ₹6,600 cr) exists.",
+        status: "asserted_only", grade: "E", confidence: "medium", evidence: [0, 3],
+        limitations: ["No sanctioning GO located, though the scheme is widely reported."] },
+      { id: "completion_2425", text: "In 2024-25 the full one lakh sanctioned houses were completed within ₹3,500 cr.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 1, 2, 4],
+        limitations: ["A precise completion claim with no completion certificate, expenditure record or beneficiary list.",
+          "Independent audit evidence shows release-to-spend gaps were systemic in exactly this period."] },
     ],
     assessment: {
-      grade: "E",
+      grade: "E", confidence: "low",
       rationale:
-        "A page reference exists, but this is a completion claim — 'the full one lakh sanctioned houses were completed' — with no sanction document, no expenditure record and no completion certificate located. The CAG's state-level findings on unspent SNA balances and 111 pending utilisation certificates are directly relevant to the class of assurance this claim needs, without naming the scheme.",
+        "This is a completion claim — 'the full one lakh sanctioned houses were completed' — with no sanction document, no expenditure record and no completion certificate located. The CAG's findings on unspent SNA balances and 111 pending utilisation certificates speak directly to the class of assurance this claim needs, without naming the scheme.",
+      confidence_rationale:
+        "Low: the load-bearing component is a specific completion figure supported only by the claimant, against independent evidence of systemic release-to-spend gaps.",
       limitations: [
         "A specific completion claim rests solely on the government's own summary.",
-        "Independent audit evidence shows release-to-spend gaps are systemic in this period, which is the exact assurance this claim lacks.",
+        "Independent audit evidence indicates systemic release-to-spend gaps in this period.",
         "The 2 lakh / ₹6,600 cr headline mixes the whole scheme with the one-year figure.",
       ],
-      verification_status: "unverified",
-      assessed_on: "2026-07-21",
+      verification_status: "unverified", assessed_on: "2026-07-21",
     },
     missing: [
       "Government Order sanctioning the scheme and the one lakh houses",
@@ -335,28 +471,44 @@ const ACHIEVEMENTS = [
       "Any independent verification that houses are occupied",
     ],
   },
+
   {
-    id: "ev_eco_b2_tidel",
-    subject_type: "achievement",
-    subject_id: "eco_b2_tidel",
-    domain: "industry",
+    id: "ev_eco_b2_tidel", subject_type: "achievement", subject_id: "eco_b2_tidel", domain: "industry",
     claim: "Mini Tidel Parks built at Villupuram, Vellore, Thanjavur, Thoothukudi, Salem and Tiruppur — 6 done, 10 planned.",
     sources: [
-      souvenir(null),
-      cagOffBudget,
-      NOT_SOUGHT("TIDEL/ELCOT project completion records", "No completion or commissioning record located for any of the six named parks."),
+      souvenir(null, rel(
+        "Six named completed parks and ten planned ones.",
+        "Completion, commissioning or occupancy of any individual park. No page reference recorded.",
+        "caps", "built")),
+      cagOffBudget(rel(
+        "Nothing about these parks. Independent evidence that state infrastructure is in part financed through public sector undertakings outside the Consolidated Fund.",
+        "It does not name TIDEL, ELCOT or any of these six parks. State-level finding about financing structure.",
+        "caps", "built")),
+      notLocated("TIDEL/ELCOT project completion records",
+        "Six specific completion claims and no completion or commissioning record located for any of them.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "built")),
+    ],
+    components: [
+      { id: "built", text: "Six Mini Tidel Parks were built at the named locations.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 1, 2],
+        limitations: ["Six specific, checkable completion claims with no documentation located.",
+          "'Done' is undefined — built, commissioned and occupied are different states."] },
+      { id: "planned", text: "Ten further parks are planned.",
+        status: "announced", grade: "E", confidence: "medium", evidence: [0],
+        limitations: ["A statement of intent. Recorded separately so the headline cannot present it as delivery."] },
     ],
     assessment: {
-      grade: "E",
+      grade: "E", confidence: "low",
       rationale:
-        "Six named locations make this a specific and checkable claim, which is a strength. But no sanction, tender, completion or occupancy document has been located for any of them. The CAG finding on off-budget borrowing through public sector undertakings is relevant context, since such parks are typically built through PSUs.",
+        "Six named locations make this unusually checkable, which is a genuine strength of the claim as written. But no sanction, tender, completion or occupancy document has been located for any of them, and the headline mixes six delivered with ten planned.",
+      confidence_rationale:
+        "Low: the specific completion component has no document, despite being the most verifiable claim in the achievement set.",
       limitations: [
         "Six specific completion claims, none documented beyond the government's summary.",
-        "'Done' is not defined — built, commissioned, or occupied are different things.",
+        "'Done' is not defined.",
         "No page reference to the source volume.",
       ],
-      verification_status: "unverified",
-      assessed_on: "2026-07-21",
+      verification_status: "unverified", assessed_on: "2026-07-21",
     },
     missing: [
       "Completion or commissioning records for each of the six parks",
@@ -365,29 +517,42 @@ const ACHIEVEMENTS = [
       "Whether any were financed via off-budget borrowing",
     ],
   },
+
   {
-    id: "ev_wom_b2_gender",
-    subject_type: "achievement",
-    subject_id: "wom_b2_gender",
-    domain: "women/social welfare",
+    id: "ev_wom_b2_gender", subject_type: "achievement", subject_id: "wom_b2_gender", domain: "women/social welfare",
     claim: "Gender Resource / Vanavil Centres providing counselling and legal aid.",
     sources: [
-      souvenir(null),
-      NOT_SOUGHT("Centre-wise establishment orders", "No GO establishing the centres has been located."),
-      NOT_SOUGHT("Service-usage data", "No caseload, counselling or legal-aid usage data has been located."),
+      souvenir(null, rel(
+        "That centres exist and provide counselling and legal aid.",
+        "Any count, location, staffing or caseload. The claim is entirely unquantified and no page reference is recorded.",
+        "caps", "service")),
+      notLocated("Centre-wise establishment orders",
+        "No GO establishing the centres has been located, so even their existence is undocumented outside the summary volume.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "service")),
+      notLocated("Service-usage data",
+        "No caseload, counselling or legal-aid usage data located, so no aspect of the service claim can be checked.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "service")),
+    ],
+    components: [
+      { id: "service", text: "Gender Resource / Vanavil Centres exist and provide counselling and legal aid.",
+        status: "unquantified", grade: "E", confidence: "low", evidence: [0, 1, 2],
+        limitations: ["No count of centres, staff, locations or cases.",
+          "No document of any type located.",
+          "As stated, the claim is not falsifiable."] },
     ],
     assessment: {
-      grade: "E",
+      grade: "E", confidence: "low",
       rationale:
-        "An entirely unquantified service claim with no located document of any kind. There is no number to verify and no sanction order to point to. This is the weakest evidential position in the achievement set, and is representative of the corpus rather than exceptional.",
+        "An entirely unquantified service claim with no located document of any kind. There is no number to verify and no sanction order to point to. This is the weakest evidential position in the achievement set, and is representative of the wider corpus rather than exceptional.",
+      confidence_rationale:
+        "Low: nothing at all supports the claim beyond a single unread summary entry, and the claim as worded admits no test.",
       limitations: [
         "No count of centres, staff, locations or cases.",
         "No document of any type located.",
         "No page reference to the source volume.",
         "As stated, the claim is not falsifiable.",
       ],
-      verification_status: "unverified",
-      assessed_on: "2026-07-21",
+      verification_status: "unverified", assessed_on: "2026-07-21",
     },
     missing: [
       "Government Order establishing the centres",
@@ -397,36 +562,47 @@ const ACHIEVEMENTS = [
       "Any user or independent assessment of service quality",
     ],
   },
+
   {
-    id: "ev_coop_b16_societies",
-    subject_type: "achievement",
-    subject_id: "coop_b16_societies",
-    domain: "agriculture",
+    id: "ev_coop_b16_societies", subject_type: "achievement", subject_id: "coop_b16_societies", domain: "agriculture",
     claim: "Co-operative societies modernised (PACS, marketing societies) across the state.",
     sources: [
-      souvenir(460),
-      {
-        source_type: "legislation", authority: "legislative",
-        title: "Tamil Nadu co-operative societies legislation linked to this record (13 instruments)",
-        issuing_authority: "Tamil Nadu Legislative Assembly / Dept. of Stationery & Printing",
-        date: "2021–2026",
-        url: "https://www.stationeryprinting.tn.gov.in/archives.php",
-        stage: "administrative_sanction", extraction: "identified", stance: "supporting",
-        note: "13 legislative instruments are linked to this record in the dataset. They evidence legislative activity on co-operatives; none has been read, so which of them bears on 'modernisation' is unknown.",
-      },
-      cagUC,
+      souvenir(460, rel(
+        "That a co-operative modernisation programme was reported, locatable at page 460.",
+        "What 'modernised' means, or how many societies were affected.",
+        "caps", "modernisation")),
+      law("Tamil Nadu co-operative societies legislation linked to this record (13 instruments)",
+        "13 instruments, 2021–2026", "2021–2026", "https://www.stationeryprinting.tn.gov.in/archives.php",
+        rel("That legislative activity on co-operatives occurred during the period — 13 instruments are linked to this record.",
+          "That any society was modernised. None of the 13 has been read, so which of them even bears on modernisation is unknown. The link count flatters the evidence.",
+          "raises", "legislative")),
+      cagUC(rel(
+        "Nothing about co-operatives. Independent evidence on general delivery assurance in the period.",
+        "It does not name co-operative societies or this programme. State-level finding.",
+        "caps", "modernisation")),
+    ],
+    components: [
+      { id: "legislative", text: "Legislation affecting co-operative societies was enacted during the period.",
+        status: "documented", grade: "D", confidence: "medium", evidence: [1],
+        limitations: ["13 instruments linked, 0 read.",
+          "Which instruments relate to modernisation is unknown."] },
+      { id: "modernisation", text: "Co-operative societies (PACS, marketing societies) were modernised across the state.",
+        status: "unquantified", grade: "E", confidence: "low", evidence: [0, 2],
+        limitations: ["'Modernised' has no definition or criterion.",
+          "No count of societies affected, against a total."] },
     ],
     assessment: {
-      grade: "D",
+      grade: "E", confidence: "low",
       rationale:
-        "The largest set of linked legislative instruments in the pilot (13) plus a page reference. Legislative activity on co-operatives is well documented. But 'modernised' is undefined, none of the 13 instruments has been read, and no delivery evidence exists — so the documentation supports legislative action, not modernisation of any society.",
+        "The largest set of linked legislative instruments in the pilot (13) plus a page reference, which looks like the best-evidenced record here. It is not: none of the 13 has been read, 'modernised' is undefined, and no delivery evidence exists. Legislative activity is documented; modernisation is not.",
+      confidence_rationale:
+        "Low: the headline component is undefined and unquantified, and the strong-looking legislative component is 13 unread titles.",
       limitations: [
         "13 linked instruments, 0 read — the link count flatters the evidence.",
         "'Modernised' has no definition or criterion.",
         "No count of societies affected.",
       ],
-      verification_status: "unverified",
-      assessed_on: "2026-07-21",
+      verification_status: "unverified", assessed_on: "2026-07-21",
     },
     missing: [
       "Which of the 13 instruments actually relate to modernisation",
@@ -436,28 +612,44 @@ const ACHIEVEMENTS = [
       "Any audit of co-operative society functioning",
     ],
   },
+
   {
-    id: "ev_inf5",
-    subject_type: "achievement",
-    subject_id: "inf5",
-    domain: "infrastructure",
+    id: "ev_inf5", subject_type: "achievement", subject_id: "inf5", domain: "infrastructure",
     claim: "Modern integrated bus terminuses opened at Kilambakkam (Chennai) — the ₹393.74 cr Kalaignar Centenary Bus Terminus — and at Tiruchi.",
     sources: [
-      souvenir(null),
-      cagOffBudget,
-      NOT_SOUGHT("Construction contract and completion certificate", "No tender, contract award or completion record located for a ₹393.74 cr project."),
+      souvenir(null, rel(
+        "Both terminuses and the ₹393.74 cr cost figure for Kilambakkam.",
+        "Completion, expenditure or operation of either facility. No page reference recorded.",
+        "caps", "kilambakkam")),
+      cagOffBudget(rel(
+        "Nothing about these terminuses. Independent evidence on off-budget financing of state infrastructure.",
+        "It does not name either terminus or the transport department. State-level finding about financing structure.",
+        "caps", "kilambakkam")),
+      notLocated("Construction contract and completion certificate",
+        "A ₹393.74 cr capital project with no located tender, contract award or completion record.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "kilambakkam")),
+    ],
+    components: [
+      { id: "kilambakkam", text: "The Kilambakkam terminus was built and opened at a cost of ₹393.74 cr.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 1, 2],
+        limitations: ["A precise cost figure with no located financial document.",
+          "A capital project of this size would normally leave a substantial documentary trail."] },
+      { id: "tiruchi", text: "A modern terminus was also opened at Tiruchi.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0],
+        limitations: ["Bundled with the Chennai claim; its status is not stated separately in the source."] },
     ],
     assessment: {
-      grade: "E",
+      grade: "E", confidence: "low",
       rationale:
-        "A precise cost figure (₹393.74 cr) and a named facility make this highly checkable, yet no procurement, expenditure or completion document has been located. A capital project of this size would normally generate a substantial documentary trail; its absence here reflects the state of this repository's collection, not necessarily of the record.",
+        "A precise cost figure and a named facility make this highly checkable, yet no procurement, expenditure or completion document has been located. The absence reflects the state of this repository's collection rather than necessarily of the public record — but as held, nothing supports it.",
+      confidence_rationale:
+        "Low: both components rest on one unread source, and the Tiruchi facility is not separately evidenced at all.",
       limitations: [
-        "A precise cost figure with no located financial document behind it.",
-        "Record is flagged mixedStatus — delivered and planned components are mixed.",
+        "A precise cost figure with no located financial document.",
+        "Record is flagged mixedStatus in the main dataset.",
         "No page reference to the source volume.",
       ],
-      verification_status: "unverified",
-      assessed_on: "2026-07-21",
+      verification_status: "unverified", assessed_on: "2026-07-21",
     },
     missing: [
       "Tender and contract award for Kilambakkam",
@@ -467,29 +659,42 @@ const ACHIEVEMENTS = [
       "Status of the Tiruchi facility separately from Chennai",
     ],
   },
+
   {
-    id: "ev_env_b4_thoonmai",
-    subject_type: "achievement",
-    subject_id: "env_b4_thoonmai",
-    domain: "environment",
+    id: "ev_env_b4_thoonmai", subject_type: "achievement", subject_id: "env_b4_thoonmai", domain: "environment",
     claim: "Thoonmai Iyakkam (Clean Tamil Nadu) — over ₹133 cr returned to the treasury in 2025.",
     sources: [
-      souvenir(null),
-      cagUnspent,
-      NOT_SOUGHT("Treasury receipt or departmental account", "No treasury credit record or departmental account located for the ₹133 cr figure."),
+      souvenir(null, rel(
+        "The ₹133 cr treasury return figure and the programme's existence.",
+        "Any treasury or accounting fact. This is a claim about public accounts supported only by a promotional volume, with no page reference.",
+        "caps", "return")),
+      cagUnspent(rel(
+        "Nothing about this programme. Independent evidence that unspent balances and fund-flow timing were material issues in this period.",
+        "It does not name Thoonmai Iyakkam, and does not characterise this ₹133 cr. State-level finding.",
+        "caps", "return")),
+      notLocated("Treasury receipt or departmental account",
+        "A claim about money credited to the treasury, with no treasury credit record or departmental account located.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "return")),
+    ],
+    components: [
+      { id: "return", text: "Over ₹133 cr was returned to the treasury in 2025.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 1, 2],
+        limitations: ["A treasury figure with no treasury document.",
+          "'Returned to the treasury' is ambiguous — savings, recoveries and unspent balances are different things."] },
     ],
     assessment: {
-      grade: "E",
+      grade: "E", confidence: "low",
       rationale:
-        "A specific financial claim — money returned to the treasury — with no financial document attached. This is a claim about public accounts, and public accounts are precisely the class of record that can be independently verified, which makes the absence of any source more significant than usual.",
+        "A specific financial claim about public accounts, with no financial document attached. Public accounts are precisely the class of record that can be independently verified, which makes the absence of any source here more significant than usual.",
+      confidence_rationale:
+        "Low: the single component is a precise accounting figure with an ambiguous meaning and no supporting record.",
       limitations: [
         "A treasury figure with no treasury document.",
-        "Record is flagged mixedStatus.",
-        "'Returned to the treasury' is ambiguous — savings, recoveries and unspent balances are different things.",
+        "Record is flagged mixedStatus in the main dataset.",
+        "'Returned to the treasury' is ambiguous.",
         "No page reference to the source volume.",
       ],
-      verification_status: "unverified",
-      assessed_on: "2026-07-21",
+      verification_status: "unverified", assessed_on: "2026-07-21",
     },
     missing: [
       "Treasury credit records or the relevant departmental account",
@@ -500,254 +705,273 @@ const ACHIEVEMENTS = [
   },
 ];
 
-// ---------------------------------------------------------------
-// 2. MANIFESTO PROMISES — across maturity levels
-// ---------------------------------------------------------------
+// ===============================================================
+// 2. MANIFESTO PROMISES
+// ===============================================================
 
-const trackerSource = (num, status) => ({
-  source_type: "external_tracker",
-  authority: "external_tracker",
-  title: `Pudhiyavan DMK Manifesto 2021 Tracker — promise #${num}, status "${status}"`,
-  issuing_authority: "Pudhiyavan (external, independent of this project and of the government)",
-  date: "2026-07-18",
-  stage: "context_only",
-  extraction: "identified",
-  stance: "contextual",
-  note: "This is the ONLY basis for the status shown in the interface. This project has not verified it. It is an external judgement, reproduced.",
-});
-
-const manifestoSource = {
-  source_type: "manifesto",
-  authority: "party_source",
+const manifestoSource = (relationship) => ({
+  source_type: "manifesto", authority: "party_source",
   title: "DMK Election Manifesto 2021",
   issuing_authority: "Dravida Munnetra Kazhagam",
-  date: "2021",
-  stage: "manifesto",
-  extraction: "identified",
-  stance: "contextual",
-  note: "The promise text in this dataset is a condensed English summary, not the manifesto's binding wording. The original has not been parsed.",
-};
+  date: "2021", stage: "manifesto", extraction: "identified", stance: "contextual",
+  document: docNotFetched(),
+  relationship,
+});
 
-const promise = (n, subject_id, claim, status, extra) => ({
-  id: `ev_promise_${subject_id}`,
-  subject_type: "promise",
-  subject_id: String(subject_id),
-  domain: "manifesto",
-  claim,
-  maturity: n,
-  ...extra,
-  sources: [manifestoSource, trackerSource(subject_id, status), ...(extra.sources || [])],
+const trackerSource = (num, status, relationship) => ({
+  source_type: "external_tracker", authority: "external_tracker",
+  title: `Pudhiyavan DMK Manifesto 2021 Tracker — promise #${num}, status "${status}"`,
+  issuing_authority: "Pudhiyavan (external, independent of this project and of the government)",
+  date: "2026-07-18", stage: "context_only", extraction: "identified", stance: "contextual",
+  document: docNotFetched(),
+  relationship,
+});
+
+const promiseRecord = (num, maturity, claim, status, sources, components, assessment, missing) => ({
+  id: `ev_promise_${num}`, subject_type: "promise", subject_id: String(num),
+  domain: "manifesto", claim, maturity,
+  sources: [
+    manifestoSource(rel(
+      "That the promise was made in the 2021 manifesto.",
+      "Anything about whether it was kept. The text held here is a condensed English summary, not the manifesto's binding wording.",
+      "none", "fulfilment")),
+    trackerSource(num, status, rel(
+      `That an external tracker assessed this promise as "${status}" on 18 July 2026.`,
+      "That the assessment is correct. This project has not verified it; it is reproduced, not endorsed, and the tracker's criteria are not published.",
+      "none", "fulfilment")),
+    ...sources,
+  ],
+  components, assessment, missing,
 });
 
 const PROMISES_PILOT = [
-  promise("apparently completed", 8,
-    "Establish Tamil Chairs in international universities. Tracker status: fulfilled.",
-    "fulfilled", {
-    sources: [{
-      source_type: "go", authority: "primary_official",
-      title: "Government Order linked to promise #8 (G.O. 23)",
-      issuing_authority: "Government of Tamil Nadu", document_no: "G.O. 23",
-      stage: "administrative_sanction", extraction: "identified", stance: "supporting",
-      note: "A GO is linked to this promise in promiseGoLinks. It has not been read, so whether it sanctions a chair, funds one, or merely proposes one is unknown.",
-    }],
-    assessment: {
-      grade: "D",
-      rationale:
-        "Among the best-evidenced promises in the corpus: an external tracker marks it fulfilled AND a Government Order is linked. Sanction is documented. Whether any chair was actually established, staffed and is teaching is not.",
-      limitations: [
-        "The GO has not been read.",
-        "'Fulfilled' is the tracker's judgement, not this project's.",
-        "No count of chairs, universities or occupants.",
-      ],
-      verification_status: "unverified", assessed_on: "2026-07-21",
-    },
-    missing: ["Contents of the linked GO", "Names of universities and chairs established", "Funding and occupancy status", "Whether any chair is currently active"],
-  }),
-  promise("apparently completed", 17,
-    "Create a Non-Resident Tamils Department. Tracker status: fulfilled.",
-    "fulfilled", {
-    sources: [{
-      source_type: "go", authority: "primary_official",
-      title: "Government Order linked to promise #17 (G.O. 827)",
-      issuing_authority: "Government of Tamil Nadu", document_no: "G.O. 827",
-      stage: "administrative_sanction", extraction: "identified", stance: "supporting",
-      note: "Linked in promiseGoLinks; not read.",
-    }],
-    assessment: {
-      grade: "D",
-      rationale:
-        "Creating a department is one of the few promise types where a sanction order genuinely is close to fulfilment — a department either exists in the government's structure or it does not. A GO is linked, so the administrative act is documented, though unread.",
+  promiseRecord(8, "apparently completed",
+    "Establish Tamil Chairs in international universities. Tracker status: fulfilled.", "fulfilled",
+    [go("Government Order linked to promise #8", "Government of Tamil Nadu", null, null,
+      rel("That an administrative order exists connected to this promise.",
+        "What the order actually does — it is unread, so whether it sanctions a chair, funds one or merely proposes one is unknown.",
+        "raises", "fulfilment"), "G.O. 23")],
+    [{ id: "fulfilment", text: "Tamil Chairs were established in international universities.",
+      status: "documented", grade: "D", confidence: "low", evidence: [0, 1, 2],
+      limitations: ["The linked GO is unread.", "No count of chairs, universities or occupants.",
+        "'Fulfilled' is the tracker's judgement, not this project's."] }],
+    { grade: "D", confidence: "low",
+      rationale: "Among the best-evidenced promises in the corpus: an external tracker marks it fulfilled and a Government Order is linked, so an administrative act is documented. Whether any chair was actually established, staffed and is teaching is not.",
+      confidence_rationale: "Low: the sole supporting document is unread, so the grade rests on the existence of a GO rather than its contents.",
+      limitations: ["The GO has not been read.", "'Fulfilled' is the tracker's judgement.", "No count of chairs or occupants."],
+      verification_status: "unverified", assessed_on: "2026-07-21" },
+    ["Contents of the linked GO", "Names of universities and chairs established", "Funding and occupancy status", "Whether any chair is currently active"]),
+
+  promiseRecord(17, "apparently completed",
+    "Create a Non-Resident Tamils Department. Tracker status: fulfilled.", "fulfilled",
+    [go("Government Order linked to promise #17", "Government of Tamil Nadu", null, null,
+      rel("That an administrative order exists connected to the creation of this department.",
+        "The department's functioning, budget or staffing. Creation and effectiveness are different claims.",
+        "raises", "fulfilment"), "G.O. 827")],
+    [{ id: "fulfilment", text: "A Non-Resident Tamils Department was created.",
+      status: "documented", grade: "D", confidence: "medium", evidence: [0, 1, 2],
+      limitations: ["The linked GO is unread.", "Existence is not effectiveness."] }],
+    { grade: "D", confidence: "medium",
+      rationale: "Creating a department is one of the few promise types where a sanction order genuinely approaches fulfilment — a department either exists in the government's structure or it does not. A GO is linked, so the administrative act is documented.",
+      confidence_rationale: "Medium: the claim type aligns unusually well with the evidence type, even though the GO itself is unread.",
       limitations: ["The GO has not been read.", "Departmental functioning, budget and staffing are unevidenced.", "Existence is not effectiveness."],
-      verification_status: "unverified", assessed_on: "2026-07-21",
-    },
-    missing: ["Contents of the linked GO", "Department budget and staffing", "Any output or service data"],
-  }),
-  promise("partially completed", 18,
-    "Revive the Lok Ayukta. Tracker status: modified.",
-    "modified", {
-    sources: [NOT_SOUGHT("Lok Ayukta appointment or amendment records", "No GO, Act or appointment notification located.")],
-    assessment: {
-      grade: "E",
-      rationale:
-        "Marked 'modified' by the tracker, which is a judgement this project cannot check without the appointment and statutory records. An anti-corruption institution's revival is exactly the kind of promise where partial fulfilment is contestable and the documentary trail matters most.",
-      limitations: ["No document of any kind located.", "'Modified' is undefined by the tracker.", "This project cannot distinguish partial fulfilment from non-fulfilment here."],
-      verification_status: "unverified", assessed_on: "2026-07-21",
-    },
-    missing: ["Lok Ayukta appointment notifications", "Any amending legislation", "Case disposal statistics", "Budget and staffing of the institution"],
-  }),
-  promise("partially completed", 19,
-    "Pass a Right to Services Act. Tracker status: modified.",
-    "modified", {
-    sources: [NOT_SOUGHT("Right to Services Act or Bill", "No such Act or Bill was found among the 222 legislative instruments held in this repository.")],
-    assessment: {
-      grade: "E",
-      rationale:
-        "A legislative promise is uniquely checkable: either a statute was gazetted or it was not. This repository holds 222 legislative instruments for the period and none matching this promise was located, yet the tracker marks it 'modified'. That divergence is recorded rather than resolved.",
-      limitations: [
-        "No matching statute located in the 222 instruments held.",
+      verification_status: "unverified", assessed_on: "2026-07-21" },
+    ["Contents of the linked GO", "Department budget and staffing", "Any output or service data"]),
+
+  promiseRecord(18, "partially completed",
+    "Revive the Lok Ayukta. Tracker status: modified.", "modified",
+    [notLocated("Lok Ayukta appointment or amendment records",
+      "No GO, Act or appointment notification located, so 'modified' cannot be distinguished from non-fulfilment.",
+      rel("Nothing — recorded to make the absence visible.", "", "caps", "fulfilment"))],
+    [{ id: "fulfilment", text: "The Lok Ayukta was revived.",
+      status: "contested", grade: "E", confidence: "low", evidence: [0, 1, 2],
+      limitations: ["No document of any kind located.", "'Modified' is undefined by the tracker.",
+        "This project cannot distinguish partial fulfilment from non-fulfilment."] }],
+    { grade: "E", confidence: "low",
+      rationale: "Marked 'modified' by the tracker, a judgement this project cannot check without appointment and statutory records. An anti-corruption institution's revival is exactly the kind of promise where partial fulfilment is contestable and the documentary trail matters most.",
+      confidence_rationale: "Low: no document at all, and the tracker's own category is undefined.",
+      limitations: ["No document of any kind located.", "'Modified' is undefined.", "Partial fulfilment cannot be distinguished from non-fulfilment."],
+      verification_status: "unverified", assessed_on: "2026-07-21" },
+    ["Lok Ayukta appointment notifications", "Any amending legislation", "Case disposal statistics", "Budget and staffing of the institution"]),
+
+  promiseRecord(19, "partially completed",
+    "Pass a Right to Services Act. Tracker status: modified.", "modified",
+    [notLocated("Right to Services Act or Bill",
+      "No such Act or Bill was found among the 222 legislative instruments held in this repository, yet the tracker marks the promise 'modified'.",
+      rel("Nothing — recorded to make the absence visible, and to record a divergence from the tracker.", "", "caps", "fulfilment"))],
+    [{ id: "fulfilment", text: "A Right to Services Act was passed.",
+      status: "contested", grade: "E", confidence: "low", evidence: [0, 1, 2],
+      limitations: ["No matching statute among the 222 instruments held.",
         "Absence here may reflect this repository's coverage rather than the statute book.",
-        "The tracker's 'modified' is unexplained.",
-      ],
-      verification_status: "unverified", assessed_on: "2026-07-21",
-    },
-    missing: ["A search of the complete Tamil Nadu statute book, not just the instruments held here", "The tracker's reasoning for 'modified'"],
-  }),
-  promise("ongoing", 1,
-    "Fight to restore the state's lost rights. Tracker status: in progress.",
-    "progress", {
-    sources: [NOT_SOUGHT("Any measurable criterion", "This promise has no defined outcome, so no document could settle it.")],
-    assessment: {
-      grade: "E",
-      rationale:
-        "An open-ended political commitment with no criterion for fulfilment. It is included in the pilot precisely because the evidence model must be able to represent claims that are not evidence-testable at all, rather than forcing them onto the same ladder as a bed count.",
-      limitations: [
-        "No fulfilment criterion exists, so no grade above E is achievable in principle.",
-        "The evidence ladder is a poor fit for open-ended political commitments.",
-      ],
-      verification_status: "unverified", assessed_on: "2026-07-21",
-    },
-    missing: ["A definition of 'lost rights' and what restoration would look like", "Any milestone against which progress could be measured"],
-  }),
-  promise("ongoing", 10,
-    "Translate world books into Tamil and Tamil classics outward. Tracker status: in progress.",
-    "progress", {
-    sources: [{
-      ...souvenir(null),
-      title: "Tamil Nadu Government 2021–26 achievements record — translation programme entries",
-      note: "Three achievement records are linked to this promise, all resting on the souvenir volume.",
-    }],
-    assessment: {
-      grade: "E",
-      rationale:
-        "A countable promise — books translated is a number — linked to three achievement records, all of which trace to the same government summary volume. Multiple linked records give an impression of corroboration that the shared single source does not support.",
-      limitations: [
-        "Three linked records share one underlying source; this is not independent corroboration.",
-        "No publication list or catalogue record located.",
-      ],
-      verification_status: "unverified", assessed_on: "2026-07-21",
-    },
-    missing: ["A list of titles translated", "Publisher or catalogue records", "Distribution and availability data"],
-  }),
-  promise("announcement-only", 7,
-    "Revive the Classical Tamil Institute; Thirukkural as a national book. Tracker status: fulfilled.",
-    "fulfilled", {
-    sources: [NOT_SOUGHT("Any supporting document or linked record", "Nothing is linked to this promise in this dataset — no achievement record and no Government Order.")],
-    assessment: {
-      grade: "E",
-      rationale:
-        "Counted within the public '400 fulfilled' headline while this dataset holds nothing at all for it — no record, no GO, no document. This is one of 158 such promises, and it is the clearest demonstration in the pilot that the headline number is not reproducible from this project's own evidence.",
-      limitations: [
-        "Zero linked evidence of any kind.",
-        "Counted as fulfilled in a public headline this project cannot substantiate.",
-        "The second half (Thirukkural as a national book) is a Union-government matter outside state control.",
-      ],
-      verification_status: "unverified", assessed_on: "2026-07-21",
-    },
-    missing: ["Any document at all", "Institute revival order, funding, staffing", "The tracker's basis for 'fulfilled'"],
-  }),
-  promise("announcement-only", 9,
-    "Refurbish Semmozhi Poonga; Semmozhi Park in all corporations. Tracker status: fulfilled.",
-    "fulfilled", {
-    sources: [NOT_SOUGHT("Any supporting document or linked record", "Nothing is linked to this promise in this dataset.")],
-    assessment: {
-      grade: "E",
-      rationale:
-        "Marked fulfilled with nothing linked. The promise has two parts of very different difficulty — refurbishing one park, versus a park in every corporation — and a single 'fulfilled' status cannot represent both.",
-      limitations: [
-        "Zero linked evidence.",
-        "A compound promise flattened to one status.",
-        "'All corporations' is a testable claim that nothing here tests.",
-      ],
-      verification_status: "unverified", assessed_on: "2026-07-21",
-    },
-    missing: ["Works orders or completion records for any park", "A list of corporations with and without a Semmozhi Park"],
-  }),
-  promise("difficult to assess", 2,
-    "Move 'Education' from the Concurrent List back to the State List. Tracker status: stalled.",
-    "stalled", {
-    sources: [NOT_SOUGHT("Constitutional amendment record", "This requires a Union constitutional amendment; no state document could evidence fulfilment.")],
-    assessment: {
-      grade: "E",
-      rationale:
-        "Fulfilment is outside the state government's power — it needs a constitutional amendment by the Union. The tracker's 'stalled' is descriptively accurate but says nothing about state effort. The evidence model has no way to represent 'attempted but not within the actor's control', which is a genuine gap.",
-      limitations: [
-        "Outcome is not within the promising party's control.",
-        "The ladder cannot distinguish inaction from action that could not succeed.",
-      ],
-      verification_status: "unverified", assessed_on: "2026-07-21",
-    },
-    missing: ["Assembly resolutions or formal representations to the Union", "Correspondence or litigation records"],
-  }),
-  promise("difficult to assess", 4,
-    "Oppose Hindi imposition; state languages as official languages. Tracker status: stalled.",
-    "stalled", {
-    sources: [{
-      ...souvenir(null),
-      title: "Tamil Nadu Government 2021–26 achievements record — language policy entries",
-      note: "Two achievement records are linked to this promise; both rest on the souvenir volume.",
-    }],
-    assessment: {
-      grade: "E",
-      rationale:
-        "A continuous political posture rather than a deliverable. Two achievement records are linked, but opposition is an ongoing stance with no completion state. Marked 'stalled' by the tracker, which is itself a contestable characterisation of an ongoing position.",
-      limitations: [
-        "No completion state exists for a continuous posture.",
+        "The tracker's 'modified' is unexplained."] }],
+    { grade: "E", confidence: "low",
+      rationale: "A legislative promise is uniquely checkable: either a statute was gazetted or it was not. This repository holds 222 legislative instruments for the period and none matching was located, yet the tracker marks it 'modified'. That divergence is recorded rather than resolved.",
+      confidence_rationale: "Low: this project's legislative coverage is incomplete, so absence here is weak evidence either way.",
+      limitations: ["No matching statute located in the instruments held.", "Coverage gap may explain the absence.", "The tracker's reasoning is unpublished."],
+      verification_status: "unverified", assessed_on: "2026-07-21" },
+    ["A search of the complete Tamil Nadu statute book, not just the instruments held here", "The tracker's reasoning for 'modified'"]),
+
+  promiseRecord(1, "ongoing",
+    "Fight to restore the state's lost rights. Tracker status: in progress.", "progress",
+    [notLocated("Any measurable criterion",
+      "This promise defines no outcome, so no document could settle it. The absence is structural, not a collection gap.",
+      rel("Nothing — recorded to show why this claim is not gradeable.", "", "none", "fulfilment"))],
+    [{ id: "fulfilment", text: "The state's 'lost rights' were restored.",
+      status: "not_assessable", grade: "NG", ng_reason: "no_measurable_criteria", confidence: "high", evidence: [0, 1, 2],
+      limitations: ["'Lost rights' is undefined, so no evidence could confirm or refute fulfilment.",
+        "Graded NG rather than E: the problem is the claim's form, not missing documents."] }],
+    { grade: "NG", ng_reason: "no_measurable_criteria", confidence: "high",
+      rationale: "An open-ended political commitment with no criterion for fulfilment. Grading it E would imply that better evidence could settle it; nothing could. NG records that the claim is not evidence-testable as worded, which is a finding about the promise rather than about the research.",
+      confidence_rationale: "High: we are confident this cannot be assessed. Confidence attaches to the NG determination itself, not to any factual claim.",
+      limitations: ["No fulfilment criterion exists.", "The evidence ladder does not apply to open-ended political commitments."],
+      verification_status: "unverified", assessed_on: "2026-07-21" },
+    ["A definition of 'lost rights' and what restoration would look like", "Any milestone against which progress could be measured"]),
+
+  promiseRecord(10, "ongoing",
+    "Translate world books into Tamil and Tamil classics outward. Tracker status: in progress.", "progress",
+    [souvenir(null, rel(
+      "That a translation programme was reported; three achievement records in this dataset link to this promise.",
+      "Independent corroboration. All three linked records trace to this same volume, so they are one source presented three times.",
+      "caps", "fulfilment"))],
+    [{ id: "fulfilment", text: "World books were translated into Tamil and Tamil classics outward.",
+      status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 1, 2],
+      limitations: ["Three linked records share one underlying source; this is not corroboration.",
+        "No publication list or catalogue record located."] }],
+    { grade: "E", confidence: "low",
+      rationale: "A countable promise — books translated is a number — linked to three achievement records, all of which trace to the same government summary volume. Multiple linked records create an impression of corroboration that a shared single source does not support.",
+      confidence_rationale: "Low: apparent multiplicity of evidence collapses to one unread source.",
+      limitations: ["Linked records share one source.", "No publication list located."],
+      verification_status: "unverified", assessed_on: "2026-07-21" },
+    ["A list of titles translated", "Publisher or catalogue records", "Distribution and availability data"]),
+
+  promiseRecord(7, "announcement-only",
+    "Revive the Classical Tamil Institute; Thirukkural as a national book. Tracker status: fulfilled.", "fulfilled",
+    [notLocated("Any supporting document or linked record",
+      "Nothing is linked to this promise in this dataset — no achievement record and no Government Order — yet it is counted in the public '400 fulfilled' headline.",
+      rel("Nothing — recorded because the absence is the finding.", "", "caps", "institute"))],
+    [{ id: "institute", text: "The Classical Tamil Institute was revived.",
+      status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 1, 2],
+      limitations: ["Zero linked evidence of any kind.", "Counted in a public headline this project cannot substantiate."] },
+     { id: "thirukkural", text: "Thirukkural was made a national book.",
+      status: "not_assessable", grade: "NG", ng_reason: "responsible_authority_unclear", confidence: "high", evidence: [0, 1],
+      limitations: ["Declaring a national book is a Union-government matter outside state control.",
+        "The state cannot fulfil this unilaterally, so state action cannot settle it."] }],
+    { grade: "E", confidence: "low",
+      rationale: "Counted within the public '400 fulfilled' headline while this dataset holds nothing at all for it. One of 158 such promises, and the clearest demonstration that the headline is not reproducible from this project's own evidence. The compound structure also matters: the second half is not the state's to deliver.",
+      confidence_rationale: "Low: no evidence exists for the gradeable component.",
+      limitations: ["Zero linked evidence.", "Counted as fulfilled in a public headline this project cannot substantiate.",
+        "Compound promise with one component outside state control."],
+      verification_status: "unverified", assessed_on: "2026-07-21" },
+    ["Any document at all", "Institute revival order, funding, staffing", "The tracker's basis for 'fulfilled'"]),
+
+  promiseRecord(9, "announcement-only",
+    "Refurbish Semmozhi Poonga; Semmozhi Park in all corporations. Tracker status: fulfilled.", "fulfilled",
+    [notLocated("Any supporting document or linked record",
+      "Nothing is linked to this promise in this dataset, despite one half being a precisely testable claim about every corporation.",
+      rel("Nothing — recorded because the absence is the finding.", "", "caps", "refurbish"))],
+    [{ id: "refurbish", text: "Semmozhi Poonga was refurbished.",
+      status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 1, 2],
+      limitations: ["No works order or completion record located."] },
+     { id: "all_corporations", text: "A Semmozhi Park was created in all corporations.",
+      status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 1, 2],
+      limitations: ["'All corporations' is precisely testable and nothing here tests it.",
+        "No list of corporations with and without a park exists."] }],
+    { grade: "E", confidence: "low",
+      rationale: "Marked fulfilled with nothing linked. The promise has two parts of very different difficulty — refurbishing one park, versus a park in every corporation — and a single 'fulfilled' status cannot represent both. Splitting them is exactly what the component model is for.",
+      confidence_rationale: "Low: neither component has any evidence, and the harder one is the more testable.",
+      limitations: ["Zero linked evidence.", "A compound promise flattened to one status by the tracker.",
+        "'All corporations' is testable and untested."],
+      verification_status: "unverified", assessed_on: "2026-07-21" },
+    ["Works orders or completion records for any park", "A list of corporations with and without a Semmozhi Park"]),
+
+  promiseRecord(2, "difficult to assess",
+    "Move 'Education' from the Concurrent List back to the State List. Tracker status: stalled.", "stalled",
+    [notLocated("Constitutional amendment record",
+      "Fulfilment requires a Union constitutional amendment; no state document could evidence it, so the absence is structural.",
+      rel("Nothing — recorded to show the authority problem.", "", "none", "fulfilment"))],
+    [{ id: "fulfilment", text: "'Education' was moved from the Concurrent List to the State List.",
+      status: "not_assessable", grade: "NG", ng_reason: "responsible_authority_unclear", confidence: "high", evidence: [0, 1, 2],
+      limitations: ["Requires a Union constitutional amendment — outside the promising party's power.",
+        "The ladder cannot distinguish inaction from action that could not succeed."] }],
+    { grade: "NG", ng_reason: "responsible_authority_unclear", confidence: "high",
+      rationale: "Fulfilment is outside the state government's power: it needs a constitutional amendment by the Union. The tracker's 'stalled' is descriptively accurate but says nothing about state effort. Grading this on a delivery ladder would misattribute responsibility, so NG is the honest outcome.",
+      confidence_rationale: "High: the authority constraint is a matter of constitutional structure, not of evidence availability.",
+      limitations: ["Outcome is not within the promising party's control.", "The ladder cannot separate inaction from impossibility."],
+      verification_status: "unverified", assessed_on: "2026-07-21" },
+    ["Assembly resolutions or formal representations to the Union", "Correspondence or litigation records"]),
+
+  promiseRecord(4, "difficult to assess",
+    "Oppose Hindi imposition; state languages as official languages. Tracker status: stalled.", "stalled",
+    [souvenir(null, rel(
+      "That language-policy positions were reported; two achievement records link to this promise.",
+      "That the promise was kept or broken — opposition is a continuous stance with no completion state.",
+      "none", "fulfilment"))],
+    [{ id: "fulfilment", text: "Hindi imposition was opposed and state languages made official.",
+      status: "not_assessable", grade: "NG", ng_reason: "not_objectively_assessable", confidence: "medium", evidence: [0, 1, 2],
+      limitations: ["A continuous political posture has no completion state.",
         "'Stalled' may describe outcomes rather than effort.",
-        "Highly politically contested; any grade here would be read as a political judgement.",
-      ],
-      verification_status: "unverified", assessed_on: "2026-07-21",
-    },
-    missing: ["A criterion for what fulfilment would look like", "Record of formal state actions taken"],
-  }),
+        "Any grade here would be read as a political judgement."] }],
+    { grade: "NG", ng_reason: "not_objectively_assessable", confidence: "medium",
+      rationale: "A continuous political posture rather than a deliverable. Two achievement records are linked, but opposition has no completion state, and the second half depends on Union acceptance. Marked 'stalled' by the tracker, which is itself a contestable characterisation of an ongoing position.",
+      confidence_rationale: "Medium: the NG determination is sound, but reasonable people could argue the 'official languages' half is partly assessable.",
+      limitations: ["No completion state exists for a continuous posture.", "'Stalled' may describe outcomes rather than effort.",
+        "Highly politically contested; any grade would read as a political judgement."],
+      verification_status: "unverified", assessed_on: "2026-07-21" },
+    ["A criterion for what fulfilment would look like", "Record of formal state actions taken"]),
 ];
 
-// ---------------------------------------------------------------
+// ===============================================================
 // 3. CONTESTED / HIGH-IMPACT CLAIMS
-// ---------------------------------------------------------------
+// ===============================================================
 
 const CONTESTED = [
   {
-    id: "ev_contested_investment_jobs",
-    subject_type: "contested_claim",
-    subject_id: "eco4",
+    id: "ev_contested_investment_jobs", subject_type: "contested_claim", subject_id: "eco4",
     domain: "investment commitments / employment numbers",
     claim: "₹12 lakh crore of investment attracted and 35 lakh jobs created.",
     sources: [
-      souvenir(null),
-      cagFiscal,
-      cagOffBudget,
-      NOT_SOUGHT("MoU register and realisation data", "No register of signed MoUs, nor any data on how many converted into operating investment, has been located."),
-      NOT_SOUGHT("Employment verification (EPFO/ESI or state labour data)", "No independent employment dataset has been located to test the 35 lakh jobs figure."),
+      souvenir(null, rel(
+        "Both the ₹12 lakh cr investment figure and the 35 lakh jobs figure.",
+        "Whether 'attracted' means signed or realised, and whether any job exists. No page reference recorded.",
+        "caps", "investment")),
+      cagFiscal(rel(
+        "Nothing about these figures. Independent fiscal context for large commitments made in this period.",
+        "It does not name any investment programme or dispute these figures. State-level fiscal observation.",
+        "none", "investment")),
+      cagOffBudget(rel(
+        "Nothing about these figures. Independent evidence that some state capital activity is financed outside the Consolidated Fund.",
+        "It does not name this programme or assert that these investments were off-budget.",
+        "none", "investment")),
+      notLocated("MoU register and realisation data",
+        "No register of signed MoUs, nor any data on how many converted into operating investment, has been located — so 'attracted' cannot be interpreted.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "investment")),
+      notLocated("Employment verification (EPFO/ESI or state labour data)",
+        "No independent employment dataset located to test the 35 lakh jobs figure, though such series exist nationally.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "jobs")),
+    ],
+    components: [
+      { id: "investment", text: "₹12 lakh crore of investment was attracted.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 1, 2, 3],
+        limitations: ["'Attracted' almost certainly means MoUs signed, not capital deployed — the claim does not say which.",
+          "No MoU register or realisation data located.",
+          "No time base stated, so it cannot be compared with any other period."] },
+      { id: "jobs", text: "35 lakh jobs were created.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 4],
+        limitations: ["No independent employment data of any kind.",
+          "'Job created' is undefined — direct, indirect and projected are very different.",
+          "This is the figure most likely to be quoted from this project."] },
     ],
     assessment: {
-      grade: "E",
+      grade: "E", confidence: "low",
       rationale:
-        "The single highest-impact economic claim in the project and among the least evidenced. Investment 'attracted' conventionally counts MoUs signed, not capital deployed, and jobs 'created' at this scale requires an independent employment series to test. Neither is present. The CAG's findings on fiscal stress and off-budget borrowing are attached as context because they bear on how such commitments are financed.",
+        "The highest-impact economic claim in the project and among the least evidenced. Investment 'attracted' conventionally counts MoUs signed rather than capital deployed, and jobs 'created' at this scale requires an independent employment series to test. Neither is present.",
+      confidence_rationale:
+        "Low: both components are undefined in the claim itself, so even a supporting document might not settle what is being asserted.",
       limitations: [
-        "'Attracted' almost certainly means MoUs signed, not investment realised — the claim does not say which.",
-        "No independent employment data of any kind.",
-        "No time base stated, so the figures cannot be compared with any other period.",
-        "This is the figure most likely to be quoted from this project, and it is grade E.",
+        "'Attracted' is ambiguous between signed and realised.",
+        "No independent employment data.",
+        "No time base stated.",
+        "This is the figure most likely to be quoted, and it is grade E.",
       ],
       verification_status: "unverified", assessed_on: "2026-07-21",
     },
@@ -759,25 +983,44 @@ const CONTESTED = [
       "Any independent economic evaluation",
     ],
   },
+
   {
-    id: "ev_contested_growth_ranking",
-    subject_type: "contested_claim",
-    subject_id: "eco1",
+    id: "ev_contested_growth_ranking", subject_type: "contested_claim", subject_id: "eco1",
     domain: "rankings",
     claim: "India's #1 growth state — GSDP growth of 11.19% in 2024-25, up from 0.07% in 2020-21.",
     sources: [
-      souvenir(null),
-      cagGsdp,
-      NOT_SOUGHT("Comparable inter-state growth table", "No source ranking all states on the same basis and year has been located."),
+      souvenir(null, rel(
+        "Both the 11.19% growth figure and the '#1 in India' ranking.",
+        "The ranking, which requires a comparable inter-state table the volume does not cite. No page reference recorded.",
+        "caps", "ranking")),
+      cagGsdp(rel(
+        "An independent official GSDP series for Tamil Nadu — the only independent figure available against which this project's GSDP claims can be sanity-checked.",
+        "It does not confirm or refute the 11.19% figure. This is a state-level aggregate that names no scheme; the CAG covers 2023-24 and reports 13.71% growth over 2022-23, a different year on a different basis. Non-comparability is itself the finding.",
+        "caps", "growth_rate")),
+      notLocated("Comparable inter-state growth table",
+        "No source ranking all states on the same basis and year has been located, so the '#1' claim has no foundation in this corpus.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "ranking")),
+    ],
+    components: [
+      { id: "growth_rate", text: "GSDP growth was 11.19% in 2024-25, up from 0.07% in 2020-21.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 1],
+        limitations: ["The independent CAG figure covers 2023-24, not 2024-25 — not comparable.",
+          "The 0.07% base year is the pandemic year, which flatters any growth comparison."] },
+      { id: "ranking", text: "Tamil Nadu was India's #1 growth state.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 2],
+        limitations: ["No inter-state table attached.",
+          "Unclear whether the ranking covers all states or only large states."] },
     ],
     assessment: {
-      grade: "E",
+      grade: "E", confidence: "low",
       rationale:
-        "A ranking claim requires a comparable series across all states for the same year on the same basis; none is attached. The CAG independently reports GSDP growth of 13.71% over 2022-23 and a 10.92% average from 2019-20 — real independent figures, but for different years and on a different basis than the claim, so they neither confirm nor refute it. Recording that non-comparability is more useful than forcing a verdict.",
+        "A ranking claim requires a comparable series across all states for the same year on the same basis; none is attached. The CAG independently reports GSDP growth of 13.71% over 2022-23 — a real independent figure, but for a different year and basis, so it neither confirms nor refutes the claim. Recording that non-comparability is more useful than forcing a verdict.",
+      confidence_rationale:
+        "Low: the only independent figure available is not comparable, and the base year choice materially affects the headline.",
       limitations: [
-        "The independent CAG figure covers 2023-24; the claim covers 2024-25. They are not comparable.",
-        "The 0.07% base year is the pandemic year, which flatters any growth comparison.",
-        "'#1' is unsourced — no inter-state table is attached.",
+        "CAG covers 2023-24; the claim covers 2024-25.",
+        "The 0.07% base year is the pandemic year.",
+        "'#1' is unsourced.",
       ],
       verification_status: "unverified", assessed_on: "2026-07-21",
     },
@@ -788,27 +1031,52 @@ const CONTESTED = [
       "Constant-price as well as current-price figures",
     ],
   },
+
   {
-    id: "ev_contested_free_bus",
-    subject_type: "contested_claim",
-    subject_id: "wom1",
+    id: "ev_contested_free_bus", subject_type: "contested_claim", subject_id: "wom1",
     domain: "beneficiary counts",
     claim: "71.81 lakh women travel free daily under Vidiyal Payanam; 862 crore trips to January 2026, saving ₹13,820 crore.",
     sources: [
-      souvenir(null),
-      cagUnspent,
-      NOT_SOUGHT("Transport corporation ridership returns", "No STU ticketing or ridership dataset located."),
-      NOT_SOUGHT("Reimbursement accounts to transport corporations", "No record of the subsidy actually paid to operators located."),
+      souvenir(null, rel(
+        "The daily rider figure, the cumulative trip count and the savings estimate.",
+        "Any of them independently — a daily ridership figure of this precision must come from a ticketing system whose output is not cited.",
+        "caps", "ridership")),
+      cagUnspent(rel(
+        "Nothing about this scheme. Independent evidence about fund-flow reliability in the period.",
+        "It does not name this scheme or the transport corporations, and does not address whether the subsidy was reimbursed.",
+        "caps", "reimbursement")),
+      notLocated("Transport corporation ridership returns",
+        "No ticketing or ridership dataset located, so the daily figure cannot be checked at any level.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "ridership")),
+      notLocated("Reimbursement accounts to transport corporations",
+        "No record of the subsidy actually paid to operators located, so the fiscal side of the scheme is undocumented.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "reimbursement")),
+    ],
+    components: [
+      { id: "ridership", text: "71.81 lakh women travel free daily; 862 crore trips to January 2026.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 2],
+        limitations: ["No ticketing data attached.",
+          "Daily riders and unique beneficiaries are different measures; the claim does not distinguish them."] },
+      { id: "savings", text: "The scheme saved women ₹13,820 crore.",
+        status: "modelled", grade: "E", confidence: "low", evidence: [0],
+        limitations: ["A derived estimate, not a measurement.",
+          "Depends on an assumed fare and an assumed counterfactual journey; the model is not published."] },
+      { id: "reimbursement", text: "The fare subsidy was borne and settled by the state.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [1, 3],
+        limitations: ["Not claimed explicitly in the headline but implied by it.",
+          "No reimbursement accounts located."] },
     ],
     assessment: {
-      grade: "E",
+      grade: "E", confidence: "low",
       rationale:
-        "The most-quoted beneficiary figure in the project. A daily ridership number of this precision must come from a ticketing system, and that system's output has not been located. The ₹13,820 crore saving is a derived estimate whose method is not stated — it depends on an assumed fare and an assumed counterfactual journey.",
+        "The most-quoted beneficiary figure in the project. A daily ridership number of this precision must come from a ticketing system, and that system's output has not been located. The ₹13,820 crore saving is a derived estimate whose method is unpublished — it depends on an assumed fare and an assumed counterfactual journey.",
+      confidence_rationale:
+        "Low: one component is modelled rather than measured, and the measurement that would anchor it does not exist in this corpus.",
       limitations: [
-        "'71.81 lakh women daily' — no ticketing data attached.",
-        "The savings figure is modelled, not measured, and the model is not published.",
-        "Daily riders and unique beneficiaries are different measures; the claim does not distinguish them.",
-        "Whether the subsidy was actually reimbursed to operators is unevidenced.",
+        "No ticketing data attached.",
+        "The savings figure is modelled, and the model is not published.",
+        "Daily trips and unique beneficiaries are conflated.",
+        "Whether the subsidy was reimbursed is unevidenced.",
       ],
       verification_status: "unverified", assessed_on: "2026-07-21",
     },
@@ -819,24 +1087,40 @@ const CONTESTED = [
       "Distinction between daily trips and unique beneficiaries",
     ],
   },
+
   {
-    id: "ev_contested_doorstep_health",
-    subject_type: "contested_claim",
-    subject_id: "hea1",
+    id: "ev_contested_doorstep_health", subject_type: "contested_claim", subject_id: "hea1",
     domain: "beneficiary counts",
     claim: "Makkalai Thedi Maruthuvam doorstep medical care has reached 2.59 crore people.",
     sources: [
-      souvenir(null),
-      cagUC,
-      NOT_SOUGHT("HMIS or programme MIS extract", "No health management information system extract located, though such a system exists nationally."),
+      souvenir(null, rel(
+        "The 2.59 crore beneficiary figure — roughly a third of the state's population.",
+        "What 'reached' means, or whether the count is of unique people or of visits. No page reference recorded.",
+        "caps", "reach")),
+      cagUC(rel(
+        "Nothing about this programme. Independent evidence on delivery assurance generally in the period.",
+        "It does not name this programme or dispute its beneficiary count. State-level finding.",
+        "caps", "reach")),
+      notLocated("HMIS or programme MIS extract",
+        "No health management information system extract located, although the Union HMIS holds comparable data and is catalogued in this project's source registry but has never been fetched.",
+        rel("Nothing — recorded to make the absence visible, and to note that verification is available in principle.", "", "caps", "reach")),
+    ],
+    components: [
+      { id: "reach", text: "The programme reached 2.59 crore people.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 1, 2],
+        limitations: ["No programme MIS or HMIS extract attached.",
+          "'Reached' is undefined — a single screening and continuing treatment are very different.",
+          "Cumulative counts may double-count repeat visits."] },
     ],
     assessment: {
-      grade: "E",
+      grade: "E", confidence: "low",
       rationale:
-        "A beneficiary count of 2.59 crore — roughly a third of the state's population — with no programme data attached. This is a case where independent verification is genuinely available in principle: the Union HMIS holds comparable data, and it is catalogued in this project's source registry but has never been retrieved.",
+        "A beneficiary count of roughly a third of the state's population, with no programme data attached. This is a case where independent verification is genuinely available in principle: the Union HMIS holds comparable data and is catalogued in this project's source registry, but has never been retrieved.",
+      confidence_rationale:
+        "Low: the key term is undefined and the obvious verification route exists but is unused, so the figure is neither supported nor tested.",
       limitations: [
         "No programme MIS or HMIS extract attached.",
-        "'Reached' is undefined — a single screening and continuing treatment are very different.",
+        "'Reached' is undefined.",
         "Cumulative counts may double-count repeat visits.",
       ],
       verification_status: "unverified", assessed_on: "2026-07-21",
@@ -848,33 +1132,48 @@ const CONTESTED = [
       "Any health-outcome data attributable to the programme",
     ],
   },
+
   {
-    id: "ev_contested_hospital_completion",
-    subject_type: "contested_claim",
-    subject_id: "hea4",
+    id: "ev_contested_hospital_completion", subject_type: "contested_claim", subject_id: "hea4",
     domain: "major infrastructure completion",
     claim: "A 1,000-bed super-speciality hospital was completed and opened on 15 June 2023 at a cost of ₹240 crore.",
     sources: [
-      souvenir(null),
-      {
-        source_type: "go", authority: "primary_official",
-        title: "Pay Ward — Formation of Pay wards in Kalaignar Centenary Super Speciality Hospital, Guindy",
-        issuing_authority: "Health and Family Welfare Department, Government of Tamil Nadu",
-        date: "18-03-2025",
-        url: "https://cms.tn.gov.in/cms_migrated/document/GO/hfw_e_69_2025.pdf",
-        stage: "administrative_sanction", extraction: "identified", stance: "supporting",
-        note: "Strong evidence the hospital is operating by March 2025. Silent on bed count, opening date and cost.",
-      },
-      cagUC,
-      NOT_SOUGHT("Completion certificate and final bill", "Neither located for a ₹240 cr capital project."),
+      souvenir(null, rel(
+        "The completion, the bed count, the opening date and the cost.",
+        "Any of them independently. No page reference recorded.",
+        "caps", "capacity_cost")),
+      go("Pay Ward — Formation of Pay wards in Kalaignar Centenary Super Speciality Hospital, Guindy",
+        "Health and Family Welfare Department, Government of Tamil Nadu", "18-03-2025",
+        "https://cms.tn.gov.in/cms_migrated/document/GO/hfw_e_69_2025.pdf",
+        rel("That the hospital was operating as a functioning facility by March 2025.",
+          "The bed count, the opening date or the ₹240 cr cost. A pay-ward order is being used as existence evidence — legitimate, but it is not what the order is for.",
+          "raises", "operating")),
+      cagUC(rel(
+        "Nothing about this hospital. Independent evidence on the reliability of spend-to-delivery assurance.",
+        "It does not name this hospital or this project. State-level finding.",
+        "caps", "capacity_cost")),
+      notLocated("Completion certificate and final bill",
+        "Neither located for a ₹240 cr capital project, so the completion claim itself is undocumented.",
+        rel("Nothing — recorded to make the absence visible.", "", "caps", "capacity_cost")),
+    ],
+    components: [
+      { id: "operating", text: "The hospital is complete and operating.",
+        status: "documented", grade: "D", confidence: "high", evidence: [0, 1],
+        limitations: ["Inferred from a pay-ward order, which presupposes wards in use but is not a completion record."] },
+      { id: "capacity_cost", text: "It has 1,000 beds and cost ₹240 crore, opening on 15 June 2023.",
+        status: "asserted_only", grade: "E", confidence: "low", evidence: [0, 2, 3],
+        limitations: ["No completion certificate, bed notification or final bill located.",
+          "Three distinct figures bundled into one claim."] },
     ],
     assessment: {
-      grade: "D",
+      grade: "E", confidence: "low",
       rationale:
-        "Included deliberately as the strongest completion claim in the pilot, to test whether the model can distinguish 'the facility demonstrably exists and operates' from 'the specific completion claim is verified'. A 2025 GO proves the former. Nothing proves the latter: the bed count, the opening date and the ₹240 cr cost are all unevidenced.",
+        "Included deliberately as the strongest completion claim in the pilot, to test whether the model can distinguish 'the facility demonstrably exists and operates' from 'the specific completion claim is verified'. A 2025 GO establishes the first at grade D. The second — beds, date, cost — has nothing, so the parent rolls up to E. Before components existed, this record graded D and looked better evidenced than it is.",
+      confidence_rationale:
+        "Low: the well-evidenced component is not the one the claim is really making.",
       limitations: [
-        "Operation is documented; the specific figures in the claim are not.",
-        "A GO about pay wards is being used as existence evidence — legitimate, but it is not what the GO is for.",
+        "Operation is documented; the specific figures are not.",
+        "A pay-ward GO is being used as existence evidence.",
         "No completion certificate for a major capital project.",
       ],
       verification_status: "unverified", assessed_on: "2026-07-21",

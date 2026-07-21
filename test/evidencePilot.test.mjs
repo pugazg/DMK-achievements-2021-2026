@@ -2,8 +2,11 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { EVIDENCE_PILOT, PILOT_META } from "../src/data/evidencePilot.js";
 import {
-  validateEvidenceRecord, validateSource, gradeFromEvidence, gradeMismatches,
-  summarise, isIndependentlyEvidenced, SOURCE_TYPES, AUTHORITIES, STAGES, EXTRACTION, STANCE,
+  validateEvidenceRecord, validateSource, validateDocument, gradeFromEvidence, gradeFromSources,
+  gradeMismatches, rollUpMismatches, componentMismatches, rollUpGrade, rollUpConfidence,
+  summarise, isIndependentlyEvidenced, isQuotable,
+  SOURCE_TYPES, AUTHORITIES, STAGES, EXTRACTION, STANCE, GRADE_VALUES, CONFIDENCE,
+  GRADE_IMPACT, NG_REASONS, DOWNLOAD_STATUS, EXTRACTION_STATUS, HUMAN_REVIEW,
 } from "../src/lib/evidenceRecord.js";
 import { GRADES } from "../src/lib/evidence.js";
 
@@ -60,7 +63,7 @@ test("every record has required fields", () => {
 test("every grade has a substantive rationale", () => {
   for (const r of EVIDENCE_PILOT) {
     assert.ok(r.assessment.grade, `${r.id}: no grade`);
-    assert.ok(GRADES[r.assessment.grade], `${r.id}: grade "${r.assessment.grade}" is not on the ladder`);
+    assert.ok(GRADE_VALUES.includes(r.assessment.grade), `${r.id}: grade "${r.assessment.grade}" is not a valid grade`);
     assert.ok(r.assessment.rationale && r.assessment.rationale.length >= 40,
       `${r.id}: rationale missing or too short`);
     assert.ok(r.assessment.assessed_on, `${r.id}: no assessment date`);
@@ -187,8 +190,10 @@ test("quoted audit sources carry an attribution note limiting their scope", () =
   const audits = EVIDENCE_PILOT.flatMap((r) => r.sources.filter((s) => s.authority === "audit" && s.extraction === "quoted"));
   assert.ok(audits.length > 0, "no quoted audit evidence in the pilot");
   for (const s of audits) {
-    assert.ok(s.note && /name|scheme|state-level/i.test(s.note),
-      `audit source "${s.reference || s.title}" does not state its scope`);
+    // v2: the scope statement moved into the mandatory relationship note.
+    const scope = `${s.relationship?.supports || ""} ${s.relationship?.does_not_prove || ""}`;
+    assert.ok(/name|scheme|state-level/i.test(scope),
+      `audit source "${s.reference || s.title}" does not state its scope in its relationship note`);
   }
 });
 
@@ -206,4 +211,206 @@ test("pilot metadata declares its version and provenance", () => {
   assert.match(PILOT_META.version, /^\d+\.\d+$/);
   assert.match(PILOT_META.compiled, /^\d{4}-\d{2}-\d{2}$/);
   assert.ok(PILOT_META.fetch_manifest.includes("manifest"));
+});
+
+// ===============================================================
+// Phase C0.5 — hardened model (v2)
+// ===============================================================
+
+test("v2: every source carries a mandatory relationship note", () => {
+  for (const r of EVIDENCE_PILOT) {
+    for (const [i, s] of r.sources.entries()) {
+      const rel = s.relationship;
+      assert.ok(rel, `${r.id}.sources[${i}]: no relationship note`);
+      assert.ok(rel.supports && rel.supports.length >= 12, `${r.id}.sources[${i}]: "supports" too short`);
+      assert.ok(typeof rel.does_not_prove === "string", `${r.id}.sources[${i}]: no "does_not_prove"`);
+      assert.ok(GRADE_IMPACT.includes(rel.grade_impact), `${r.id}.sources[${i}]: bad grade_impact`);
+    }
+  }
+});
+
+test("v2 REGRESSION: a source without a relationship note is rejected", () => {
+  const errs = validateSource({
+    source_type: "go", authority: "primary_official", title: "t", stage: "administrative_sanction",
+    extraction: "identified", stance: "supporting",
+    document: { download_status: "not_attempted", extraction_status: "not_attempted", extraction_method: "none", text_sha256: null, extraction_confidence: null, human_review: "unreviewed" },
+  });
+  assert.ok(errs.some((e) => /no relationship note/.test(e)));
+});
+
+test("v2 REGRESSION: a relationship note must say what the source does NOT prove", () => {
+  const base = {
+    source_type: "go", authority: "primary_official", title: "t", stage: "administrative_sanction",
+    extraction: "identified", stance: "supporting",
+    document: { download_status: "not_attempted", extraction_status: "not_attempted", extraction_method: "none", text_sha256: null, extraction_confidence: null, human_review: "unreviewed" },
+    relationship: { supports: "Something substantial here", does_not_prove: "", grade_impact: "raises" },
+  };
+  assert.ok(validateSource(base).some((e) => /does_not_prove/.test(e)));
+});
+
+// ---- claim components ------------------------------------------------
+
+test("v2: every record has claim components with grade, confidence and limitations", () => {
+  for (const r of EVIDENCE_PILOT) {
+    assert.ok(Array.isArray(r.components) && r.components.length > 0, `${r.id}: no components`);
+    for (const c of r.components) {
+      assert.ok(c.id && c.text && c.status, `${r.id}.${c.id}: incomplete component`);
+      assert.ok(GRADE_VALUES.includes(c.grade), `${r.id}.${c.id}: bad grade`);
+      assert.ok(CONFIDENCE.includes(c.confidence), `${r.id}.${c.id}: bad confidence`);
+      assert.ok(c.limitations.length > 0, `${r.id}.${c.id}: no limitations`);
+      for (const i of c.evidence) assert.ok(r.sources[i], `${r.id}.${c.id}: dangling evidence index ${i}`);
+    }
+  }
+});
+
+test("v2 CRITICAL: a parent never inherits its strongest component", () => {
+  assert.deepEqual(rollUpMismatches(EVIDENCE_PILOT), []);
+  for (const r of EVIDENCE_PILOT) {
+    if (r.assessment.grade === "NG") continue;
+    const gradeable = r.components.filter((c) => c.grade !== "NG");
+    if (gradeable.length < 2) continue;
+    const rank = { F: 0, E: 1, D: 2, C: 3, B: 4, A: 5 };
+    const best = gradeable.reduce((b, c) => (rank[c.grade] > rank[b] ? c.grade : b), gradeable[0].grade);
+    const worst = rollUpGrade(r.components);
+    assert.equal(r.assessment.grade, worst, `${r.id}: parent should equal the weakest component`);
+    if (best !== worst) {
+      assert.notEqual(r.assessment.grade, best, `${r.id}: parent inherited its STRONGEST component`);
+    }
+  }
+});
+
+test("v2 REGRESSION: componentisation demoted the compound claims it should have", () => {
+  // These four graded D under v1 because one strong component carried them.
+  for (const id of ["ev_hea4", "ev_inf_b15_cumta", "ev_coop_b16_societies", "ev_contested_hospital_completion"]) {
+    const r = EVIDENCE_PILOT.find((x) => x.id === id);
+    assert.ok(r, `${id} missing`);
+    assert.ok(r.components.some((c) => c.grade === "D"), `${id}: expected a D component`);
+    assert.equal(r.assessment.grade, "E", `${id}: parent must roll up to the weaker component`);
+  }
+});
+
+test("v2: rollUpGrade and rollUpConfidence take the weakest/lowest", () => {
+  assert.equal(rollUpGrade([{ grade: "A" }, { grade: "D" }, { grade: "B" }]), "D");
+  assert.equal(rollUpGrade([{ grade: "NG" }, { grade: "C" }]), "C");
+  assert.equal(rollUpGrade([{ grade: "NG" }]), "NG");
+  assert.equal(rollUpConfidence([{ confidence: "high" }, { confidence: "low" }]), "low");
+  assert.equal(rollUpConfidence([{ confidence: "high" }, { confidence: "medium" }]), "medium");
+});
+
+// ---- NG --------------------------------------------------------------
+
+test("v2: NG is used only with a stated reason", () => {
+  const ng = EVIDENCE_PILOT.filter((r) => r.assessment.grade === "NG");
+  assert.ok(ng.length >= 3, "the pilot should contain non-gradeable subjects");
+  for (const r of ng) {
+    assert.ok(NG_REASONS.includes(r.assessment.ng_reason), `${r.id}: NG without a valid reason`);
+  }
+  for (const r of EVIDENCE_PILOT) {
+    for (const c of r.components.filter((c) => c.grade === "NG")) {
+      assert.ok(NG_REASONS.includes(c.ng_reason), `${r.id}.${c.id}: NG component without a reason`);
+    }
+  }
+});
+
+test("v2 REGRESSION: NG without a reason is rejected", () => {
+  const r = EVIDENCE_PILOT.find((x) => x.assessment.grade === "NG");
+  const bad = { ...r, id: "bad_ng", assessment: { ...r.assessment, ng_reason: undefined } };
+  assert.ok(validateEvidenceRecord(bad).some((e) => /requires ng_reason/.test(e)));
+});
+
+// ---- confidence ------------------------------------------------------
+
+test("v2: grade and confidence are separate, each with its own rationale", () => {
+  for (const r of EVIDENCE_PILOT) {
+    assert.ok(CONFIDENCE.includes(r.assessment.confidence), `${r.id}: no confidence`);
+    assert.ok(r.assessment.confidence_rationale?.length >= 20, `${r.id}: no confidence rationale`);
+    assert.notEqual(r.assessment.confidence_rationale, r.assessment.rationale,
+      `${r.id}: confidence rationale duplicates the grade rationale`);
+  }
+  // The two dimensions must actually vary independently in the corpus.
+  const pairs = new Set(EVIDENCE_PILOT.map((r) => `${r.assessment.grade}/${r.assessment.confidence}`));
+  assert.ok(pairs.size >= 3, "grade and confidence should not move in lockstep");
+});
+
+test("v2 REGRESSION: a missing confidence is rejected", () => {
+  const r = { ...EVIDENCE_PILOT[0], id: "noconf", assessment: { ...EVIDENCE_PILOT[0].assessment, confidence: undefined } };
+  assert.ok(validateEvidenceRecord(r).some((e) => /assessmentConfidence missing/.test(e)));
+});
+
+// ---- document lifecycle ---------------------------------------------
+
+test("v2: every source tracks its document lifecycle", () => {
+  for (const r of EVIDENCE_PILOT) {
+    for (const [i, s] of r.sources.entries()) {
+      const d = s.document;
+      assert.ok(d, `${r.id}.sources[${i}]: no document block`);
+      assert.ok(DOWNLOAD_STATUS.includes(d.download_status));
+      assert.ok(EXTRACTION_STATUS.includes(d.extraction_status));
+      assert.ok(HUMAN_REVIEW.includes(d.human_review));
+    }
+  }
+});
+
+test("v2 CRITICAL: a failed extraction can never be quoted", () => {
+  for (const r of EVIDENCE_PILOT) {
+    for (const s of r.sources) {
+      if (s.quote) {
+        assert.ok(isQuotable(s), `${r.id}: quote present but extraction did not succeed`);
+        assert.equal(s.document.extraction_status, "success");
+        assert.ok(s.document.text_sha256, "a quote needs the hash of the extracted text");
+      }
+    }
+  }
+  // and the validator rejects the forgery
+  const forged = {
+    source_type: "audit", authority: "audit", title: "t", stage: "independent_audit",
+    extraction: "quoted", stance: "contrary", url: "https://cag.gov.in/x.pdf",
+    quote: "Something that was never actually extracted from the document.",
+    relationship: { supports: "Something substantial", does_not_prove: "Something else substantial", grade_impact: "caps" },
+    document: { download_status: "success", extraction_status: "failed", extraction_method: "pdftotext", text_sha256: null, extraction_confidence: null, human_review: "reviewed" },
+  };
+  assert.ok(validateSource(forged).some((e) => /failed extraction must never be quoted/.test(e)));
+});
+
+test("v2 REGRESSION: extraction cannot succeed without a download", () => {
+  const errs = validateDocument({
+    download_status: "failed", extraction_status: "success", extraction_method: "pdftotext",
+    text_sha256: "abc", extraction_confidence: "high", human_review: "reviewed",
+  }, "x");
+  assert.ok(errs.some((e) => /extraction_status "success" but download_status/.test(e)));
+});
+
+test("v2 REGRESSION: successful extraction requires method, hash and confidence", () => {
+  const errs = validateDocument({
+    download_status: "success", extraction_status: "success", extraction_method: "none",
+    text_sha256: null, extraction_confidence: null, human_review: "unreviewed",
+  }, "x");
+  assert.ok(errs.some((e) => /no text_sha256/.test(e)));
+  assert.ok(errs.some((e) => /no method recorded/.test(e)));
+  assert.ok(errs.some((e) => /extraction_confidence is missing/.test(e)));
+});
+
+test("v2: the CAG evidence is genuinely extracted, not asserted", () => {
+  const cag = EVIDENCE_PILOT.flatMap((r) => r.sources).filter((s) => s.authority === "audit" && s.quote);
+  assert.ok(cag.length >= 5, "expected the CAG passages");
+  for (const s of cag) {
+    assert.equal(s.document.download_status, "success");
+    assert.equal(s.document.extraction_status, "success");
+    assert.equal(s.document.extraction_method, "pdftotext");
+    assert.equal(s.document.human_review, "reviewed");
+    assert.match(s.document.text_sha256, /^[0-9a-f]{64}$/);
+  }
+});
+
+// ---- grading consistency --------------------------------------------
+
+test("v2 CRITICAL: no component claims a grade its own evidence cannot support", () => {
+  assert.deepEqual(componentMismatches(EVIDENCE_PILOT), []);
+});
+
+test("v2: gradeFromSources never returns above D without independent support", () => {
+  const goOnly = [{ source_type: "go", authority: "primary_official", stance: "supporting", stage: "administrative_sanction", extraction: "identified" }];
+  assert.equal(gradeFromSources(goOnly), "D");
+  const contraryAudit = [{ source_type: "audit", authority: "audit", stance: "contrary", stage: "outcome", extraction: "quoted" }];
+  assert.equal(gradeFromSources(contraryAudit), "E", "contrary independent evidence must never lift a grade");
 });

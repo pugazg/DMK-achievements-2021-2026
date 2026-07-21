@@ -3,7 +3,7 @@ import { useT, textSafe } from "../lib/theme.js";
 import { Section, SectionHead } from "../components/layout.jsx";
 import { GRADES } from "../lib/evidence.js";
 import { EVIDENCE_PILOT, PILOT_META } from "../data/evidencePilot.js";
-import { summarise, isIndependentlyEvidenced, hasIndependentScrutiny, hasContraryIndependent, STAGES } from "../lib/evidenceRecord.js";
+import { summarise, isIndependentlyEvidenced, hasIndependentScrutiny, hasContraryIndependent, rollUpGrade, STAGES } from "../lib/evidenceRecord.js";
 
 /* Pilot evidence view (#evidence-pilot).
 
@@ -25,11 +25,30 @@ const STANCE_STYLE = (t, stance) => ({
   contextual: { c: textSafe(t.grey, t.name), mark: "~", label: "context" },
 }[stance] || { c: t.mute, mark: "·", label: stance });
 
+const GRADE_META = (g) => (g === "NG"
+  ? { label: "NG · Not gradeable", color: "#8a8aa0" }
+  : null);
+
+const CONF_STYLE = (t, c) => ({
+  high: { c: textSafe(t.green, t.name), label: "high confidence" },
+  medium: { c: textSafe(t.amber, t.name), label: "medium confidence" },
+  low: { c: textSafe(t.red, t.name), label: "low confidence" },
+}[c] || { c: t.mute, label: c });
+
+const IMPACT_LABEL = {
+  raises: "raises the grade",
+  supports_current: "supports the current grade",
+  caps: "caps the grade",
+  lowers: "lowers the grade",
+  none: "no grade impact",
+};
+
 const EXTRACTION_LABEL = {
   identified: "identified only — not opened",
   retrieved: "retrieved — not read",
   parsed: "read",
   quoted: "read & quoted",
+  failed: "extraction FAILED — not usable",
   unavailable: "not available",
 };
 
@@ -73,15 +92,46 @@ function SourceCard({ s }) {
           “{s.quote}”
         </blockquote>
       )}
-      {s.note && <p style={{ color: t.textSoft, fontSize: 11.5, lineHeight: 1.6, margin: "6px 0 0" }}>{s.note}</p>}
+      {/* v2: the relationship note is mandatory, so it is always rendered.
+          "Does not prove" is given equal prominence to "supports". */}
+      {s.relationship && (
+        <div style={{ marginTop: 8, display: "grid", gap: 4 }}>
+          <div style={{ display: "flex", gap: 7 }}>
+            <span style={{ color: textSafe(t.green, t.name), fontSize: 11, fontWeight: 700, minWidth: 78, fontFamily: "ui-monospace,monospace" }}>supports</span>
+            <span style={{ color: t.textDim, fontSize: 12, lineHeight: 1.6 }}>{s.relationship.supports}</span>
+          </div>
+          {s.relationship.does_not_prove && (
+            <div style={{ display: "flex", gap: 7 }}>
+              <span style={{ color: textSafe(t.red, t.name), fontSize: 11, fontWeight: 700, minWidth: 78, fontFamily: "ui-monospace,monospace" }}>does NOT</span>
+              <span style={{ color: t.textDim, fontSize: 12, lineHeight: 1.6 }}>{s.relationship.does_not_prove}</span>
+            </div>
+          )}
+          <div style={{ display: "flex", gap: 7, alignItems: "baseline" }}>
+            <span style={{ color: t.mute, fontSize: 11, minWidth: 78, fontFamily: "ui-monospace,monospace" }}>effect</span>
+            <span style={{ color: t.textSoft, fontSize: 11.5 }}>
+              {IMPACT_LABEL[s.relationship.grade_impact] || s.relationship.grade_impact}
+              {s.relationship.component_id ? ` · component "${s.relationship.component_id}"` : ""}
+            </span>
+          </div>
+        </div>
+      )}
+      {/* v2: document lifecycle, so a failed extraction is never invisible. */}
+      {s.document && (s.document.download_status !== "not_attempted" || s.document.extraction_status !== "not_attempted") && (
+        <div style={{ marginTop: 7, color: t.wisp, fontSize: 10.5, fontFamily: "ui-monospace,monospace" }}>
+          download {s.document.download_status} · extraction {s.document.extraction_status}
+          {s.document.extraction_method && s.document.extraction_method !== "none" ? ` (${s.document.extraction_method})` : ""}
+          {s.document.extraction_confidence ? ` · ${s.document.extraction_confidence} confidence` : ""}
+          {` · ${s.document.human_review}`}
+        </div>
+      )}
     </div>
   );
 }
 
 function Record({ r }) {
   const t = useT();
-  const g = GRADES[r.assessment.grade];
-  const gc = textSafe(g?.color || t.gold, t.name);
+  const g = GRADES[r.assessment.grade] || GRADE_META(r.assessment.grade);
+  const gc = textSafe(g?.color || t.grey, t.name);
   // Timeline order = delivery lifecycle, so contrary audit evidence sits at its
   // real position rather than being appended after the supporting sources.
   const ordered = useMemo(
@@ -93,6 +143,8 @@ function Record({ r }) {
   const scrutinised = r.sources.some(hasIndependentScrutiny);
   const independentSupport = r.sources.some(isIndependentlyEvidenced);
   const contradicted = hasContraryIndependent(r);
+  const conf = CONF_STYLE(t, r.assessment.confidence);
+  const ngMeta = GRADE_META(r.assessment.grade);
 
   return (
     <div style={{ display: "grid", gap: 12 }}>
@@ -139,6 +191,50 @@ function Record({ r }) {
           )}
         </div>
         <p style={{ color: t.textDim, fontSize: 12.5, lineHeight: 1.7, margin: 0 }}>{r.assessment.rationale}</p>
+        <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${t.line2}` }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "baseline", flexWrap: "wrap" }}>
+            <span style={{ color: t.text, fontSize: 12, fontWeight: 700 }}>Confidence</span>
+            <span style={{ color: conf.c, fontSize: 12.5, fontWeight: 700, fontFamily: "ui-monospace,monospace" }}>{r.assessment.confidence}</span>
+            <span style={{ color: t.mute, fontSize: 11 }}>— separate from the grade: what rung is reached, versus how sure we are it is reached</span>
+          </div>
+          <p style={{ color: t.textDim, fontSize: 12, lineHeight: 1.6, margin: "4px 0 0" }}>{r.assessment.confidence_rationale}</p>
+        </div>
+        {r.assessment.ng_reason && (
+          <p style={{ color: textSafe(t.amber, t.name), fontSize: 12, margin: "8px 0 0" }}>
+            Not gradeable because: {r.assessment.ng_reason.replace(/_/g, " ")}
+          </p>
+        )}
+      </div>
+
+      {/* COMPONENTS — a compound claim graded part by part */}
+      <div style={{ background: t.panel, border: `1px solid ${t.line}`, borderRadius: 12, padding: "15px 17px" }}>
+        <div style={{ color: textSafe(t.gold, t.name), fontSize: 11, fontFamily: "ui-monospace,monospace", letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 8 }}>
+          Claim components — {r.components.length}
+        </div>
+        <p style={{ color: t.textSoft, fontSize: 11.5, lineHeight: 1.6, margin: "0 0 10px" }}>
+          The parent grade is the <b style={{ color: t.text }}>weakest</b> component, never the strongest.
+          A compound claim is only as good as its weakest delivered part.
+        </p>
+        <div style={{ display: "grid", gap: 7 }}>
+          {r.components.map((c) => {
+            const cg = c.grade === "NG" ? textSafe(t.grey, t.name) : textSafe(GRADES[c.grade]?.color || t.gold, t.name);
+            const cc = CONF_STYLE(t, c.confidence);
+            return (
+              <div key={c.id} style={{ background: t.panel2, border: `1px solid ${t.line2}`, borderLeft: `3px solid ${cg}`, borderRadius: 9, padding: "10px 12px" }}>
+                <div style={{ display: "flex", gap: 9, alignItems: "baseline", flexWrap: "wrap", marginBottom: 3 }}>
+                  <span style={{ color: cg, fontFamily: "ui-monospace,monospace", fontSize: 13, fontWeight: 800 }}>{c.grade}</span>
+                  <span style={{ color: cc.c, fontSize: 11, fontFamily: "ui-monospace,monospace" }}>{cc.label}</span>
+                  <span style={{ color: t.mute, fontSize: 11, fontFamily: "ui-monospace,monospace" }}>{c.status.replace(/_/g, " ")}</span>
+                  {c.ng_reason && <span style={{ color: textSafe(t.amber, t.name), fontSize: 11 }}>{c.ng_reason.replace(/_/g, " ")}</span>}
+                </div>
+                <div style={{ color: t.text, fontSize: 12.5, lineHeight: 1.55 }}>{c.text}</div>
+                <ul style={{ margin: "5px 0 0", paddingLeft: 17, color: t.textSoft, fontSize: 11.5, lineHeight: 1.6 }}>
+                  {c.limitations.map((l, i) => <li key={i}>{l}</li>)}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* LIMITATIONS */}
@@ -199,8 +295,10 @@ export default function EvidencePilot() {
 
       <div style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(auto-fit,minmax(120px,1fr))", marginBottom: 14 }}>
         {[
-          ["Subjects", s.total], ["Sources", s.sources], ["Actually read", s.read],
-          ["Contrary sources", s.contrary], ["With contrary evidence", `${s.withContrary}/${s.total}`],
+          ["Subjects", s.total], ["Claim components", s.components],
+          ["Compound claims", `${s.compound}/${s.total}`], ["Not gradeable", s.notGradeable],
+          ["Sources", s.sources], ["Actually read", s.read],
+          ["Contrary sources", s.contrary], ["Low confidence", s.byConfidence.low ?? 0],
           ["Missing items logged", s.missingItems],
         ].map(([k, v]) => (
           <div key={k} style={{ background: t.panel, border: `1px solid ${t.line}`, borderRadius: 10, padding: "10px 12px" }}>
