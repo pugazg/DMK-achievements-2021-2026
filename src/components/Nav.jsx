@@ -14,6 +14,7 @@ export const SECTIONS = [
   { id: "govorders", label: "Orders" },
   { id: "debates", label: "Debates" },
   { id: "about", label: "About" },
+  { id: "transparency", label: "Transparency" },
 ];
 
 export default function Nav({ onSearch, theme, onToggleTheme }) {

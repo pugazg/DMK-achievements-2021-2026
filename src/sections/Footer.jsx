@@ -1,7 +1,9 @@
-import { useT } from "../lib/theme.js";
+import { useT, textSafe } from "../lib/theme.js";
 import { REFERENCES } from "../data/dashboard.js";
 import { Section, SectionHead } from "../components/layout.jsx";
 import { scrollToId } from "../lib/hooks.js";
+import { versionLine } from "../lib/version.js";
+import { REPO_URL, ISSUES_URL } from "../data/transparency.js";
 import RisingSun from "../components/RisingSun.jsx";
 
 const DISCLOSURES = [
@@ -41,6 +43,10 @@ export default function Footer() {
             </div>
           ))}
         </div>
+        <button onClick={() => scrollToId("transparency")}
+          style={{ marginTop: 12, padding: "10px 16px", background: "transparent", border: `1px solid ${t.gold}66`, color: textSafe(t.gold, t.name), borderRadius: 10, fontSize: 12.5, cursor: "pointer", fontFamily: "ui-monospace,monospace" }}>
+          Full transparency &amp; methodology →
+        </button>
       </Section>
 
       <footer style={{ maxWidth: 1080, margin: "40px auto 0", padding: "28px 18px 60px" }}>
@@ -55,7 +61,27 @@ export default function Footer() {
             and third-party-assessed material, not an independent audit — read each record against its linked source
             before drawing conclusions. Built to be shared, checked and disputed against its own sources.
           </p>
-          <button onClick={() => scrollToId("overview")} style={{ padding: "9px 16px", background: "transparent", border: `1px solid ${t.line}`, color: t.gold, borderRadius: 9, fontSize: 12.5, cursor: "pointer", fontFamily: "ui-monospace,monospace", letterSpacing: ".06em" }}>↑ Back to top</button>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <button onClick={() => scrollToId("transparency")}
+              style={{ padding: "9px 16px", background: "transparent", border: `1px solid ${t.gold}66`, color: textSafe(t.gold, t.name), borderRadius: 9, fontSize: 12.5, cursor: "pointer", fontFamily: "ui-monospace,monospace", letterSpacing: ".06em" }}>
+              Transparency &amp; methodology
+            </button>
+            <a href={ISSUES_URL} target="_blank" rel="noopener noreferrer"
+              style={{ padding: "9px 16px", background: "transparent", border: `1px solid ${t.line}`, color: t.faint, borderRadius: 9, fontSize: 12.5, textDecoration: "none", fontFamily: "ui-monospace,monospace", letterSpacing: ".06em" }}>
+              Submit a correction ↗
+            </a>
+            <a href={REPO_URL} target="_blank" rel="noopener noreferrer"
+              style={{ padding: "9px 16px", background: "transparent", border: `1px solid ${t.line}`, color: t.faint, borderRadius: 9, fontSize: 12.5, textDecoration: "none", fontFamily: "ui-monospace,monospace", letterSpacing: ".06em" }}>
+              Repository ↗
+            </a>
+            <button onClick={() => scrollToId("overview")} style={{ padding: "9px 16px", background: "transparent", border: `1px solid ${t.line}`, color: textSafe(t.gold, t.name), borderRadius: 9, fontSize: 12.5, cursor: "pointer", fontFamily: "ui-monospace,monospace", letterSpacing: ".06em" }}>↑ Back to top</button>
+          </div>
+          {/* Version line: a reader needs the data cut-off and the methodology
+              version to know what this artefact could possibly know. */}
+          <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px solid ${t.line2}`, color: t.mute, fontSize: 11.5, fontFamily: "ui-monospace,monospace", lineHeight: 1.9 }}>
+            <div>{versionLine()}</div>
+            <div>Maintained independently by Pugazhendhi R · no political affiliation · self-funded · code MIT, data CC BY 4.0</div>
+          </div>
         </div>
       </footer>
     </>

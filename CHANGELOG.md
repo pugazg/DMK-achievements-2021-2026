@@ -7,6 +7,53 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [Unreleased] — Phase B: public transparency and methodology
+
+**Data 2026-07-18 · Methodology v1.0 · Build 2.0.0**
+
+### Added — transparency
+
+- **Publisher disclosure completed** (`docs/PUBLISHER_TRANSPARENCY.md`). Every
+  field that was `[NOT YET DECIDED]` is now stated: maintainer **Pugazhendhi R**,
+  independently maintained, **no political affiliation** with DMK or any party,
+  government body or campaign, not commissioned, **self-funded** with no
+  advertisements, sponsorships or donations.
+- Two perspective caveats are stated rather than buried: the source material is
+  **one-sided by construction** (no adverse or contrary evidence has been
+  ingested), and some framing is **editorial and sympathetic** in tone.
+- **In-app Transparency section** (`#transparency`, lazy-loaded), linked from the
+  nav, the About section and the footer. Publisher, purpose, affiliation,
+  funding, the grade ladder with live counts, the Government Order caveat,
+  methodology, limitations, corrections and licence.
+- **`docs/METHODOLOGY.md`** (methodology v1.0) — evidence classification,
+  source selection, inclusion criteria, status classification, data-integrity
+  rules, and a version history. States plainly that a Government Order proves
+  administrative action but **not** completion, beneficiary delivery or outcome.
+- **`docs/CORRECTIONS.md`** — correction process with issue type, record ID,
+  source reference, explanation and a review-status flow. Contrary evidence is
+  explicitly invited; corrections are announced, never silent.
+- **Licences.** MIT for the software (`LICENSE`), CC BY 4.0 for the data
+  compilation (`LICENSE-DATA`). Both state that **government documents are not
+  licensed by this project** — they belong to their issuing authorities, are
+  linked rather than rehosted, and no ownership is claimed.
+- **Version information** (`src/lib/version.js`) — release, data cut-off, data
+  last-updated and methodology version, shown in the footer and the Transparency
+  section. Methodology is versioned separately because changing the rules can
+  change what an existing record *means*.
+- `test/transparency.test.mjs` — 14 tests guarding the disclosures: no
+  unresolved placeholder reaches the page, affiliation and funding cover every
+  route, the grade ladder cannot drift from `GRADES`, the licence never claims
+  government documents, version matches `package.json`, and no copy claims
+  verification.
+
+### Changed
+
+- README carries the publisher, affiliation, funding, licence and version
+  tables instead of a "not yet stated" placeholder.
+- Release checklist: publisher, licence and corrections items now checked.
+
+---
+
 ## [Unreleased] — audit remediation
 
 Remediation of the reviewer's artefact audit of 19 July 2026. Traceability from

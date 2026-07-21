@@ -123,11 +123,11 @@ app/
                  govorders.js · gazettegos.js (788) · debates.js (138)
                  promiseGoLinks.js · sourceRegistry.json (108) · dashboard.js
     lib/         theme.js (incl. textSafe contrast helper) · search.js
-                 evidence.js · publicMetrics.js · hooks.js · format.js
+                 evidence.js · publicMetrics.js · version.js · hooks.js · format.js
     components/  charts.jsx · Nav · SearchOverlay · ShareCard · RecordCard
                  Counter · RisingSun · layout
     sections/    Hero · Dashboard · Method · Explore · Claim · Manifesto
-                 Legislation · GovOrders · Debates · Footer
+                 Legislation · GovOrders · Debates · Footer · Transparency
     App.jsx      composition, theme provider, lazy routes, error boundary
   scripts/       validate · baseline · data_quality_scan · check_contrast
                  source_registry_seed · verify_sources · recheck_sources
@@ -136,7 +136,7 @@ app/
   docs/          evidence model · methodology · limitations · coverage matrix
                  data quality · accessibility · acquisition plan · RTI register
                  release checklist · audit remediation
-  test/          claim.test.mjs · metrics.test.mjs · tamil.test.mjs
+  test/          claim · metrics · tamil · transparency .test.mjs
 ```
 
 ## Sources
@@ -152,11 +152,32 @@ is in [`docs/SOURCE_COVERAGE_MATRIX.md`](docs/SOURCE_COVERAGE_MATRIX.md).
 
 ## Publisher, affiliation and licence
 
-**Not yet stated — this is a launch blocker.** Publisher identity, political affiliation,
-funding disclosure and licensing are unresolved. The template with every outstanding
-field is [`docs/PUBLISHER_TRANSPARENCY.md`](docs/PUBLISHER_TRANSPARENCY.md); nothing in it
-has been invented, and every unknown is marked `[NOT YET DECIDED]`.
+| | |
+|---|---|
+| Maintainer | **Pugazhendhi R** — independently maintained by one person |
+| Affiliation | **None.** No affiliation with DMK, any other party, any government body or any campaign organisation. Not commissioned. |
+| Funding | **Self-funded.** No government, party, grant or institutional money. No advertisements, sponsorships or donations. |
+| Software licence | **MIT** — [`LICENSE`](LICENSE) |
+| Data licence | **CC BY 4.0** — [`LICENSE-DATA`](LICENSE-DATA) |
+| Government documents | **Not licensed here.** They belong to their issuing authorities under their own terms; this project claims no ownership and links to the authority's own copy. |
+| Corrections | [`docs/CORRECTIONS.md`](docs/CORRECTIONS.md) · [open an issue](https://github.com/pugazg/DMK-achievements-2021-2026/issues) |
 
-For a politically charged artefact published during the term it describes, these are not
-a nicety. "No affiliation" is a valid answer and must be stated explicitly if true —
-silence reads as concealment.
+Two things a reader should weigh even so: the source material is **one-sided by
+construction** (drawn almost entirely from the government's own publications, with no
+adverse or contrary evidence yet ingested), and some framing is **editorial and
+sympathetic** in tone. Both are stated in full in
+[`docs/PUBLISHER_TRANSPARENCY.md`](docs/PUBLISHER_TRANSPARENCY.md), which is also
+published in the app itself under **Transparency**.
+
+## Versions
+
+| Version | Value |
+|---|---|
+| Release | 2.0.0 |
+| Data cut-off | 2026-07-18 |
+| Data last updated | 2026-07-21 |
+| Methodology | **1.0** — [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) |
+
+Methodology is versioned separately from the data because changing the rules can change
+what an existing record *means* without any data changing. Defined once in
+`src/lib/version.js`.

@@ -18,10 +18,10 @@ npm run build       # vite production build
 
 | Gate | Expected | Last run (21 Jul 2026) |
 |---|---|---|
-| `npm run test` | all pass | ✅ 29/29 |
+| `npm run test` | all pass | ✅ 43/43 |
 | `npm run validate` | all pass | ✅ passed |
 | `npm run a11y` | 0 failures | ✅ 0 |
-| `npm run build` | succeeds | ✅ 842KB main / 244KB gzip |
+| `npm run build` | succeeds | ✅ 853KB main / 248KB gzip |
 
 ## Claims discipline
 
@@ -83,12 +83,14 @@ npm run build       # vite production build
 - [ ] The release is described as an **evidence explorer**, not a fact-checking
       platform — in the UI, the README, and the `index.html` meta/OpenGraph tags
       that generate social previews.
-- [ ] Publisher identity, political affiliation and funding disclosure are
-      present. **Currently Open — this is a genuine blocker for a public launch**
-      of a politically-charged artefact. Template and outstanding fields:
-      `docs/PUBLISHER_TRANSPARENCY.md`.
-- [ ] Licence and attribution stated. **Currently Open.**
-- [ ] Corrections policy and a public change log are reachable from the page.
+- [x] Publisher identity, political affiliation and funding disclosure are
+      present — `docs/PUBLISHER_TRANSPARENCY.md`, and published in-app under
+      **Transparency**. Guarded by `test/transparency.test.mjs`.
+- [x] Licence and attribution stated — MIT (`LICENSE`) + CC BY 4.0
+      (`LICENSE-DATA`), with an explicit no-ownership policy for government
+      documents.
+- [x] Corrections policy (`docs/CORRECTIONS.md`) and change log are reachable
+      from the page footer and the Transparency section.
 
 ## Known-open items at last review
 
@@ -100,7 +102,5 @@ These are not gates, but they must be disclosed rather than quietly carried:
   crawling to close the gap.
 - No chart has a textual data-table equivalent.
 - No testing with real assistive technology.
-- Publisher identity, funding disclosure and licensing are not yet written
-  (`docs/PUBLISHER_TRANSPARENCY.md`).
 - Tamil search coverage is partial: 20 of 438 records carry a Tamil scheme name.
 - No contrary or adverse evidence (e.g. CAG findings) has been ingested.

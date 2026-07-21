@@ -1,6 +1,8 @@
-import { useState, useEffect, lazy, Suspense, Component } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense, Component } from "react";
 import { ThemeCtx, THEMES, useT, onColor } from "./lib/theme.js";
 import { usePersisted, useScrollProgress } from "./lib/hooks.js";
+import { DATA } from "./data/records.js";
+import { gradeRecord } from "./lib/evidence.js";
 
 import Nav from "./components/Nav.jsx";
 import SearchOverlay from "./components/SearchOverlay.jsx";
@@ -18,6 +20,9 @@ import Footer from "./sections/Footer.jsx";
 const Legislation = lazy(() => import("./sections/Legislation.jsx"));
 const GovOrders = lazy(() => import("./sections/GovOrders.jsx"));
 const Debates = lazy(() => import("./sections/Debates.jsx"));
+// Transparency is text-only but sits at the bottom of the page; lazy-loading it
+// keeps the disclosure out of the initial download without hiding it.
+const Transparency = lazy(() => import("./sections/Transparency.jsx"));
 
 class ErrorBoundary extends Component {
   constructor(p) { super(p); this.state = { err: null }; }
@@ -46,6 +51,14 @@ export default function App() {
   const theme = THEMES[themeName] || THEMES.dark;
   const [search, setSearch] = useState(false);
   const [card, setCard] = useState(null);
+
+  /* Grade totals for the transparency page. Derived here rather than written
+     into the copy — a stale number on the page that explains the evidence
+     model would be the worst place for one. */
+  const gradeCounts = useMemo(
+    () => DATA.reduce((a, r) => ((a[gradeRecord(r).grade] = (a[gradeRecord(r).grade] || 0) + 1), a), {}),
+    [],
+  );
 
   // Cmd/Ctrl+K opens search
   useEffect(() => {
@@ -94,6 +107,9 @@ export default function App() {
           <Debates />
         </Suspense></ErrorBoundary>
         <Footer />
+        <ErrorBoundary><Suspense fallback={<LazySection />}>
+          <Transparency gradeCounts={gradeCounts} />
+        </Suspense></ErrorBoundary>
       </div>
 
       <SearchOverlay open={search} onClose={() => setSearch(false)} onPickRecord={setCard} />
