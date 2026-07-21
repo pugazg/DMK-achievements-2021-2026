@@ -15,6 +15,8 @@ const { DERIVED, reconcile, checkInvariants } = await import("../src/lib/publicM
 // not just the underlying datasets. This is what the "999 verified records"
 // mutation slipped through before.
 const { HERO_STRIP } = await import("../src/data/dashboard.js");
+const { EVIDENCE_PILOT } = await import("../src/data/evidencePilot.js");
+const { validateEvidenceRecord, gradeMismatches } = await import("../src/lib/evidenceRecord.js");
 
 let fail = 0;
 const check = (cond, msg) => { if (!cond) { console.error("  FAIL:", msg); fail++; } else { console.log("  ok  :", msg); } };
@@ -107,6 +109,17 @@ try {
 const promNums = new Set(PROMISES.map((p) => String(p.num)));
 const badPgl = Object.keys(PROMISE_GO_LINKS).filter((k) => !promNums.has(k)).length;
 check(badPgl === 0, `promise GO-links reference existing promises (${badPgl} orphaned)`);
+
+// 10. Phase C0 evidence pilot — schema and the no-silent-verification invariant.
+const pilotErrs = EVIDENCE_PILOT.flatMap((r) => validateEvidenceRecord(r));
+check(pilotErrs.length === 0, `evidence pilot: ${EVIDENCE_PILOT.length} records pass schema (${pilotErrs.length} errors)`);
+pilotErrs.slice(0, 5).forEach((e) => console.error("        " + e));
+const pilotMism = gradeMismatches(EVIDENCE_PILOT);
+check(pilotMism.length === 0, `evidence pilot: asserted grades match the evidence (${pilotMism.length} mismatches)`);
+check(EVIDENCE_PILOT.every((r) => r.assessment.verification_status === "unverified"),
+  `evidence pilot: no record is marked verified`);
+check(EVIDENCE_PILOT.every((r) => Array.isArray(r.missing) && r.missing.length > 0),
+  `evidence pilot: every record states what evidence is missing`);
 
 console.log(fail === 0 ? "\nVALIDATION PASSED" : `\nVALIDATION FAILED (${fail})`);
 process.exit(fail === 0 ? 0 : 1);

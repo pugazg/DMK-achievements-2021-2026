@@ -23,6 +23,9 @@ const Debates = lazy(() => import("./sections/Debates.jsx"));
 // Transparency is text-only but sits at the bottom of the page; lazy-loading it
 // keeps the disclosure out of the initial download without hiding it.
 const Transparency = lazy(() => import("./sections/Transparency.jsx"));
+// Phase C0 evidence pilot — 25 subjects with full provenance. Lazy: it is a
+// deep-dive view, not part of the main reading path.
+const EvidencePilot = lazy(() => import("./sections/EvidencePilot.jsx"));
 
 class ErrorBoundary extends Component {
   constructor(p) { super(p); this.state = { err: null }; }
@@ -108,6 +111,7 @@ export default function App() {
         </Suspense></ErrorBoundary>
         <Footer />
         <ErrorBoundary><Suspense fallback={<LazySection />}>
+          <EvidencePilot />
           <Transparency gradeCounts={gradeCounts} />
         </Suspense></ErrorBoundary>
       </div>

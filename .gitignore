@@ -12,3 +12,5 @@ coverage/
 .cache/
 
 sources/robots/
+
+sources/pilot_c0/
