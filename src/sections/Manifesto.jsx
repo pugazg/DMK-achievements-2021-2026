@@ -2,8 +2,27 @@ import { useState, useMemo, useEffect } from "react";
 import { useT } from "../lib/theme.js";
 import { DATA, CAT } from "../data/records.js";
 import { PROMISES } from "../data/promises.js";
+import { PROMISE_GO_LINKS } from "../data/promiseGoLinks.js";
 import { Section, SectionHead, Reveal } from "../components/layout.jsx";
 import { ProgressRing } from "../components/charts.jsx";
+
+// Turn "G.O. (Ms) No. 57" mentions in a note into links to the actual GO PDF,
+// where that GO resolves to one in our datasets (goMap: { number: {pdf, src} }).
+const GO_RE = /G\.?\s*O\.?\s*\(?(?:Ms|D|2D|Rt|P)?\)?\.?\s*No\.?\s*(\d+)/gi;
+function linkifyGO(note, goMap, t) {
+  if (!goMap) return note;
+  const out = []; let last = 0, m, k = 0;
+  GO_RE.lastIndex = 0;
+  while ((m = GO_RE.exec(note)) !== null) {
+    if (last < m.index) out.push(note.slice(last, m.index));
+    const link = goMap[m[1]];
+    if (link) out.push(<a key={k++} href={link.pdf} target="_blank" rel="noopener noreferrer" title={`Open ${m[0].trim()} · ${link.src}`} style={{ color: t.gold, textDecoration: "underline", textUnderlineOffset: 2 }}>{m[0]}</a>);
+    else out.push(m[0]);
+    last = m.index + m[0].length;
+  }
+  if (last < note.length) out.push(note.slice(last));
+  return out;
+}
 
 // Five-status taxonomy, mirroring the independent Pudhiyavan DMK Manifesto 2021 Tracker.
 const PSTATUS = {
@@ -22,6 +41,7 @@ function PromiseRow({ p, onPickRecord }) {
   const st = PSTATUS[p.status];
   const hasNote = !!(p.note && p.note.trim());
   const recs = p.records.map((id) => RECBYID[id]).filter(Boolean);
+  const goMap = PROMISE_GO_LINKS[p.num];
   return (
     <div style={{ background: t.panel, border: `1px solid ${t.line2}`, borderLeft: `3px solid ${st.color}`, borderRadius: 10, padding: "11px 13px", marginBottom: 8 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
@@ -39,11 +59,12 @@ function PromiseRow({ p, onPickRecord }) {
           {hasNote && (
             <button onClick={() => setOpen((o) => !o)} aria-expanded={open} style={{ fontSize: 11, padding: "3px 10px", background: open ? `${st.color}18` : "transparent", border: `1px solid ${st.color}44`, color: st.color, borderRadius: 14, cursor: "pointer", fontFamily: "ui-monospace,monospace" }}>{open ? "▾ hide" : "ⓘ details"}</button>
           )}
+          {goMap && <span title="Government Orders in the details are linked to their PDFs" style={{ fontSize: 10, padding: "3px 8px", color: t.gold, border: `1px solid ${t.gold}44`, borderRadius: 14, fontFamily: "ui-monospace,monospace" }}>📎 G.O. linked</span>}
         </div>
       )}
       {open && hasNote && (
         <p style={{ margin: "10px 0 2px", padding: "10px 12px", background: t.panel2, border: `1px solid ${t.line2}`, borderRadius: 8, color: t.textDim, fontSize: 12.5, lineHeight: 1.65 }}>
-          {p.note}
+          {linkifyGO(p.note, goMap, t)}
         </p>
       )}
     </div>
