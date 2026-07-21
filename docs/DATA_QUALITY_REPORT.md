@@ -25,7 +25,7 @@ Two rules govern every fix in this project:
 | Measure | Count |
 |---|---|
 | Issues detected | 70 |
-| Fixed and logged | 15 |
+| Fixed and logged | 16 |
 | Flagged, deliberately not fixed (quoted source text) | 55 |
 | Records flagged `mixedStatus: true` | 6 |
 | Record IDs changed | 0 |
@@ -105,7 +105,7 @@ replacing the government's framing with ours.
 
 ## Applied changes
 
-### `src/data/promises.js` — 7 changes (2026-07-21)
+### `src/data/promises.js` — 8 changes (2026-07-21)
 
 Character-encoding repairs only. Restoring a corrupted `₹` glyph does not alter any amount,
 and no other field was touched.
@@ -114,6 +114,7 @@ and no other field was touched.
 - Promise #26 · `note` — restored corrupted rupee glyph
 - Promise #70 · `note` — restored corrupted rupee glyph
 - Promise #87 · `note` — restored corrupted rupee glyph
+- Promise #162 · `note` — restored corrupted rupee glyph (2 occurrences); missed by the first pass because the unit match was case-sensitive and the text reads "Cr", not "cr"
 - Promise #178 · `note` — restored corrupted rupee glyph
 - Promise #182 · `note` — restored corrupted rupee glyph
 - Promise #261 · `note` — restored corrupted rupee glyph

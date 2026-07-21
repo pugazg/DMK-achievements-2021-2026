@@ -1,7 +1,7 @@
 {
- "generated": "2026-07-21T06:22:13.032Z",
+ "generated": "2026-07-21T12:00:38.467Z",
  "file": "src/data/promises.js",
- "changeCount": 7,
+ "changeCount": 8,
  "changes": [
   {
    "id": "#10",
@@ -26,6 +26,12 @@
    "field": "note",
    "type": "currency-encoding",
    "note": "restored corrupted rupee glyph"
+  },
+  {
+   "id": "#162",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph (2 occurrences); missed by the first pass because the unit match was case-sensitive and the text reads \"Cr\", not \"cr\""
   },
   {
    "id": "#178",

@@ -11,7 +11,9 @@ const before = src;
 // â‚¹ mojibake -> ₹
 src = src.replace(/â‚¹/g, "₹");
 // "?<digits> crore/lakh" and "?<digits>L" -> "₹<digits> ..."  (only when a number follows)
-src = src.replace(/\?(\d[\d,.]*)(\s*(?:crore|lakh|cr\b|L\b))/g, "₹$1$2");
+// The unit match is case-insensitive: the source text mixes "cr", "Cr" and "CR",
+// and a case-sensitive pattern silently skipped promise #162 ("?169 Cr").
+src = src.replace(/\?(\d[\d,.]*)(\s*(?:crore|lakh|cr\b|L\b))/gi, "₹$1$2");
 
 if (src !== before) {
   // record which promise notes changed

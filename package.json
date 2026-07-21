@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "node --test",
     "validate": "node scripts/validate.mjs",
-    "baseline": "node scripts/baseline.mjs"
+    "baseline": "node scripts/baseline.mjs",
+    "a11y": "node scripts/check_contrast.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
