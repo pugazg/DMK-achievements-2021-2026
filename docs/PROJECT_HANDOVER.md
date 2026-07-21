@@ -25,6 +25,8 @@ npm ci
 npm run build       # vite production build
 npm run test        # node --test  (adversarial claim-lookup tests)
 npm run validate    # scripts/validate.mjs — 19 dataset/label integrity checks
+npm run a11y        # scripts/check_contrast.mjs — WCAG AA contrast, both themes
+npm run docs        # regenerate the three generated docs from the data
 npm run baseline    # regenerate docs/BASELINE_MANIFEST.json (DO NOT overwrite the committed pre-change baseline casually)
 ```
 
@@ -81,23 +83,68 @@ Baseline snapshot: `docs/BASELINE_MANIFEST.json`.
 
 ## 5. What REMAINS (next-chat TODO, in priority order)
 
-1. **Finish Phase 6/12 registry docs** (in progress when handover was requested):
-   - Patch `sourceRegistry.json` entries with `http_status`/`accessibility`/`last_checked_at` from `scripts/source_verification.tsv`.
-   - Blocked/unreachable to put in a manual queue: `403` = eci-manifesto, adb-tnhousing, eci-results; `000` (timeout/JS/DNS) = most DES pages, aishe-dash, paimana(×2), elcot, tnrdc(×2), egazette. Re-check DES with longer timeout / trailing slash; several are JS/CAPTCHA (record as manual, don't bypass).
-2. **Phase 12 documentation** (create these; brief lists exact names):
-   `docs/ARTEFACT_AUDIT_REMEDIATION.md`, `docs/SOURCE_COVERAGE_MATRIX.md`, `docs/EVIDENCE_MODEL.md`, `docs/MANIFESTO_ASSESSMENT_METHODOLOGY.md`, `docs/CLAIM_SEARCH_LIMITATIONS.md`, `docs/DATA_QUALITY_REPORT.md` (human-readable wrapper over the JSON), `docs/ACCESSIBILITY_REPORT.md`, `docs/RELEASE_CHECKLIST.md`, `docs/SOURCE_ACQUISITION_PLAN.md`, `docs/RTI_GAP_REGISTER.md`, `CHANGELOG.md`. (The code already references `CLAIM_SEARCH_LIMITATIONS.md`, `EVIDENCE_MODEL.md`, `MANIFESTO_ASSESSMENT_METHODOLOGY.md`, `GAZETTE_SOURCES.md` — write them.)
-3. **Phase 2 provenance model (deeper):** optional structured `EvidenceRecord[]` store + a provenance display on records (source title/authority/date/page/stage/assessment-date). Currently only the grade chip exists. The remediation-queue for the 247 page-less records should be emitted as `docs/remediation_queue.json`.
-4. **README update:** correct 12→11 domains, search scope, 138-vs-38, 3,501-vs-186, add cut-off date, Node version, test/validate commands, methodology/limitations/ownership disclosure.
-5. **Packaging scripts:** add `source-package` / `deploy-package` npm scripts (Phase 11).
-6. **Optional accessibility:** textual data-table alternative for charts; automated a11y check.
-7. **Update the reviewer README table** in `app/README.md` (still says "Fact-check … who actually started it" and "12 domains").
-8. **Final deliverables report** (executive summary, file-change report, dataset reconciliation, audit remediation table, source coverage report, test results, remaining manual-review queue, release recommendation). Recommendation so far: **Public beta evidence explorer** — NOT a fact-checking platform (claim logic is neutral retrieval by design).
-9. **Push `audit-remediation` + open PR** when a coherent chunk is ready.
+**Updated 21 Jul 2026.** Commits since the original handover: `966696d`, `f7a2228`,
+`2fb5c94`, `c58cdc1`, `06a1b4f` — all on `audit-remediation`, tree clean, **not yet pushed**.
 
-### Deferred / large source-acquisition (Phase 6 priorities 1–14)
-Architecture + registry + pilot are done. Full ingestion (budget PDFs, policy notes, CAG, Assembly committee reports, press releases, tenders, statistics, Union cross-checks, local bodies, PSUs, courts, RTI) is a **resumable queue** — do NOT claim any source reviewed unless actually fetched. Respect robots/CAPTCHA/ToS; put blocked ones in the manual queue.
+### Done since handover
 
----
+1. ~~Phase 6/12 registry patch~~ — **done**. Registry now carries `http_status` /
+   `accessibility` / `automation_allowed` / `acquisition_mode` / `last_checked_at`.
+   92 reachable · 3 blocked (403) · 6 server_error · 7 unreachable · 40 in the manual
+   queue (`docs/SOURCE_MANUAL_QUEUE.json`). The 6 DES pages moved from timeout to HTTP
+   500 on a 60s re-check — host up, application erroring; worth re-checking periodically.
+2. ~~Phase 12 documentation~~ — **done**. All 11 documents written. Three are generated
+   (`npm run docs`) so they cannot drift: `SOURCE_COVERAGE_MATRIX.md`,
+   `DATA_QUALITY_REPORT.md`, `remediation_queue.json`.
+3. ~~Phase 2 remediation queue~~ — **done**. `docs/remediation_queue.json`, 247 records,
+   prioritised 27 (document-backed) / 5 (mixed-status) / 215 (souvenir only).
+   The structured `EvidenceRecord[]` store is still designed-not-built.
+4. ~~README update~~ — **done**. Rewritten with 11 domains, catalogue-vs-embedded totals,
+   Node version, all gate commands, Limitations, corrections policy.
+5. ~~Phase 9 accessibility~~ — **went well beyond the audit's finding.** A full in-browser
+   audit found **76 contrast failures on dark, 78 on light**. Nearly all were one systemic
+   defect: identity hues (category / grade / origin / kind / status) used verbatim as text
+   in both themes. The grade chip on all 438 cards sat at 2.25:1 in light mode. Fixed with
+   `textSafe()` in `src/lib/theme.js`. **Now 0/0**, guarded by `npm run a11y`.
+
+### Still open
+
+1. **Packaging scripts** — `source-package` / `deploy-package` (Phase 11).
+2. **Final deliverables report** — executive summary, file-change report, dataset
+   reconciliation, source coverage, test results, manual-review queue, release
+   recommendation. Recommendation stands: **public beta evidence explorer**, not a
+   fact-checking platform.
+3. **Push `audit-remediation` + open PR.** Not done — deliberately left for the user.
+4. **Publisher identity, political affiliation, funding disclosure, licensing.** Unwritten,
+   and a genuine launch blocker for a politically-charged artefact. Flagged in the README
+   and `docs/RELEASE_CHECKLIST.md`.
+5. **Chart data-table alternatives**, real AT testing, `lang="ta"` tagging, permalinks /
+   URL state, print views, per-value chart citations. All logged as Open in
+   `docs/ARTEFACT_AUDIT_REMEDIATION.md`.
+
+### IMPORTANT compliance finding (new)
+
+`robots.txt` was read for all 60 origins. **`assembly.tn.gov.in` and `tn.data.gov.in`
+publish a blanket `User-agent: * / Disallow: /`.** The outstanding work to measure the
+remaining 100 of 138 Assembly sittings therefore **must not be done by crawling** — the
+resumable-queue plan in the original handover is not available. Needs a manual process or
+permission from the Assembly. The 138 outbound links are unaffected; linking is not
+crawling. A further 30 sources serve an HTML soft-404 at `/robots.txt`, recorded as
+**unknown**, never as permission.
+
+### Correction to the original handover
+
+"11/11 pilot docs fetched" counted the manifest header row. It is **10 documents**.
+Separately: the data-quality scan flagged 8 currency-encoding defects but only 7 had been
+repaired — promise **#162** was skipped because the unit pattern was case-sensitive and
+that note reads "?169 Cr". Fixed and logged (`migration_currency.json`, changeCount 8).
+
+### Deferred / large source-acquisition (Phase 6 priorities 1-14)
+
+Architecture + registry + pilot are done; **0 of 108 registry sources ingested**. Full
+ingestion remains a resumable queue — do NOT claim any source reviewed unless actually
+fetched and hashed. Respect robots/CAPTCHA/ToS; blocked ones go to the manual queue.
+See `docs/SOURCE_ACQUISITION_PLAN.md`.
 
 ## 6. Non-negotiable rules (from the brief — keep enforcing)
 
