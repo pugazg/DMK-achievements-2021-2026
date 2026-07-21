@@ -3,10 +3,16 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 const reg = JSON.parse(readFileSync("src/data/sourceRegistry.json", "utf8"));
+/* The pilot manifest is the provenance record for documents actually fetched.
+   If it is absent we must NOT report 0 — "we fetched nothing" and "we cannot
+   tell what was fetched" are different statements, and silently printing the
+   first would be exactly the kind of confident-but-wrong output this project
+   exists to avoid. The manifest is tracked in git for this reason. */
 const pilotPath = "sources/pilot/manifest.tsv";
 const pilot = existsSync(pilotPath)
   ? readFileSync(pilotPath, "utf8").trim().split("\n").slice(1).filter(Boolean).length
-  : 0;
+  : null;
+const pilotCell = pilot === null ? "unknown — manifest not present in this checkout" : pilot;
 
 const ACCESS_LABEL = {
   reachable: "reachable",
@@ -65,7 +71,7 @@ claim in this project. Those states are tracked separately in the \`fetched\` / 
 | Robots policy unknown | ${count((s) => s.automation_allowed === null)} |
 | Eligible for automated acquisition | ${count((s) => s.acquisition_mode === "automated")} |
 | Manual-acquisition queue | ${count((s) => s.acquisition_mode === "manual")} |
-| Documents actually fetched (pilot ingest) | ${pilot} |
+| Documents actually fetched (pilot ingest) | ${pilotCell} |
 
 ### By accessibility
 

@@ -1,6 +1,13 @@
 node_modules/
 dist/
-sources/pilot/
+# Fetched source DOCUMENTS stay out of git — they belong to their issuing
+# authorities and are large. Their MANIFESTS do not: a manifest is the
+# provenance record (url, http status, bytes, sha256, retrieved-at) with no
+# document text, and docs/SOURCE_COVERAGE_MATRIX.md is generated from it. CI
+# caught this: with the manifests ignored, the matrix could not be regenerated
+# from a clean checkout and reported 0 pilot documents instead of 10.
+sources/pilot/*
+!sources/pilot/manifest.tsv
 *.log
 .DS_Store
 __MACOSX/
@@ -11,6 +18,8 @@ coverage/
 .vite/
 .cache/
 
-sources/robots/
+sources/robots/*
+!sources/robots/index.tsv
 
-sources/pilot_c0/
+sources/pilot_c0/*
+!sources/pilot_c0/manifest.tsv

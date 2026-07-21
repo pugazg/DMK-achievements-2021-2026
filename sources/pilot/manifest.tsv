@@ -1,0 +1,11 @@
+source_id	url	http	bytes	sha256	content_type	note
+spc_es2526_highlights.pdf	https://spc.tn.gov.in/wp-content/uploads/Economic-Survey-Highlights-Eng.pdf	200	852948	3c80d3e3abfbceb98bc11b01dd0961d282117fd484055d2e852d8e505215e721	application/pdf	Economic Survey 2025-26 highlights
+spc_es2425_highlights.pdf	https://spc.tn.gov.in/wp-content/uploads/ES_TN-English.pdf	200	11826752	b251650263b0cd80242a89499cb52ae8162ffe4ab291607072677ce12d6a9222	application/pdf	Economic Survey 2024-25 highlights
+spc_sif20.pdf	https://spc.tn.gov.in/wp-content/uploads/TN-SIF-2.0.pdf	200	18616922	6ff13a8e9c55df48c8760f1e7b7f12e28597272c1415b294297c7e5141fe30e2	application/pdf	TN State Indicator Framework 2.0
+fin_budget_publications.html	https://financedept.tn.gov.in/en/budget-publications/	200	965730	3e07b0665aa7e3efdb00fcfa6730a41471597e19cba323af67ba217558f83ab5	text/html; charset=UTF-8	Finance budget publications index
+fin_policy_notes.html	https://financedept.tn.gov.in/en/policy-notes/	200	360061	043b1e5a92018065d5d3dd3627a06cf8fb4ab557c2bf97bdf24c72ba22a98973	text/html; charset=UTF-8	Finance policy notes index
+cag_ag1_tn_reports.html	https://cag.gov.in/ag1/tamil-nadu/en/audit-report	200	77207	61b55614837bc74eb82b90383364deef4d8dbb2da34fe3f41b56a2d19d56aecc	text/html; charset=UTF-8	CAG AG1 TN audit report listing
+dmk_manifesto_page.html	https://www.dmk.in/en/resources/manifesto/	200	7257	df2706ec380e0925e16cb82c2a83af2ec9ebdcd886706be4e1643411d5dda172	text/html	DMK manifesto resource page (party source)
+tn_press_index.html	https://www.tn.gov.in/press_release.php	200	81848	ce6ef1460755fe1c77077638cb5bd27b9565bc3930627931cfed4c6169a546eb	text/html; charset=UTF-8	TN press release index
+tnla_debates_menu.html	https://www.assembly.tn.gov.in/debates/debates_menu.php	200	117308	a91b7fcee999821a1d05a610c4652ffe1955030eef19d92090bbad909c52b067	text/html; charset=UTF-8	TNLA legacy debates menu
+tn_dept_docs.html	https://www.tn.gov.in/document_dept_list.php?cate_name=YWxs	200	70900	216a35a530637aea18c297583ea25626e8e7693deb6678f33ed6250be12d9c5d	text/html; charset=UTF-8	TN department documents index
