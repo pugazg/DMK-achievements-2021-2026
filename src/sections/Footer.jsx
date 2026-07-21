@@ -4,6 +4,14 @@ import { Section, SectionHead } from "../components/layout.jsx";
 import { scrollToId } from "../lib/hooks.js";
 import RisingSun from "../components/RisingSun.jsx";
 
+const DISCLOSURES = [
+  ["What this is", "An interactive, source-linked explorer of the Tamil Nadu government's published 2021–2026 record. It is a reference and discovery tool, not an independent audit or a fact-checking platform."],
+  ["What the data is", "Achievement records are quoted from the government's own published summary material (souvenir / minister-by-minister volumes) — government-reported evidence, graded E by default. Records rise to grade D where a Government Order or gazetted Act names the scheme. No record is graded A/B/C here, because outcome-, delivery- and execution-level primary documents are not yet embedded."],
+  ["Manifesto statuses", "The five promise statuses mirror the independent Pudhiyavan DMK Manifesto 2021 Tracker (18 Jul 2026), matched by promise number — they are that tracker's assessments, not this project's own verification. Promise texts are condensed English summaries, not the manifesto's original wording."],
+  ["Coverage limits", "Government Orders: 3,501 catalogued in the archive listing, 186 embedded here. Assembly debates: 138 sitting links, 38 measured for pages/words. These distinctions are shown in each section, and the remainder is a resumable ingestion queue."],
+  ["Corrections", "Encoding, duplicate-title and mixed-status fixes are logged in the repository's docs/CHANGELOG.md and migration files. Original manifesto/promise wording is preserved. Report issues via the repository."],
+];
+
 export default function Footer() {
   const t = useT();
   return (
@@ -23,14 +31,29 @@ export default function Footer() {
         </div>
       </Section>
 
-      <footer style={{ maxWidth: 1080, margin: "48px auto 0", padding: "28px 18px 60px" }}>
+      <Section id="about" style={{ paddingTop: "clamp(36px,5vw,60px)" }}>
+        <SectionHead eyebrow="About & methodology" title="How to read this — and what it is not" />
+        <div style={{ display: "grid", gap: 8 }}>
+          {DISCLOSURES.map(([h, body]) => (
+            <div key={h} style={{ background: t.panel, border: `1px solid ${t.line}`, borderRadius: 10, padding: "13px 16px" }}>
+              <div style={{ color: t.gold, fontSize: 11.5, fontFamily: "ui-monospace,monospace", letterSpacing: ".08em", textTransform: "uppercase", marginBottom: 5 }}>{h}</div>
+              <p style={{ color: t.textDim, fontSize: 12.5, lineHeight: 1.7, margin: 0 }}>{body}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <footer style={{ maxWidth: 1080, margin: "40px auto 0", padding: "28px 18px 60px" }}>
         <div style={{ background: t.panel2, border: `1px solid ${t.line2}`, borderRadius: 16, padding: "24px 22px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
             <RisingSun size={28} glow />
             <span style={{ color: t.text, fontWeight: 800, fontSize: 15 }}>The Dravidian Model · 2021–2026</span>
           </div>
           <p style={{ color: t.textSoft, fontSize: 12, lineHeight: 1.75, margin: "0 0 14px", maxWidth: 760 }}>
-            Every fact in this report comes only from the Tamil Nadu Government 2021–26 achievement record, the Economic Survey of Tamil Nadu 2025–26 and the DMK 2021 manifesto. There is no AI answering here and no live internet call — the tool cannot invent a fact, and where a source itself gives differing figures, the record notes both. Built to be shared, checked and disputed against its own sources.
+            A source-linked civic reference, data as of 18 July 2026. Figures are quoted from the official sources
+            listed above; where a source itself gives differing figures, both are noted. This is government-reported
+            and third-party-assessed material, not an independent audit — read each record against its linked source
+            before drawing conclusions. Built to be shared, checked and disputed against its own sources.
           </p>
           <button onClick={() => scrollToId("overview")} style={{ padding: "9px 16px", background: "transparent", border: `1px solid ${t.line}`, color: t.gold, borderRadius: 9, fontSize: 12.5, cursor: "pointer", fontFamily: "ui-monospace,monospace", letterSpacing: ".06em" }}>↑ Back to top</button>
         </div>

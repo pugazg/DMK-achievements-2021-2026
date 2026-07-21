@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense, Component } from "react";
 import { ThemeCtx, THEMES, useT } from "./lib/theme.js";
 import { usePersisted, useScrollProgress } from "./lib/hooks.js";
 
@@ -12,10 +12,24 @@ import Method from "./sections/Method.jsx";
 import Explore from "./sections/Explore.jsx";
 import Claim from "./sections/Claim.jsx";
 import Manifesto from "./sections/Manifesto.jsx";
-import Legislation from "./sections/Legislation.jsx";
-import GovOrders from "./sections/GovOrders.jsx";
-import Debates from "./sections/Debates.jsx";
 import Footer from "./sections/Footer.jsx";
+
+// Lazy-load heavy below-the-fold sections (esp. GovOrders -> gazettegos.js, ~340KB)
+const Legislation = lazy(() => import("./sections/Legislation.jsx"));
+const GovOrders = lazy(() => import("./sections/GovOrders.jsx"));
+const Debates = lazy(() => import("./sections/Debates.jsx"));
+
+class ErrorBoundary extends Component {
+  constructor(p) { super(p); this.state = { err: null }; }
+  static getDerivedStateFromError(err) { return { err }; }
+  render() {
+    if (this.state.err) return <div style={{ maxWidth: 1080, margin: "0 auto", padding: "40px 18px", color: "#c0392b" }}>This section failed to load. The rest of the page is unaffected.</div>;
+    return this.props.children;
+  }
+}
+function LazySection() {
+  return <div style={{ maxWidth: 1080, margin: "0 auto", padding: "60px 18px", color: "#7a6c4c", fontFamily: "ui-monospace,monospace", fontSize: 12 }}>Loading section…</div>;
+}
 
 function BackToTop() {
   const t = useT();
@@ -66,6 +80,7 @@ export default function App() {
       `}</style>
 
       <div style={{ minHeight: "100vh", background: theme.bgGrad, color: theme.text }}>
+        <a href="#overview" className="skip-link" style={{ position: "absolute", left: -9999, top: 0, zIndex: 999, background: theme.gold, color: "#1a1206", padding: "8px 14px", borderRadius: 8 }} onFocus={(e)=>{e.target.style.left="8px";e.target.style.top="8px"}} onBlur={(e)=>{e.target.style.left="-9999px"}}>Skip to content</a>
         <Nav onSearch={() => setSearch(true)} theme={themeName} onToggleTheme={() => setThemeName(themeName === "dark" ? "light" : "dark")} />
         <Hero />
         <Dashboard />
@@ -73,9 +88,11 @@ export default function App() {
         <Explore onCard={setCard} />
         <Claim onCard={setCard} />
         <Manifesto onPickRecord={setCard} />
-        <Legislation onPickRecord={setCard} />
-        <GovOrders onPickRecord={setCard} />
-        <Debates />
+        <ErrorBoundary><Suspense fallback={<LazySection />}>
+          <Legislation onPickRecord={setCard} />
+          <GovOrders onPickRecord={setCard} />
+          <Debates />
+        </Suspense></ErrorBoundary>
         <Footer />
       </div>
 

@@ -1,0 +1,108 @@
+tn-portal	200	200	text/html; charset=UTF-8
+tn-go-dept	200	200	text/html; charset=UTF-8
+tn-dept-docs	200	200	text/html; charset=UTF-8
+tn-announcements	200	200	text/html; charset=UTF-8
+tn-acts	200	200	text/html; charset=UTF-8
+tn-press	200	200	text/html; charset=UTF-8
+fin-home	200	200	text/html
+fin-budget-pubs	200	200	text/html; charset=UTF-8
+fin-policy-notes	200	200	text/html; charset=UTF-8
+fin-highlights	200	200	text/html; charset=UTF-8
+ccfms-statutory	200	200	text/html; charset=UTF-8
+tnla-neva	200	200	text/html; charset=utf-8
+tnla-legacy	200	200	text/html; charset=UTF-8
+tnla-debates	200	200	text/html; charset=UTF-8
+prs-tnla	200	200	text/html; charset=UTF-8
+gz-home	200	200	text/html; charset=UTF-8
+gz-current	200	200	text/html; charset=UTF-8
+gz-archives	200	200	text/html; charset=UTF-8
+gz-extra	200	200	text/html; charset=UTF-8
+tnt-home	200	200	text/html
+tnt-archive	200	200	text/html;charset=UTF-8
+tnt-status	200	200	text/html;charset=UTF-8
+tnt-org	200	200	text/html;charset=UTF-8
+cag-ag1	200	200	text/html; charset=UTF-8
+cag-ag2	200	200	text/html; charset=UTF-8
+cag-ae	200	200	text/html; charset=UTF-8
+cag-pac	200	200	text/html; charset=UTF-8
+dmk-manifesto	200	200	text/html
+dmk-home	200	200	text/html
+eci-manifesto	403	403	text/html
+spc-home	200	200	text/html; charset=UTF-8
+spc-policies	200	200	text/html; charset=UTF-8
+spc-hdr	200	200	text/html; charset=UTF-8
+spc-sdg	200	200	text/html; charset=UTF-8
+spc-es2526	200	200	application/pdf
+spc-es2425	200	200	application/pdf
+spc-sif	200	200	application/pdf
+des-pubs	000	000	
+des-index	000	000	
+des-handbook	000	000	
+des-glance	000	000	
+des-crops	000	000	
+des-income	000	000	
+tn-opendata	200	200	text/html; charset=utf-8
+tn-sdg	200	200	text/html; charset=utf-8
+tn-sdg-district	200	200	text/html; charset=utf-8
+tn-sdg-state	200	200	text/html; charset=utf-8
+rbi-states	200	200	text/html; charset=utf-8
+mospi	200	200	text/html; charset=utf-8
+udise	200	200	text/html; charset=UTF-8
+udise-archive	200	200	text/html; charset=UTF-8
+aishe	200	200	text/html; charset=UTF-8
+aishe-reports	200	200	text/html; charset=UTF-8
+aishe-dash	000	000	
+hmis	200	200	text/html
+jjm	200	200	text/html; charset=UTF-8
+jjm-report	200	200	text/html; charset=utf-8
+pmay-u	200	200	text/html; charset=UTF-8
+pmay-mis	200	200	text/html; charset=utf-8
+niti-sdg	200	200	text/html; charset=UTF-8
+startup-rank	200	200	text/html
+paimana-dash	000	000	
+paimana	000	000	
+gcc	200	200	text/html;charset=ISO-8859-1
+gcc-council	200	200	text/html;charset=UTF-8
+gcc-tenders	200	200	text/html;charset=UTF-8
+tidco-reports	200	200	text/html; charset=UTF-8
+tidco-policy	200	200	text/html; charset=UTF-8
+tidco-tenders	200	200	text/html; charset=UTF-8
+sipcot-annual	200	200	text/html; charset=UTF-8
+sipcot-reports	200	200	text/html; charset=UTF-8
+tidel	200	200	text/html; charset=utf-8
+tidel-about	200	200	text/html; charset=utf-8
+elcot	000	000	
+twad	200	200	text/html; charset=UTF-8
+twad-policy	200	200	text/html; charset=UTF-8
+cmwssb	200	200	text/html; charset=UTF-8
+cmwssb-balance	200	200	text/html; charset=UTF-8
+cmwssb-tenders	200	200	text/html; charset=UTF-8
+tnhb	200	200	text/html
+tnhb-policy	200	200	text/html
+tnuhdb	200	200	text/html
+adb-tnhousing	403	403	text/html; charset=UTF-8
+tnmsc	200	200	text/html; charset=UTF-8
+tnmsc-tenders	200	200	text/html; charset=UTF-8
+tnmsc-policy	200	200	text/html; charset=UTF-8
+tnrdc	000	000	
+tnrdc-rti	000	000	
+tnstc	200	200	text/html
+tnpdcl	200	200	text/html; charset=utf-8
+tnerc	200	200	text/html; charset=utf-8
+tnpcb-policy	200	200	text/html; charset=UTF-8
+tnpcb	200	200	text/html; charset=UTF-8
+hc-madras	200	200	text/html; charset=UTF-8
+sc-judgments	200	200	text/html; charset=UTF-8
+ngt	200	200	text/html; charset=utf-8
+ngt-orders	200	200	text/html; charset=utf-8
+tn-rera	200	200	text/html; charset=UTF-8
+tnsec	200	200	text/html; charset=UTF-8
+eci-results	403	403	text/html
+indiacode	200	200	text/html;charset=UTF-8
+egazette	000	000	
+ls-questions	200	200	text/html; charset=utf-8
+rs-questions	200	200	text/html; charset=utf-8
+rti-tn	200	200	text/html; charset=UTF-8
+tnsic	200	200	text/html; charset=UTF-8
+tn-rti-info	200	200	text/html
+rti-central	200	200	text/html; charset=UTF-8

@@ -71,6 +71,29 @@ function PromiseRow({ p, onPickRecord }) {
   );
 }
 
+function MethodologyNote({ t }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <button onClick={() => setOpen((o) => !o)} aria-expanded={open} style={{ fontSize: 11.5, padding: "6px 12px", background: "transparent", border: `1px dashed ${t.line}`, color: t.faint, borderRadius: 10, cursor: "pointer", fontFamily: "ui-monospace,monospace" }}>
+        {open ? "▾" : "▸"} How these statuses were assessed
+      </button>
+      {open && (
+        <div style={{ marginTop: 8, padding: "12px 14px", background: t.panel2, border: `1px solid ${t.line2}`, borderRadius: 10, color: t.textDim, fontSize: 12.5, lineHeight: 1.7 }}>
+          The five statuses (Fulfilled / Modified / In progress / Stalled / Not fulfilled) and the per-promise
+          detail notes mirror the independent <b style={{ color: t.text }}>Pudhiyavan DMK Manifesto 2021 Tracker</b>,
+          as published on 18 July 2026, matched to this dataset by promise number. They are that tracker's
+          assessments — <b style={{ color: t.text }}>this project has not independently verified each status</b> against
+          primary documents, and the headline fulfilled count inherits the tracker's methodology. Promise texts are
+          condensed English summaries, not the manifesto's original wording. Every promise behind the headline
+          numbers is inspectable below. Full methodology and limitations: docs/MANIFESTO_ASSESSMENT_METHODOLOGY.md
+          in the repository.
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Manifesto({ onPickRecord }) {
   const t = useT();
   const [status, setStatus] = useState("all");
@@ -112,7 +135,7 @@ export default function Manifesto({ onPickRecord }) {
       <SectionHead
         eyebrow="Promises, tracked honestly"
         title="The 2021 manifesto, kept to account"
-        lede="All 505 promises from the DMK's 2021 election manifesto, tracked promise by promise. Where this tool holds a matching verified record, it is linked beneath the promise."
+        lede="All 505 promises from the DMK's 2021 election manifesto, tracked promise by promise. Statuses are external assessments (see 'How these statuses were assessed' below), not this project's own verification. Where this tool holds a matching record, it is linked beneath the promise."
       />
 
       <Reveal>
@@ -128,6 +151,9 @@ export default function Manifesto({ onPickRecord }) {
           </div>
         </div>
       </Reveal>
+
+      {/* methodology disclosure — Phase 5 of the audit remediation */}
+      <MethodologyNote t={t} />
 
       {/* controls */}
       <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Filter promises — a word or a number…"

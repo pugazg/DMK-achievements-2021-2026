@@ -1,0 +1,49 @@
+{
+ "generated": "2026-07-21T06:22:13.032Z",
+ "file": "src/data/promises.js",
+ "changeCount": 7,
+ "changes": [
+  {
+   "id": "#10",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph"
+  },
+  {
+   "id": "#26",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph"
+  },
+  {
+   "id": "#70",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph"
+  },
+  {
+   "id": "#87",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph"
+  },
+  {
+   "id": "#178",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph"
+  },
+  {
+   "id": "#182",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph"
+  },
+  {
+   "id": "#261",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph"
+  }
+ ]
+}

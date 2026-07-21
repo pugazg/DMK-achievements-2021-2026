@@ -1,3 +1,12 @@
-node_modules
-dist
+node_modules/
+dist/
+sources/pilot/
+*.log
 .DS_Store
+__MACOSX/
+*.zip
+.env
+.env.*
+coverage/
+.vite/
+.cache/

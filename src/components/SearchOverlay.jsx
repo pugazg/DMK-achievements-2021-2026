@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useT } from "../lib/theme.js";
+import { useModalA11y } from "../lib/hooks.js";
 import { DATA, CAT } from "../data/records.js";
 import { PROMISES } from "../data/promises.js";
 import { searchRecords } from "../lib/search.js";
@@ -9,6 +10,7 @@ export default function SearchOverlay({ open, onClose, onPickRecord }) {
   const t = useT();
   const [q, setQ] = useState("");
   const inputRef = useRef(null);
+  const dialogRef = useModalA11y(open, onClose);
 
   useEffect(() => {
     if (open) { setQ(""); setTimeout(() => inputRef.current?.focus(), 30); }
@@ -30,11 +32,11 @@ export default function SearchOverlay({ open, onClose, onPickRecord }) {
   if (!open) return null;
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.7)", backdropFilter: "blur(4px)", zIndex: 900, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "10vh 16px 16px" }} onClick={onClose}>
-      <div style={{ width: "100%", maxWidth: 620 }} onClick={(e) => e.stopPropagation()}>
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Search records and manifesto promises" style={{ width: "100%", maxWidth: 620 }} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, background: t.panel, border: `1px solid ${t.gold}66`, borderRadius: 12, padding: "4px 14px", boxShadow: t.shadow }}>
           <span style={{ fontSize: 17 }}>🔍</span>
           <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)}
-            placeholder="Search 438 records and 505 promises…"
+            aria-label="Search records and promises" placeholder="Search 438 records and 505 promises…"
             style={{ flex: 1, background: "transparent", border: "none", outline: "none", color: t.text, fontSize: 16, padding: "12px 0" }} />
           <kbd style={{ fontSize: 10.5, color: t.mute, border: `1px solid ${t.line}`, borderRadius: 5, padding: "2px 6px" }}>Esc</kbd>
         </div>

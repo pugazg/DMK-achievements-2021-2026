@@ -144,11 +144,12 @@ export default function GovOrders({ onPickRecord }) {
   const shown = list.slice(0, limit);
 
   const topDepts = Object.entries(M.byDept || {}).slice(0, 8);
+  const deptCount = Object.keys(M.byDept || {}).length;
   const stats = [
-    { n: fmtK(M.total), l: "Government Orders indexed" },
-    { n: M.departments, l: "departments" },
+    { n: fmtK(M.total), l: "GOs catalogued in the archive listing" },
+    { n: GO_LINKS.length, l: "GOs embedded & linked in this app" },
+    { n: deptCount, l: "departments" },
     { n: M.budget, l: "budget-announcement orders" },
-    { n: "2021–26", l: M.from + " → " + M.to },
   ];
 
   return (
@@ -156,7 +157,7 @@ export default function GovOrders({ onPickRecord }) {
       <SectionHead
         eyebrow="The machinery of delivery"
         title="From announcement to order"
-        lede="A promise becomes real through a Government Order. This layer indexes GOs across all 38 departments — and surfaces the ones that name a scheme, implement an Act, or carry out an announcement made on the floor of the Assembly during the budget. Two sources are indexed here — the department portal and the Government Gazette — each linking to its official PDF."
+        lede={`A promise becomes real through a Government Order. This layer catalogues the archive\u2019s GO listings across ${Object.keys(GO_META.byDept || {}).length} departments, and embeds the subset that names a scheme, implements an Act, or carries out a budget announcement. Two sources are shown \u2014 the department portal and the Government Gazette \u2014 each linking to its official PDF.`}
       />
 
       {/* source toggle */}

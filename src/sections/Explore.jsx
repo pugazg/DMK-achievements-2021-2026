@@ -27,7 +27,7 @@ export default function Explore({ onCard }) {
       <SectionHead
         eyebrow="The evidence"
         title="Explore every record"
-        lede="438 verified schemes across 12 domains. Filter by area, search a topic or scheme, and turn any record into a shareable card."
+        lede={`${DATA.length} records across ${CATEGORIES.length - 1} domains, quoted from the government\u2019s published 2021\u20132026 record. Filter by area, search a topic or scheme, and turn any record into a shareable card.`}
       />
 
       {/* category chips */}

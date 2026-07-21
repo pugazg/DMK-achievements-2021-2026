@@ -81,17 +81,18 @@ export default function Legislation({ onPickRecord }) {
   }, [list]);
 
   const stats = [
-    { n: M.acts, l: "Acts passed into law" },
-    { n: M.bills, l: "Bills introduced" },
-    { n: M.total, l: "gazetted 2021–2026" },
+    { n: M.acts, l: "Acts enacted into law" },
+    { n: M.bills, l: "Bills introduced (not yet law as gazetted)" },
+    { n: M.ordinances, l: "Ordinances promulgated" },
+    { n: M.total, l: "instruments gazetted 2021–2026" },
   ];
 
   return (
     <Section id="legislation">
       <SectionHead
         eyebrow="Law into effect"
-        title="What the House actually enacted"
-        lede="A record only becomes durable when it becomes law. These are the Acts, Bills and Ordinances of the 2021–2026 term, taken from the Tamil Nadu Government Gazette — each linked to its official gazette PDF and, where the subject matches, to the achievement it enabled."
+        title="Legislation: introduced and enacted"
+        lede="A record only becomes durable when it becomes law. These are the instruments of the 2021–2026 term from the Tamil Nadu Government Gazette, by legal stage: Acts enacted, Bills introduced (a Bill is not yet law), and Ordinances promulgated. Each links to its official gazette PDF; some PDFs bundle several instruments (shown as +N more). Where the subject matches, the achievement it relates to is linked."
       />
 
       <Reveal>

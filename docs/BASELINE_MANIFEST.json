@@ -1,0 +1,61 @@
+{
+  "generated": "2026-07-21T06:29:09.291Z",
+  "branch": "audit-remediation",
+  "build": {
+    "minifiedBytes": 1167357,
+    "gzipBytes": 277087,
+    "status": "pass (npm ci + vite build)"
+  },
+  "datasets": {
+    "achievements": {
+      "count": 438,
+      "uniqueIds": 438,
+      "withoutPage": 247,
+      "duplicateTitles": [],
+      "hash": "c444d64e265421f0"
+    },
+    "domains": {
+      "actual": 11,
+      "note": "'All' is a filter, not a domain"
+    },
+    "promises": {
+      "count": 505,
+      "fulfilled": 400,
+      "withGoLinks": 38,
+      "hash": "02500eea1b1feade"
+    },
+    "debates": {
+      "sittingLinks": 138,
+      "measured": 38,
+      "unmeasured": 100,
+      "metaPages": 12720,
+      "metaWords": 2173509,
+      "hash": "f346b987a4b24a5a"
+    },
+    "govOrders": {
+      "archiveIndexed": 3501,
+      "embeddedLinked": 186,
+      "departments": 36,
+      "claimedDepartments38": false,
+      "withoutGoNumber": 153,
+      "hash": "cdf2b896de9b2fa4"
+    },
+    "gazetteGos": {
+      "count": 788,
+      "withoutGoNumber": 238,
+      "withoutDept": 17,
+      "withoutSubject": 5,
+      "weeklyIssues": 286,
+      "hash": "23cd4d8580505350"
+    },
+    "legislation": {
+      "count": 222,
+      "acts": 119,
+      "bills": 95,
+      "ordinances": 8,
+      "withoutNumber": 123,
+      "uniquePdfs": 164,
+      "hash": "3a6e6168863d4836"
+    }
+  }
+}
