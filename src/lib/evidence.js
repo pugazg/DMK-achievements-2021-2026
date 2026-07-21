@@ -31,13 +31,15 @@ export const SOURCE_AUTHORITIES = [
   "audit", "party_source", "news_source", "social_media", "other",
 ];
 
+/* Identity hue per grade. Wrap in textSafe() when rendering as text — see
+   docs/ACCESSIBILITY_REPORT.md. */
 export const GRADES = {
-  A: { label: "A · Outcome verified",   color: "#22c55e" },
-  B: { label: "B · Delivery verified",  color: "#4ade80" },
-  C: { label: "C · Execution verified", color: "#0891b2" },
-  D: { label: "D · Sanctioned",         color: "#c9a84c" },
-  E: { label: "E · Gov-reported",       color: "#8a8aa0" },
-  F: { label: "F · Unsupported",        color: "#c0392b" },
+  A: { label: "A \u00b7 Outcome verified",   color: "#22c55e" },
+  B: { label: "B \u00b7 Delivery verified",  color: "#4ade80" },
+  C: { label: "C \u00b7 Execution verified", color: "#0891b2" },
+  D: { label: "D \u00b7 Sanctioned",         color: "#c9a84c" },
+  E: { label: "E \u00b7 Gov-reported",       color: "#8a8aa0" },
+  F: { label: "F \u00b7 Unsupported",        color: "#c0392b" },
 };
 
 // record ids that a Government Order names directly (scheme-linked GOs)

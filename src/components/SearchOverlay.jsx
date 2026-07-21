@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { useT } from "../lib/theme.js";
+import { useT, textSafe } from "../lib/theme.js";
 import { useModalA11y } from "../lib/hooks.js";
 import { DATA, CAT } from "../data/records.js";
 import { PROMISES } from "../data/promises.js";
@@ -53,7 +53,7 @@ export default function SearchOverlay({ open, onClose, onPickRecord }) {
               const c = CAT[r.cat] || { color: t.gold, emoji: "◎" };
               return (
                 <button key={r.id} onClick={() => { onPickRecord(r); onClose(); }} style={{ width: "100%", textAlign: "left", background: "transparent", border: "none", borderBottom: `1px solid ${t.line2}`, padding: "11px 14px", cursor: "pointer", display: "flex", gap: 10, alignItems: "flex-start" }}>
-                  <span style={{ color: c.color, fontSize: 14 }}>{c.emoji}</span>
+                  <span style={{ color: textSafe(c.color, t.name), fontSize: 14 }}>{c.emoji}</span>
                   <span style={{ flex: 1 }}>
                     <span style={{ color: t.text, fontSize: 14, fontWeight: 600 }}>{r.name}</span>
                     <span style={{ display: "block", color: t.textSoft, fontSize: 11.5, marginTop: 2 }}>{r.stat} · {r.date}</span>

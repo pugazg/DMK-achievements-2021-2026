@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useT } from "../lib/theme.js";
+import { useT, textSafe } from "../lib/theme.js";
 import { DATA, CATEGORIES, CAT } from "../data/records.js";
 import { searchRecords } from "../lib/search.js";
 import { Section, SectionHead } from "../components/layout.jsx";
@@ -37,7 +37,7 @@ export default function Explore({ onCard }) {
             padding: "5px 12px", fontSize: 12, cursor: "pointer", borderRadius: 20,
             background: cat === c.id ? c.color + "22" : t.panel,
             border: `1px solid ${cat === c.id ? c.color + "77" : t.line}`,
-            color: cat === c.id ? c.color : t.faint,
+            color: cat === c.id ? textSafe(c.color, t.name) : t.faint,
           }}>{c.emoji} {c.en}{c.id !== "all" && counts[c.id] ? ` ${counts[c.id]}` : ""}</button>
         ))}
       </div>

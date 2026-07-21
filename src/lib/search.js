@@ -100,6 +100,9 @@ export const ORIGIN = {
   continued: { label: "Continued under DMK", color: "#8a8aa0", mark: "→" },
 };
 
+/* `color` is the identity hue; wrap it in textSafe() when rendering it as text.
+   The mark (✓ ↗ →) carries the same distinction non-chromatically. */
+
 export const SHARE_LINE = {
   started:   "Recorded as started during the 2021–2026 DMK government (per the state record).",
   expanded:  "Recorded as expanded during the 2021–2026 DMK government (per the state record).",

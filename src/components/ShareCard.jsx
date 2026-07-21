@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useT } from "../lib/theme.js";
+import { useT, textSafe } from "../lib/theme.js";
 import { useModalA11y } from "../lib/hooks.js";
 import { CAT } from "../data/records.js";
 import { SHARE_LINE } from "../lib/search.js";
@@ -8,6 +8,7 @@ import RisingSun from "./RisingSun.jsx";
 export default function ShareCard({ rec, onClose }) {
   const t = useT();
   const c = CAT[rec.cat] || { color: t.gold };
+  const cText = textSafe(c.color, t.name);
   const [copied, setCopied] = useState(false);
   const dialogRef = useModalA11y(true, onClose);
   const text =
@@ -37,11 +38,11 @@ ${rec.det}
             <RisingSun size={22} color="#fff" />
           </div>
           <div style={{ padding: "24px 22px" }}>
-            <div style={{ fontSize: 10.5, color: c.color, fontFamily: "ui-monospace,monospace", letterSpacing: ".2em", marginBottom: 12 }}>FROM THE STATE RECORD</div>
+            <div style={{ fontSize: 10.5, color: cText, fontFamily: "ui-monospace,monospace", letterSpacing: ".2em", marginBottom: 12 }}>FROM THE STATE RECORD</div>
             <h2 style={{ color: t.text, fontSize: 22, fontWeight: 800, lineHeight: 1.3, margin: 0 }}>{rec.name}</h2>
             {rec.sub && <div style={{ color: t.faint, fontSize: 13, marginTop: 4, fontStyle: "italic" }}>{rec.sub}</div>}
             <div style={{ background: `${c.color}1c`, border: `1px solid ${c.color}44`, borderRadius: 10, padding: "15px 18px", margin: "18px 0 14px" }}>
-              <div style={{ color: c.color, fontSize: 24, fontWeight: 800, lineHeight: 1.15 }}>{rec.stat}</div>
+              <div style={{ color: cText, fontSize: 24, fontWeight: 800, lineHeight: 1.15 }}>{rec.stat}</div>
             </div>
             <p style={{ color: t.textDim, fontSize: 13.5, lineHeight: 1.7, margin: 0 }}>{rec.det}</p>
             <div style={{ marginTop: 14, paddingTop: 12, borderTop: `1px solid ${t.line}`, color: t.textSoft, fontSize: 11.5 }}>📅 {rec.date} · 📄 Government-reported record (not independently audited)</div>

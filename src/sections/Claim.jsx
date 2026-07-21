@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useT } from "../lib/theme.js";
+import { useT, textSafe } from "../lib/theme.js";
 import { lookupClaim } from "../lib/search.js";
 import { Section, SectionHead } from "../components/layout.jsx";
 import RecordCard from "../components/RecordCard.jsx";
@@ -38,7 +38,7 @@ export default function Claim({ onCard }) {
           onKeyDown={(e) => { if (e.key === "Enter") setSubmitted(true); }}
           placeholder="Type a claim… e.g. 'free bus scheme for women'"
           style={{ width: "100%", padding: "14px 54px 14px 16px", background: t.panel, border: `1px solid ${t.line}`, borderRadius: 12, color: t.text, fontSize: 15, outline: "none" }} />
-        <button onClick={() => setSubmitted(true)} aria-label="Look up related records" style={{ position: "absolute", right: 9, top: 8, width: 36, height: 36, borderRadius: 9, background: query.trim() ? t.red : t.line, border: "none", color: "#fff", fontSize: 16, cursor: query.trim() ? "pointer" : "default" }}>→</button>
+        <button onClick={() => setSubmitted(true)} disabled={!query.trim()} aria-label="Look up related records" style={{ position: "absolute", right: 9, top: 8, width: 36, height: 36, borderRadius: 9, background: query.trim() ? t.red : t.line, border: "none", color: query.trim() ? "#fff" : textSafe(t.mute, t.name), fontSize: 16, cursor: query.trim() ? "pointer" : "default" }}>→</button>
       </div>
 
       {!submitted && (

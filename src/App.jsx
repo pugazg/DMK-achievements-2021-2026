@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense, Component } from "react";
-import { ThemeCtx, THEMES, useT } from "./lib/theme.js";
+import { ThemeCtx, THEMES, useT, onColor } from "./lib/theme.js";
 import { usePersisted, useScrollProgress } from "./lib/hooks.js";
 
 import Nav from "./components/Nav.jsx";
@@ -80,7 +80,7 @@ export default function App() {
       `}</style>
 
       <div style={{ minHeight: "100vh", background: theme.bgGrad, color: theme.text }}>
-        <a href="#overview" className="skip-link" style={{ position: "absolute", left: -9999, top: 0, zIndex: 999, background: theme.gold, color: "#1a1206", padding: "8px 14px", borderRadius: 8 }} onFocus={(e)=>{e.target.style.left="8px";e.target.style.top="8px"}} onBlur={(e)=>{e.target.style.left="-9999px"}}>Skip to content</a>
+        <a href="#overview" className="skip-link" style={{ position: "absolute", left: -9999, top: 0, zIndex: 999, background: theme.gold, color: onColor(theme.gold), padding: "8px 14px", borderRadius: 8 }} onFocus={(e)=>{e.target.style.left="8px";e.target.style.top="8px"}} onBlur={(e)=>{e.target.style.left="-9999px"}}>Skip to content</a>
         <Nav onSearch={() => setSearch(true)} theme={themeName} onToggleTheme={() => setThemeName(themeName === "dark" ? "light" : "dark")} />
         <Hero />
         <Dashboard />

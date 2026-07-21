@@ -1,4 +1,4 @@
-import { useT } from "../lib/theme.js";
+import { useT, textSafe } from "../lib/theme.js";
 import { useReveal } from "../lib/hooks.js";
 
 export function Section({ id, children, style }) {
@@ -12,7 +12,7 @@ export function Section({ id, children, style }) {
 export function Eyebrow({ children, color }) {
   const t = useT();
   return (
-    <div style={{ fontSize: 11, color: color || t.gold, fontFamily: "ui-monospace,monospace", letterSpacing: ".22em", textTransform: "uppercase", marginBottom: 12 }}>
+    <div style={{ fontSize: 11, color: textSafe(color || t.gold, t.name), fontFamily: "ui-monospace,monospace", letterSpacing: ".22em", textTransform: "uppercase", marginBottom: 12 }}>
       {children}
     </div>
   );

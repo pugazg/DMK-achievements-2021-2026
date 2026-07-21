@@ -21,6 +21,10 @@ export const CATEGORIES = [
 ];
 export const CAT = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
 
+/* `color` above is the category's identity hue — use it for borders, fills and
+   chart series. Wrap it in textSafe() from lib/theme.js wherever it is applied
+   to TEXT: most of these hues fail WCAG AA on one of the two themes. */
+
 /* ---------------- THE VERIFIED RECORD ----------------
    name = scheme title (English), sub = original Tamil name where it's a proper noun */
 export const DATA = [

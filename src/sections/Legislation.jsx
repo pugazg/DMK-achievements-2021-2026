@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useT } from "../lib/theme.js";
+import { useT, textSafe } from "../lib/theme.js";
 import { DATA, CAT } from "../data/records.js";
 import { LEGISLATION, LEGISLATION_META } from "../data/legislation.js";
 import { Section, SectionHead, Reveal } from "../components/layout.jsx";
@@ -20,13 +20,13 @@ function LawRow({ a, onPickRecord }) {
     <div style={{ background: t.panel, border: `1px solid ${t.line2}`, borderLeft: `3px solid ${c.color}`, borderRadius: 10, padding: "12px 14px", marginBottom: 8 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <span style={{ display: "inline-block", fontSize: 10, fontWeight: 700, color: k.color, border: `1px solid ${k.color}55`, borderRadius: 5, padding: "1px 6px", marginRight: 8, fontFamily: "ui-monospace,monospace", verticalAlign: "middle" }}>
+          <span style={{ display: "inline-block", fontSize: 10, fontWeight: 700, color: textSafe(k.color, t.name), border: `1px solid ${k.color}55`, borderRadius: 5, padding: "1px 6px", marginRight: 8, fontFamily: "ui-monospace,monospace", verticalAlign: "middle" }}>
             {k.label}{a.no ? ` ${a.no}` : ""} · {a.year}
           </span>
           <span style={{ color: t.text, fontSize: 13.5, lineHeight: 1.5 }}>{a.title}</span>
           {a.extra > 0 && <span style={{ color: t.mute, fontSize: 11, fontStyle: "italic" }}> +{a.extra} more in this gazette</span>}
         </div>
-        <span style={{ fontSize: 10.5, color: c.color, fontFamily: "ui-monospace,monospace", whiteSpace: "nowrap" }}>{c.emoji} {c.en}</span>
+        <span style={{ fontSize: 10.5, color: textSafe(c.color, t.name), fontFamily: "ui-monospace,monospace", whiteSpace: "nowrap" }}>{c.emoji} {c.en}</span>
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 9, alignItems: "center" }}>
         {a.pdf && (
@@ -37,7 +37,7 @@ function LawRow({ a, onPickRecord }) {
         {a.date && <span style={{ fontSize: 10.5, color: t.mute, fontFamily: "ui-monospace,monospace" }}>{a.date}</span>}
         {recs.length > 0 && <span style={{ fontSize: 10, color: t.wisp, fontFamily: "ui-monospace,monospace", letterSpacing: ".06em", marginLeft: 4 }}>RELATED:</span>}
         {recs.map((r) => (
-          <button key={r.id} onClick={() => onPickRecord(r)} style={{ fontSize: 11, padding: "3px 9px", background: "transparent", border: `1px solid ${(CAT[r.cat] || {}).color || t.gold}55`, color: (CAT[r.cat] || {}).color || t.gold, borderRadius: 14, cursor: "pointer" }}>{r.name} →</button>
+          <button key={r.id} onClick={() => onPickRecord(r)} style={{ fontSize: 11, padding: "3px 9px", background: "transparent", border: `1px solid ${(CAT[r.cat] || {}).color || t.gold}55`, color: textSafe((CAT[r.cat] || {}).color || t.gold, t.name), borderRadius: 14, cursor: "pointer" }}>{r.name} →</button>
         ))}
       </div>
     </div>

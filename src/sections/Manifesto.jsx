@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useT } from "../lib/theme.js";
+import { useT, textSafe } from "../lib/theme.js";
 import { DATA, CAT } from "../data/records.js";
 import { PROMISES } from "../data/promises.js";
 import { PROMISE_GO_LINKS } from "../data/promiseGoLinks.js";
@@ -49,15 +49,15 @@ function PromiseRow({ p, onPickRecord }) {
           <span style={{ color: t.mute, fontSize: 12, fontFamily: "ui-monospace,monospace" }}>#{p.num}</span>
           <span style={{ color: t.text, fontSize: 13.5, lineHeight: 1.5, marginLeft: 7 }}>{p.text}</span>
         </div>
-        <div style={{ color: st.color, fontSize: 10, fontFamily: "ui-monospace,monospace", border: `1px solid ${st.color}55`, borderRadius: 5, padding: "2px 6px", whiteSpace: "nowrap" }}>{st.mark} {st.label}</div>
+        <div style={{ color: textSafe(st.color, t.name), fontSize: 10, fontFamily: "ui-monospace,monospace", border: `1px solid ${st.color}55`, borderRadius: 5, padding: "2px 6px", whiteSpace: "nowrap" }}>{st.mark} {st.label}</div>
       </div>
       {(recs.length > 0 || hasNote) && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 9, alignItems: "center" }}>
           {recs.map((r) => (
-            <button key={r.id} onClick={() => onPickRecord(r)} style={{ fontSize: 11, padding: "3px 9px", background: "transparent", border: `1px solid ${(CAT[r.cat] || {}).color || t.gold}55`, color: (CAT[r.cat] || {}).color || t.gold, borderRadius: 14, cursor: "pointer" }}>{r.name} →</button>
+            <button key={r.id} onClick={() => onPickRecord(r)} style={{ fontSize: 11, padding: "3px 9px", background: "transparent", border: `1px solid ${(CAT[r.cat] || {}).color || t.gold}55`, color: textSafe((CAT[r.cat] || {}).color || t.gold, t.name), borderRadius: 14, cursor: "pointer" }}>{r.name} →</button>
           ))}
           {hasNote && (
-            <button onClick={() => setOpen((o) => !o)} aria-expanded={open} style={{ fontSize: 11, padding: "3px 10px", background: open ? `${st.color}18` : "transparent", border: `1px solid ${st.color}44`, color: st.color, borderRadius: 14, cursor: "pointer", fontFamily: "ui-monospace,monospace" }}>{open ? "▾ hide" : "ⓘ details"}</button>
+            <button onClick={() => setOpen((o) => !o)} aria-expanded={open} style={{ fontSize: 11, padding: "3px 10px", background: open ? `${st.color}18` : "transparent", border: `1px solid ${st.color}44`, color: textSafe(st.color, t.name), borderRadius: 14, cursor: "pointer", fontFamily: "ui-monospace,monospace" }}>{open ? "▾ hide" : "ⓘ details"}</button>
           )}
           {goMap && <span title="Government Orders in the details are linked to their PDFs" style={{ fontSize: 10, padding: "3px 8px", color: t.gold, border: `1px solid ${t.gold}44`, borderRadius: 14, fontFamily: "ui-monospace,monospace" }}>📎 G.O. linked</span>}
         </div>
@@ -144,8 +144,8 @@ export default function Manifesto({ onPickRecord }) {
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", flex: 1, minWidth: 220 }}>
             {STATUS_ORDER.map((k) => (
               <div key={k} style={{ flex: 1, minWidth: 82, textAlign: "center", background: `${PSTATUS[k].color}14`, border: `1px solid ${PSTATUS[k].color}44`, borderRadius: 10, padding: "12px 6px" }}>
-                <div style={{ color: PSTATUS[k].color, fontSize: 22, fontWeight: 800, lineHeight: 1 }}>{counts[k]}</div>
-                <div style={{ color: PSTATUS[k].color, fontSize: 10, fontFamily: "ui-monospace,monospace", letterSpacing: ".03em", marginTop: 6 }}>{PSTATUS[k].label}</div>
+                <div style={{ color: textSafe(PSTATUS[k].color, t.name), fontSize: 22, fontWeight: 800, lineHeight: 1 }}>{counts[k]}</div>
+                <div style={{ color: textSafe(PSTATUS[k].color, t.name), fontSize: 10, fontFamily: "ui-monospace,monospace", letterSpacing: ".03em", marginTop: 6 }}>{PSTATUS[k].label}</div>
               </div>
             ))}
           </div>
@@ -160,7 +160,7 @@ export default function Manifesto({ onPickRecord }) {
         style={{ width: "100%", padding: "12px 15px", background: t.panel, border: `1px solid ${t.line}`, borderRadius: 12, color: t.text, fontSize: 14.5, outline: "none", marginBottom: 12 }} />
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
         {FILTERS.map((f) => (
-          <button key={f.id} onClick={() => setStatus(f.id)} style={{ padding: "6px 12px", fontSize: 11.5, cursor: "pointer", borderRadius: 20, background: status === f.id ? f.color + "22" : t.panel, border: `1px solid ${status === f.id ? f.color + "88" : t.line}`, color: status === f.id ? f.color : t.mute }}>{f.label}</button>
+          <button key={f.id} onClick={() => setStatus(f.id)} style={{ padding: "6px 12px", fontSize: 11.5, cursor: "pointer", borderRadius: 20, background: status === f.id ? f.color + "22" : t.panel, border: `1px solid ${status === f.id ? f.color + "88" : t.line}`, color: status === f.id ? textSafe(f.color, t.name) : t.mute }}>{f.label}</button>
         ))}
       </div>
 
