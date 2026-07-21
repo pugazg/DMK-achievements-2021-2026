@@ -45,6 +45,7 @@ export default function Explore({ onCard }) {
       {/* search */}
       <div style={{ position: "relative", marginBottom: 12 }}>
         <input value={query} onChange={(e) => { setQuery(e.target.value); setLimit(12); }}
+          aria-label="Search the achievement records by scheme, topic or number"
           placeholder="Search a scheme, topic or number…"
           style={{ width: "100%", padding: "14px 16px", background: t.panel, border: `1px solid ${t.line}`, borderRadius: 12, color: t.text, fontSize: 15, outline: "none" }} />
       </div>

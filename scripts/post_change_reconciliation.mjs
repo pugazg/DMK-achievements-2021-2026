@@ -13,6 +13,7 @@ import { LEGISLATION, LEGISLATION_META } from "../src/data/legislation.js";
 import { PROMISE_GO_LINKS } from "../src/data/promiseGoLinks.js";
 import { HERO_STRIP } from "../src/data/dashboard.js";
 import { gradeRecord } from "../src/lib/evidence.js";
+import { DERIVED, reconcile } from "../src/lib/publicMetrics.js";
 
 const reg = JSON.parse(readFileSync("src/data/sourceRegistry.json", "utf8"));
 const sittings = DEBATE_SESSIONS.flatMap((s) => s.sittings || []);
@@ -25,12 +26,12 @@ const rows = [];
 const add = (measure, derived, declared, guarded, note = "") =>
   rows.push({ measure, derived, declared, guarded, note, ok: String(derived) === String(declared) });
 
-add("Achievement records", DATA.length, 438, true);
+add("Achievement records", DATA.length, 438, true, "shown in hero strip; reconciled");
 add("— unique IDs", new Set(DATA.map((r) => r.id)).size, DATA.length, true);
 add("— without page reference", DATA.filter((r) => r.page == null).length, 247, false, "disclosed, not guarded");
 add("— flagged mixedStatus", DATA.filter((r) => r.mixedStatus).length, 6, false);
-add("Domains (excluding 'All')", CATEGORIES.length - 1, 11, true, "was mislabelled 12 pre-change");
-add("Manifesto promises", PROMISES.length, 505, true);
+add("Domains (excluding 'All')", CATEGORIES.length - 1, 11, true, "shown in hero strip; was mislabelled 12 pre-change");
+add("Manifesto promises", PROMISES.length, 505, true, "shown in hero strip; reconciled");
 add("— status = fulfilled", PROMISES.filter((p) => p.status === "fulfilled").length, 400, true, "external tracker's assessment");
 add("— unique promise numbers", new Set(PROMISES.map((p) => p.num)).size, PROMISES.length, true);
 add("Assembly sitting links", sittings.length, DEBATES_META.sittings, true);
@@ -55,15 +56,17 @@ add("Evidence: grades above D", (grades.A || 0) + (grades.B || 0) + (grades.C ||
 add("Source registry entries", reg.sources.length, 108, false);
 add("Source registry fetched", reg.sources.filter((s) => s.fetched).length, 0, false, "nothing ingested");
 
-// The hero strip is a separate hard-coded array that validate.mjs never reads.
-const heroRows = HERO_STRIP.map((h) => {
-  const derived =
-    /record/i.test(h.label) ? DATA.length
-    : /promise/i.test(h.label) ? PROMISES.length
-    : /domain/i.test(h.label) ? CATEGORIES.length - 1
-    : null;
-  return { label: h.label, declared: h.value, derived, ok: derived === null ? null : derived === h.value };
-});
+// The hero strip now declares which DERIVED metric each counter shows, and
+// validate.mjs + test/metrics.test.mjs reconcile them. Report that directly
+// from the shared reconciler rather than re-deriving it by label matching.
+const heroResult = reconcile(HERO_STRIP, { source: "HERO_STRIP" });
+const heroRows = HERO_STRIP.map((h) => ({
+  label: h.label,
+  metric: h.metric ?? null,
+  declared: h.value,
+  derived: h.metric ? DERIVED[h.metric] : null,
+  ok: h.metric ? DERIVED[h.metric] === h.value : null,
+}));
 
 const mismatches = rows.filter((r) => !r.ok);
 const unguarded = rows.filter((r) => !r.guarded);
@@ -103,25 +106,27 @@ ${rows
   )
   .join("\n")}
 
-## Hero strip — hard-coded counters
+## Hero strip — the counters a reader sees first
 
-The hero counter strip (\`HERO_STRIP\` in \`src/data/dashboard.js\`) is a literal
-array. It is **not derived from the datasets and not read by \`scripts/validate.mjs\`**,
-so these values can drift silently even though they are among the most prominent
-numbers on the page.
+The hero counter strip (\`HERO_STRIP\` in \`src/data/dashboard.js\`) previously held
+literal numbers that no gate read: the verification audit changed "438 verified
+records" to 999 and \`npm run validate\`, \`npm test\` and \`npm run a11y\` all still
+passed.
 
-| Label | Declared | Derived equivalent | Match |
-|---|---|---|---|
+Each counter now takes its value from \`DERIVED\` in \`src/lib/publicMetrics.js\` and
+names the metric it claims to show. \`scripts/validate.mjs\` reconciles them on every
+run, and \`test/metrics.test.mjs\` asserts that tampering with any one of them fails.
+
+| Label | Metric | Declared | Derived | Match |
+|---|---|---|---|---|
 ${heroRows
   .map(
     (h) =>
-      `| ${h.label} | ${h.declared} | ${h.derived === null ? "— (not a dataset count)" : h.derived} | ${h.ok === null ? "n/a" : h.ok ? "✅" : "❌"} |`,
+      `| ${h.label} | ${h.metric ?? "— (editorial)"} | ${h.declared} | ${h.derived === null ? "n/a" : h.derived} | ${h.ok === null ? "not a dataset count" : h.ok ? "✅" : "❌"} |`,
   )
   .join("\n")}
 
-The values are correct **today**. Nothing enforces that they stay correct: a
-mutation test that changed the "verified records" counter to 999 left
-\`npm run validate\`, \`npm test\` and \`npm run a11y\` all passing.
+Reconciler result: **${heroResult.checked} counters checked, ${heroResult.failures.length} wrong**${heroResult.unchecked.length ? `; editorial entries not checked: ${heroResult.unchecked.join(", ")}` : ""}.
 
 ## Numbers that are counts of *catalogue*, not of held content
 

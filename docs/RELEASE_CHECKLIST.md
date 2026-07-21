@@ -10,23 +10,24 @@ delay, not a reason to add a caveat.
 ```bash
 cd app
 npm ci
-npm run test        # 8 adversarial claim-lookup tests
-npm run validate    # 19 dataset/label integrity checks
+npm run test        # claim safety, Tamil handling, displayed-metric reconciliation
+npm run validate    # dataset + displayed-metric integrity checks
 npm run a11y        # WCAG AA contrast over every text colour, both themes
 npm run build       # vite production build
 ```
 
 | Gate | Expected | Last run (21 Jul 2026) |
 |---|---|---|
-| `npm run test` | 8/8 pass | ✅ 8/8 |
-| `npm run validate` | 19/19 pass | ✅ 19/19 |
+| `npm run test` | all pass | ✅ 29/29 |
+| `npm run validate` | all pass | ✅ passed |
 | `npm run a11y` | 0 failures | ✅ 0 |
 | `npm run build` | succeeds | ✅ 842KB main / 244KB gzip |
 
 ## Claims discipline
 
-- [ ] No label states a number the data does not hold. `npm run validate` derives
-      the domain, department and stage counts rather than trusting a constant.
+- [ ] No label states a number the data does not hold. Every displayed metric is
+      derived via `src/lib/publicMetrics.js` and reconciled by `npm run validate`;
+      `test/metrics.test.mjs` asserts that a tampered count fails.
 - [ ] Catalogue totals are stated separately from embedded content
       (3,501 catalogued vs 186 embedded; 138 links vs 38 measured).
 - [ ] The word "verified" does not appear where the evidence is
@@ -56,7 +57,7 @@ npm run build       # vite production build
 - [ ] Keyboard-only pass: skip link → nav → search overlay (Esc closes, focus
       restored) → a record card → share card.
 - [ ] Known gaps still listed honestly in `docs/ACCESSIBILITY_REPORT.md`
-      (chart data tables, real AT testing, `lang="ta"` tagging).
+      (chart data tables, real AT testing, focus-visible styling).
 
 ## Package
 
@@ -79,11 +80,13 @@ npm run build       # vite production build
 
 ## Framing
 
-- [ ] The release is described as a **public beta evidence explorer**, not a
-      fact-checking platform.
+- [ ] The release is described as an **evidence explorer**, not a fact-checking
+      platform — in the UI, the README, and the `index.html` meta/OpenGraph tags
+      that generate social previews.
 - [ ] Publisher identity, political affiliation and funding disclosure are
       present. **Currently Open — this is a genuine blocker for a public launch**
-      of a politically-charged artefact.
+      of a politically-charged artefact. Template and outstanding fields:
+      `docs/PUBLISHER_TRANSPARENCY.md`.
 - [ ] Licence and attribution stated. **Currently Open.**
 - [ ] Corrections policy and a public change log are reachable from the page.
 
@@ -97,4 +100,7 @@ These are not gates, but they must be disclosed rather than quietly carried:
   crawling to close the gap.
 - No chart has a textual data-table equivalent.
 - No testing with real assistive technology.
-- Publisher identity, funding disclosure and licensing are not yet written.
+- Publisher identity, funding disclosure and licensing are not yet written
+  (`docs/PUBLISHER_TRANSPARENCY.md`).
+- Tamil search coverage is partial: 20 of 438 records carry a Tamil scheme name.
+- No contrary or adverse evidence (e.g. CAG findings) has been ingested.

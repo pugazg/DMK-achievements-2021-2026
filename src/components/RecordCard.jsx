@@ -1,6 +1,6 @@
 import { useT, textSafe } from "../lib/theme.js";
 import { CAT } from "../data/records.js";
-import { ORIGIN } from "../lib/search.js";
+import { ORIGIN, hasTamil } from "../lib/search.js";
 import { gradeRecord, GRADES } from "../lib/evidence.js";
 
 export default function RecordCard({ rec, onCard }) {
@@ -24,7 +24,7 @@ export default function RecordCard({ rec, onCard }) {
             {c.emoji} {c.en} · {rec.date}
           </div>
           {o && (
-            <div style={{ display: "inline-block", fontSize: 10, color: oText, border: `1px solid ${o.color}55`, borderRadius: 5, padding: "2px 7px", marginBottom: 7, marginRight: 6, fontFamily: "ui-monospace,monospace", letterSpacing: ".03em" }}>
+            <div style={{ display: "inline-block", fontSize: 11.5, color: oText, border: `1px solid ${o.color}55`, borderRadius: 5, padding: "2px 7px", marginBottom: 7, marginRight: 6, fontFamily: "ui-monospace,monospace", letterSpacing: ".03em" }}>
               {o.mark} {o.label}
             </div>
           )}
@@ -33,11 +33,11 @@ export default function RecordCard({ rec, onCard }) {
               is invisible to keyboard and screen-reader users. */}
           <span tabIndex={0} title={ev.rationale + " (Auto-graded; pending manual review.)"}
             aria-label={`Evidence grade ${g.label}. ${ev.rationale} Auto-graded; pending manual review.`}
-            style={{ display: "inline-block", fontSize: 10, color: gText, border: `1px solid ${gText}55`, borderRadius: 5, padding: "2px 7px", marginBottom: 7, fontFamily: "ui-monospace,monospace", letterSpacing: ".03em", cursor: "help" }}>
+            style={{ display: "inline-block", fontSize: 11.5, color: gText, border: `1px solid ${gText}55`, borderRadius: 5, padding: "2px 7px", marginBottom: 7, fontFamily: "ui-monospace,monospace", letterSpacing: ".03em", cursor: "help" }}>
             {g.label}
           </span>
           <div style={{ color: t.text, fontSize: 16, fontWeight: 700, lineHeight: 1.35 }}>{rec.name}</div>
-          {rec.sub && <div style={{ color: t.faint, fontSize: 12.5, marginTop: 2, fontStyle: "italic" }}>{rec.sub}</div>}
+          {rec.sub && <div lang={hasTamil(rec.sub) ? "ta" : undefined} style={{ color: t.faint, fontSize: 12.5, marginTop: 2, fontStyle: "italic" }}>{rec.sub}</div>}
         </div>
         <div style={{ textAlign: "right", color: cText, fontWeight: 800, fontSize: 15.5, whiteSpace: "normal", maxWidth: 150, lineHeight: 1.25 }}>{rec.stat}</div>
       </div>

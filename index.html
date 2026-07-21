@@ -1,13 +1,25 @@
 <!doctype html>
+<!-- Language strategy: the interface is written in English; Tamil appears only
+     as scheme proper nouns inside records. So the document language stays "en"
+     and Tamil runs are tagged lang="ta" at the element level (RecordCard,
+     ShareCard). Setting lang="ta" on <html> would make a screen reader apply
+     Tamil pronunciation to the entire English interface — worse than no tag.
+     Revisit if the UI itself is ever translated. -->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="The Dravidian Model — an interactive, fully-offline report on the DMK government's Tamil Nadu achievements, 2021–2026. Every figure verified against the official record." />
+    <meta name="description" content="An evidence explorer of Tamil Nadu government records, 2021–2026: achievement records, manifesto commitments, Government Orders and legislative documents, each linked to its published source. Government-reported; not independently audited." />
     <meta name="theme-color" content="#0a0807" />
     <meta property="og:title" content="The Dravidian Model · Tamil Nadu 2021–2026" />
-    <meta property="og:description" content="A five-year record, verified line by line — dashboards, a fact-checker, and the 2021 manifesto tracked honestly." />
+    <meta property="og:description" content="An evidence explorer of Tamil Nadu government records, achievements, manifesto commitments and legislative documents — sourced line by line, with an evidence grade on every record." />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="The Dravidian Model · Tamil Nadu 2021–2026" />
+    <!-- Twitter falls back to og:* when these are absent, but naming them keeps
+         the shared preview from being assembled out of page text. -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="The Dravidian Model · Tamil Nadu 2021–2026" />
+    <meta name="twitter:description" content="An evidence explorer of Tamil Nadu government records, achievements, manifesto commitments and legislative documents — sourced line by line, with an evidence grade on every record." />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='38' r='11' fill='%23c0392b'/%3E%3Cg stroke='%23c0392b' stroke-width='2.6' stroke-linecap='round'%3E%3Cline x1='14' y1='38' x2='5' y2='38'/%3E%3Cline x1='15' y1='30' x2='7' y2='25'/%3E%3Cline x1='19' y1='24' x2='13' y2='17'/%3E%3Cline x1='25' y1='20' x2='22' y2='12'/%3E%3Cline x1='30' y1='19' x2='30' y2='10'/%3E%3Cline x1='35' y1='20' x2='38' y2='12'/%3E%3Cline x1='41' y1='24' x2='47' y2='17'/%3E%3Cline x1='45' y1='30' x2='53' y2='25'/%3E%3Cline x1='46' y1='38' x2='55' y2='38'/%3E%3C/g%3E%3C/svg%3E" />
     <title>The Dravidian Model · Tamil Nadu 2021–2026</title>
   </head>

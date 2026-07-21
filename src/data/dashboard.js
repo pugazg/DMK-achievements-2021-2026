@@ -1,3 +1,5 @@
+import { DERIVED } from "../lib/publicMetrics.js";
+
 /* ============================================================
    DASHBOARD, NARRATIVE & TIMELINE DATA
    Curated from the Tamil Nadu Government 2021–26 record and the
@@ -14,11 +16,20 @@ export const HERO_FIGURES = [
   { value: 2.59, decimals: 2, suffix: " cr", label: "People reached at their door", note: "Makkalai Thedi Maruthuvam" },
 ];
 
-/* ---- HERO strip: smaller supporting counters ---- */
+/* ---- HERO strip: smaller supporting counters ----
+   Values are DERIVED from the datasets, never written as literals: a
+   hard-coded "438 verified records" survived a dataset change once and
+   no gate caught it. `metric` names the DERIVED key each counter claims
+   to show, and scripts/validate.mjs + test/metrics.test.mjs reconcile
+   the two. Entries with no `metric` are editorial, not dataset counts.
+
+   Wording note: these are records of what the government reported, not
+   verified outcomes — no record in the corpus is graded above D. The
+   labels must not say "verified". See docs/EVIDENCE_MODEL.md. */
 export const HERO_STRIP = [
-  { value: 438, suffix: "", label: "verified records" },
-  { value: 505, suffix: "", label: "manifesto promises tracked" },
-  { value: 11, suffix: "", label: "domains of governance" }, // derived: CATEGORIES minus the "All" filter — validated in tests
+  { metric: "achievements", value: DERIVED.achievements, suffix: "", label: "government-recorded achievements" },
+  { metric: "promises", value: DERIVED.promises, suffix: "", label: "manifesto promises tracked" },
+  { metric: "domains", value: DERIVED.domains, suffix: "", label: "domains of governance" },
   { value: 0, suffix: "", label: "figures invented", accent: true },
 ];
 

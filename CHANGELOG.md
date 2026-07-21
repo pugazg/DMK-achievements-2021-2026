@@ -33,7 +33,15 @@ each finding to its outcome is in `docs/ARTEFACT_AUDIT_REMEDIATION.md`.
   now says "government-reported; not independently audited".
 
 All of the above counts are now *derived from the data* and asserted by
-`npm run validate`, so a label cannot drift from the dataset again.
+`npm run validate`.
+
+**Correction (Phase A):** an earlier revision of this entry claimed this already
+covered every label. It did not. The hero counter strip hard-coded its numbers in
+`src/data/dashboard.js` and no gate read them — the verification audit changed
+"438 verified records" to "999" and every check still passed. The hero strip now
+derives its values from `src/lib/publicMetrics.js`, `scripts/validate.mjs`
+reconciles every displayed metric against the datasets, and `test/metrics.test.mjs`
+asserts that a tampered count fails.
 
 ### Added — evidence and disclosure
 
@@ -111,8 +119,12 @@ good/bad palette.
 ### Fixed — performance
 
 - Legislation, Government Orders and Debates are lazy-loaded behind an
-  `ErrorBoundary`. Main bundle **1,179KB → 842KB** (244KB gzip); Government
-  Orders, which carries the ~340KB gazette dataset, is a 291KB on-demand chunk.
+  `ErrorBoundary`. Measured against a build of `origin/main`: **initial load
+  1,133.4 KB → 830.7 KB (−26.7%)**; main chunk 1,152 kB → 842 kB (275.4 → 244.2 kB
+  gzip). Government Orders, which carries the ~340KB gazette dataset, is a 291 kB
+  on-demand chunk. Total shipped bytes rose 1,136 → 1,168 KB (splitting overhead).
+  (An earlier revision of this entry said "1,179KB → 842KB"; that before-figure was
+  inherited from the handover and never measured.)
 
 ### Added — source pipeline
 

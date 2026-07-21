@@ -91,12 +91,12 @@ Done: `.gitignore` / `.npmignore` / `.nvmrc`, `engines.node >=20`, and the
 |---|---|
 | Skip-to-content link | Done |
 | Dialog semantics, focus trap, Esc, focus restore | Done (`useModalA11y`) |
-| Labels on search and claim inputs | Done |
+| Labels on search and claim inputs | Done — the verification audit found the SearchOverlay and Claim inputs labelled but the **Explore** and **Manifesto** inputs still placeholder-only; both were given `aria-label`s in Phase A |
 | `aria-expanded` / `aria-controls` on mobile menu | Done |
 | `aria-live` for copy success | Done |
 | Raise muted-text contrast | **Done, and larger than reported** — a full in-browser audit found 76 dark / 78 light failures, nearly all from identity hues used as text in both themes. Now 0/0. See `docs/ACCESSIBILITY_REPORT.md` |
-| Accessible data tables for charts | **Open** |
-| Increase 9.5–11px text | **Open** |
+| Accessible data tables for charts | **Open** — charts expose values through `aria-label`, but there is still no tabular equivalent |
+| Increase 9.5–11px text | Partly done — sub-10px text removed (smallest is now 10px), and the evidence-grade and origin chips raised 10 → 11.5px because they carry the central caveat on every card. Chart axis labels remain at 10.5px by design, with values also exposed via each chart's `aria-label` |
 | Reduced motion | Already supported; verified |
 | About/Methodology disclosure | Done (Footer) — publisher identity, affiliation and funding disclosure **Open** |
 | ShareCard implies image export | Done — verdict language removed, copy line states "government-reported; not independently audited". Image export **Open** |
@@ -109,7 +109,7 @@ Done: `.gitignore` / `.npmignore` / `.nvmrc`, `engines.node >=20`, and the
 
 | Item | Status |
 |---|---|
-| Oversized initial bundle | **Done** — React.lazy for Legislation/GovOrders/Debates + ErrorBoundary. Main bundle 1,179KB → 842KB (244KB gzip); GovOrders split to a 291KB on-demand chunk |
+| Oversized initial bundle | **Done** — React.lazy for Legislation/GovOrders/Debates + ErrorBoundary. Measured: initial load 1,133.4 KB → 830.7 KB (−26.7%); main chunk 1,152 kB → 842 kB (275.4 → 244.2 kB gzip); GovOrders split to a 291 kB on-demand chunk |
 | Error boundary | Done |
 | macOS-built dependencies / nested backup shipped | Done — gitignored |
 | Inline styles hard to maintain | **Open** — acknowledged, not addressed |

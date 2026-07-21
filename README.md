@@ -63,6 +63,9 @@ Read these before citing anything here.
   "400 fulfilled". This project did not assess them.
 - **Claim lookup is retrieval, not verification.** `not found` means *not in this dataset*,
   never *false*.
+- **The corpus is written in English.** Only 20 of 438 records carry a Tamil scheme name,
+  so a Tamil-language claim may be unmatchable. The tool reports that as a coverage limit,
+  never as an absence of evidence.
 - **The source pipeline has catalogued 108 sources but ingested none of them.** Ten pilot
   documents have been fetched. No claim in the app is currently backed by that pipeline.
   See [`docs/SOURCE_COVERAGE_MATRIX.md`](docs/SOURCE_COVERAGE_MATRIX.md).
@@ -87,9 +90,10 @@ npm ci             # clean, reproducible install
 npm run dev        # http://localhost:5173
 npm run build      # production bundle in dist/
 
-npm run test       # 8 adversarial claim-lookup tests
-npm run validate   # 19 dataset/label integrity checks
+npm run test       # 29 tests: claim safety, Tamil handling, metric reconciliation
+npm run validate   # dataset + displayed-metric integrity checks
 npm run a11y       # WCAG AA contrast check, both themes
+npm run docs       # regenerate the generated documents from the data
 npm run baseline   # regenerate docs/BASELINE_MANIFEST.json
 ```
 
@@ -104,7 +108,9 @@ Before any public deploy, work through
 - **Never invent a fact.** Data lives in `src/data/*`, extracted from the record; every
   chart block carries its own source line.
 - **Never overstate coverage.** Catalogue totals are reported separately from embedded
-  content, and the counts shown in the UI are derived from the data and asserted by tests.
+  content, and every count shown in the UI is derived from the datasets via
+  `src/lib/publicMetrics.js` and reconciled by `npm run validate` — a displayed
+  number cannot be a stale literal.
 - **Keep uncertainty explicit.** Where a classification is uncertain, the interface says so
   rather than resolving it.
 
@@ -117,7 +123,7 @@ app/
                  govorders.js · gazettegos.js (788) · debates.js (138)
                  promiseGoLinks.js · sourceRegistry.json (108) · dashboard.js
     lib/         theme.js (incl. textSafe contrast helper) · search.js
-                 evidence.js · hooks.js · format.js
+                 evidence.js · publicMetrics.js · hooks.js · format.js
     components/  charts.jsx · Nav · SearchOverlay · ShareCard · RecordCard
                  Counter · RisingSun · layout
     sections/    Hero · Dashboard · Method · Explore · Claim · Manifesto
@@ -130,7 +136,7 @@ app/
   docs/          evidence model · methodology · limitations · coverage matrix
                  data quality · accessibility · acquisition plan · RTI register
                  release checklist · audit remediation
-  test/          claim.test.mjs
+  test/          claim.test.mjs · metrics.test.mjs · tamil.test.mjs
 ```
 
 ## Sources
@@ -146,7 +152,11 @@ is in [`docs/SOURCE_COVERAGE_MATRIX.md`](docs/SOURCE_COVERAGE_MATRIX.md).
 
 ## Publisher, affiliation and licence
 
-**Not yet stated.** Publisher identity, political affiliation, funding disclosure and
-licensing must be written before this is published. They are open items on the release
-checklist, and for a politically-charged artefact they are a launch blocker rather than a
-nicety.
+**Not yet stated — this is a launch blocker.** Publisher identity, political affiliation,
+funding disclosure and licensing are unresolved. The template with every outstanding
+field is [`docs/PUBLISHER_TRANSPARENCY.md`](docs/PUBLISHER_TRANSPARENCY.md); nothing in it
+has been invented, and every unknown is marked `[NOT YET DECIDED]`.
+
+For a politically charged artefact published during the term it describes, these are not
+a nicety. "No affiliation" is a valid answer and must be stated explicitly if true —
+silence reads as concealment.

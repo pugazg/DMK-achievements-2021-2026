@@ -156,7 +156,9 @@ export default function Manifesto({ onPickRecord }) {
       <MethodologyNote t={t} />
 
       {/* controls */}
-      <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Filter promises — a word or a number…"
+      <input value={query} onChange={(e) => setQuery(e.target.value)}
+        aria-label="Filter the 2021 manifesto promises by word or promise number"
+        placeholder="Filter promises — a word or a number…"
         style={{ width: "100%", padding: "12px 15px", background: t.panel, border: `1px solid ${t.line}`, borderRadius: 12, color: t.text, fontSize: 14.5, outline: "none", marginBottom: 12 }} />
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
         {FILTERS.map((f) => (

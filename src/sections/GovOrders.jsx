@@ -56,7 +56,7 @@ function GazetteCard({ g, onPickRecord }) {
           {goLabel && <span style={{ color: t.text, fontSize: 12.5, fontWeight: 700, fontFamily: "ui-monospace,monospace" }}>{goLabel}</span>}
           {g.date && <span style={{ color: t.mute, fontSize: 11, fontFamily: "ui-monospace,monospace", marginLeft: 8 }}>{g.date}</span>}
         </div>
-        {g.inPortal && <span style={{ fontSize: 9.5, color: t.green, border: `1px solid ${t.green}55`, borderRadius: 5, padding: "1px 6px", fontFamily: "ui-monospace,monospace", whiteSpace: "nowrap" }}>✓ in portal</span>}
+        {g.inPortal && <span style={{ fontSize: 10.5, color: textSafe(t.green, t.name), border: `1px solid ${t.green}55`, borderRadius: 5, padding: "1px 6px", fontFamily: "ui-monospace,monospace", whiteSpace: "nowrap" }}>✓ in portal</span>}
       </div>
       <p style={{ color: t.textDim, fontSize: 12, lineHeight: 1.55, margin: "8px 0 0" }}>{g.subject}</p>
       {g.dept && <div style={{ fontSize: 10.5, color: t.mute, marginTop: 6 }}>{g.dept}</div>}

@@ -165,8 +165,10 @@ soft-404 and are recorded as **unknown**, never as permission.
 | **Tests** | 1 new | `test/claim.test.mjs`, 8 adversarial cases |
 | **Packaging** | 5 | `.gitignore`, `.npmignore`, `.nvmrc`, `package.json` scripts, `launch.json` |
 
-Bundle: **1,179KB → 842KB** main (244KB gzip), with Government Orders split to a
-291KB on-demand chunk.
+Bundle, measured by building `origin/main` and HEAD: initial load **1,133.4 KB →
+830.7 KB (−26.7%)**; main chunk 1,152 kB → 842 kB (275.4 → 244.2 kB gzip), with
+Government Orders split to a 291 kB on-demand chunk. Total shipped bytes rose
+slightly (1,136 → 1,168 KB) — code-splitting overhead, paid back on first load.
 
 ## 8. Remaining manual-review queue
 

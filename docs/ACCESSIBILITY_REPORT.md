@@ -11,7 +11,7 @@
 |---|---|
 | Text contrast (both themes) | **Fixed** — 0 failures, verified in-browser across 1,585 rendered nodes |
 | Keyboard operation | Fixed — modals trap focus, Esc closes, focus is restored |
-| Screen-reader labelling | Fixed for dialogs, nav, charts, and the evidence-grade chip |
+| Screen-reader labelling | Fixed for dialogs, nav, charts, the evidence-grade chip, and (Phase A) the Explore and Manifesto inputs |
 | Skip link | Present and now contrast-correct in both themes |
 | Reduced motion | Respected across all animation |
 | Textual alternative to charts | **Not done** — see Outstanding |
@@ -127,7 +127,32 @@ programmatic scrolling, and CSS `scroll-behavior`.
    computed-style measurement and code inspection. VoiceOver and NVDA passes have
    not been done, and they routinely surface problems automation cannot.
 3. **No automated axe/Lighthouse run in CI.** `npm run a11y` covers contrast only.
-4. **Tamil-script content is not language-tagged.** Tamil scheme names sit inside
-   English text without `lang="ta"`, so a screen reader will mispronounce them.
+4. ~~Tamil-script content is not language-tagged.~~ **Fixed in Phase A.** Tamil
+   scheme names in `RecordCard` and `ShareCard` now carry `lang="ta"`. The document
+   language stays `en`: the interface is English and only the scheme proper nouns
+   are Tamil, so `<html lang="ta">` would make a screen reader apply Tamil
+   pronunciation to the entire English UI.
 5. **Focus-visible styling** relies on browser defaults; it has not been designed
    or measured against the 3:1 non-text contrast requirement.
+
+## Phase A additions (21 July 2026)
+
+Fixes made after the adversarial verification audit:
+
+- **Accessible names on the two remaining inputs.** The verification audit found
+  the Explore search and Manifesto filter inputs were placeholder-only, despite
+  the remediation record claiming labels were complete. Both now carry an
+  `aria-label`. **0 interactive elements without an accessible name.**
+- **Tamil language tagging.** `lang="ta"` on Tamil scheme names; document stays
+  `lang="en"` (see above for why).
+- **Small-text review.** 176 sub-11px text nodes were classified rather than
+  blanket-enlarged:
+  - *Carriers of meaning* — the evidence-grade and origin chips appear on all 438
+    record cards and hold the project's central caveat. They were the smallest
+    type attached to the most important claim. Raised **10 → 11.5px**.
+  - *Below any floor* — 9.5px chart axis ticks and the progress-ring label.
+    Raised to **10.5px**. The smallest text in the app is now **10px**.
+  - *Intentional chart metadata* — axis labels and units at 10.5px are kept.
+    They are conventional for chart axes, and every chart also exposes its values
+    through an `aria-label`, so the information is not sight-only.
+  - Sub-11px nodes: **176 → 150**, smallest **9.5px → 10px**.

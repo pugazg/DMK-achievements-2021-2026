@@ -61,6 +61,21 @@ export default function Claim({ onCard }) {
             </div>
           )}
 
+          {res.assessment === "language_unsupported" && (
+            <div style={{ background: `${t.amber}14`, border: `1px solid ${t.amber}66`, borderRadius: 12, padding: "13px 16px" }}>
+              <div style={{ color: textSafe(t.amber, t.name), fontSize: 12.5, fontWeight: 700, marginBottom: 4 }}>
+                ⚠ Tamil coverage is limited — no conclusion possible
+              </div>
+              <p style={{ color: t.textDim, fontSize: 12.5, lineHeight: 1.6, margin: 0 }}>
+                This dataset is written in English; only {res.language.tamilIndexedRecords} of{" "}
+                {res.language.totalRecords} records carry a Tamil scheme name. Your claim could not be
+                matched, but <b style={{ color: t.text }}>that is a limit of this index, not evidence
+                about the claim</b>. Try the scheme's English or transliterated name
+                (e.g. “Vidiyal Payanam”, “Kalaignar Kanavu Illam”).
+              </p>
+            </div>
+          )}
+
           {res.assessment === "not_found" && (
             <div style={{ background: t.panel, border: `1px solid ${t.line}`, borderRadius: 12, padding: 18, color: t.faint, fontSize: 14, lineHeight: 1.7 }}>
               <b style={{ color: t.text }}>No match in this dataset.</b> None of the claim's meaningful terms appear in the 438 records. That is not evidence the claim is false — only that this dataset holds nothing related.
@@ -70,7 +85,7 @@ export default function Claim({ onCard }) {
           {res.assessment === "insufficient_match" && (
             <>
               <div style={{ background: t.panel, border: `1px solid ${t.grey}55`, borderRadius: 12, padding: "14px 16px", marginBottom: 12 }}>
-                <div style={{ color: t.grey, fontSize: 13, fontWeight: 700, marginBottom: 4 }}>◌ Insufficient match — no conclusion possible</div>
+                <div style={{ color: textSafe(t.grey, t.name), fontSize: 13, fontWeight: 700, marginBottom: 4 }}>◌ Related records found, but insufficient evidence for assessment</div>
                 <p style={{ color: t.textDim, fontSize: 12.5, lineHeight: 1.6, margin: 0 }}>
                   Only {res.results[0]?.matchedTerms.length || 0} of the claim's {res.strongTokens.length} meaningful terms appear in any record. The partial matches below are shown for transparency; they neither support nor contradict the claim.
                 </p>

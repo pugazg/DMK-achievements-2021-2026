@@ -24,12 +24,12 @@ question: *do the public numbers still equal the data?*
 
 | Measure | Derived | Declared | Match | Guarded | Note |
 |---|---|---|---|---|---|
-| Achievement records | 438 | 438 | ✅ | yes |  |
+| Achievement records | 438 | 438 | ✅ | yes | shown in hero strip; reconciled |
 | — unique IDs | 438 | 438 | ✅ | yes |  |
 | — without page reference | 247 | 247 | ✅ | **no** | disclosed, not guarded |
 | — flagged mixedStatus | 6 | 6 | ✅ | **no** |  |
-| Domains (excluding 'All') | 11 | 11 | ✅ | yes | was mislabelled 12 pre-change |
-| Manifesto promises | 505 | 505 | ✅ | yes |  |
+| Domains (excluding 'All') | 11 | 11 | ✅ | yes | shown in hero strip; was mislabelled 12 pre-change |
+| Manifesto promises | 505 | 505 | ✅ | yes | shown in hero strip; reconciled |
 | — status = fulfilled | 400 | 400 | ✅ | yes | external tracker's assessment |
 | — unique promise numbers | 505 | 505 | ✅ | yes |  |
 | Assembly sitting links | 138 | 138 | ✅ | yes |  |
@@ -54,23 +54,25 @@ question: *do the public numbers still equal the data?*
 | Source registry entries | 108 | 108 | ✅ | **no** |  |
 | Source registry fetched | 0 | 0 | ✅ | **no** | nothing ingested |
 
-## Hero strip — hard-coded counters
+## Hero strip — the counters a reader sees first
 
-The hero counter strip (`HERO_STRIP` in `src/data/dashboard.js`) is a literal
-array. It is **not derived from the datasets and not read by `scripts/validate.mjs`**,
-so these values can drift silently even though they are among the most prominent
-numbers on the page.
+The hero counter strip (`HERO_STRIP` in `src/data/dashboard.js`) previously held
+literal numbers that no gate read: the verification audit changed "438 verified
+records" to 999 and `npm run validate`, `npm test` and `npm run a11y` all still
+passed.
 
-| Label | Declared | Derived equivalent | Match |
-|---|---|---|---|
-| verified records | 438 | 438 | ✅ |
-| manifesto promises tracked | 505 | 505 | ✅ |
-| domains of governance | 11 | 11 | ✅ |
-| figures invented | 0 | — (not a dataset count) | n/a |
+Each counter now takes its value from `DERIVED` in `src/lib/publicMetrics.js` and
+names the metric it claims to show. `scripts/validate.mjs` reconciles them on every
+run, and `test/metrics.test.mjs` asserts that tampering with any one of them fails.
 
-The values are correct **today**. Nothing enforces that they stay correct: a
-mutation test that changed the "verified records" counter to 999 left
-`npm run validate`, `npm test` and `npm run a11y` all passing.
+| Label | Metric | Declared | Derived | Match |
+|---|---|---|---|---|
+| government-recorded achievements | achievements | 438 | 438 | ✅ |
+| manifesto promises tracked | promises | 505 | 505 | ✅ |
+| domains of governance | domains | 11 | 11 | ✅ |
+| figures invented | — (editorial) | 0 | n/a | not a dataset count |
+
+Reconciler result: **3 counters checked, 0 wrong**; editorial entries not checked: figures invented.
 
 ## Numbers that are counts of *catalogue*, not of held content
 

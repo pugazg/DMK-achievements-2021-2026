@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useT, textSafe } from "../lib/theme.js";
 import { useModalA11y } from "../lib/hooks.js";
 import { CAT } from "../data/records.js";
-import { SHARE_LINE } from "../lib/search.js";
+import { SHARE_LINE, hasTamil } from "../lib/search.js";
 import RisingSun from "./RisingSun.jsx";
 
 export default function ShareCard({ rec, onClose }) {
@@ -40,7 +40,7 @@ ${rec.det}
           <div style={{ padding: "24px 22px" }}>
             <div style={{ fontSize: 10.5, color: cText, fontFamily: "ui-monospace,monospace", letterSpacing: ".2em", marginBottom: 12 }}>FROM THE STATE RECORD</div>
             <h2 style={{ color: t.text, fontSize: 22, fontWeight: 800, lineHeight: 1.3, margin: 0 }}>{rec.name}</h2>
-            {rec.sub && <div style={{ color: t.faint, fontSize: 13, marginTop: 4, fontStyle: "italic" }}>{rec.sub}</div>}
+            {rec.sub && <div lang={hasTamil(rec.sub) ? "ta" : undefined} style={{ color: t.faint, fontSize: 13, marginTop: 4, fontStyle: "italic" }}>{rec.sub}</div>}
             <div style={{ background: `${c.color}1c`, border: `1px solid ${c.color}44`, borderRadius: 10, padding: "15px 18px", margin: "18px 0 14px" }}>
               <div style={{ color: cText, fontSize: 24, fontWeight: 800, lineHeight: 1.15 }}>{rec.stat}</div>
             </div>

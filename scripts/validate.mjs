@@ -10,6 +10,11 @@ const { GAZETTE_GOS } = await import("../src/data/gazettegos.js");
 const { LEGISLATION, LEGISLATION_META } = await import("../src/data/legislation.js");
 const { PROMISE_GO_LINKS } = await import("../src/data/promiseGoLinks.js");
 const { GRADES } = await import("../src/lib/evidence.js");
+const { DERIVED, reconcile, checkInvariants } = await import("../src/lib/publicMetrics.js");
+// Display constants: anything the reader actually sees must be reconciled,
+// not just the underlying datasets. This is what the "999 verified records"
+// mutation slipped through before.
+const { HERO_STRIP } = await import("../src/data/dashboard.js");
 
 let fail = 0;
 const check = (cond, msg) => { if (!cond) { console.error("  FAIL:", msg); fail++; } else { console.log("  ok  :", msg); } };
@@ -27,18 +32,45 @@ check(badGoRefs.length === 0, `all GO->record refs resolve (${badGoRefs.length} 
 const badLegRefs = LEGISLATION.flatMap((l) => (l.records || []).filter((id) => !recIds.has(id)));
 check(badLegRefs.length === 0, `all legislation->record refs resolve (${badLegRefs.length} broken)`);
 
-// 3. displayed totals match derived data (Phase 1 anti-drift)
-const domains = CATEGORIES.filter((c) => c.id !== "all").length;
-check(domains === 11, `domain count is derived 11 (got ${domains})`);
+// 3. EVERY number shown to a reader is reconciled against the dataset.
+//
+// These used to be comparisons against hard-coded literals, which caught data
+// drift but not display drift: the audit changed the hero counter to "999
+// verified records" and validation still passed. Display constants are now
+// reconciled through src/lib/publicMetrics.js.
+const hero = reconcile(HERO_STRIP, { source: "HERO_STRIP" });
+check(hero.ok, `hero strip reconciles with the datasets (${hero.checked} checked, ${hero.failures.length} wrong)`);
+hero.failures.forEach((f) => console.error(`        ${f.source}."${f.label}": ${f.reason}`));
+check(hero.checked >= 3, `hero strip still declares its dataset metrics (${hero.checked} carry a metric key)`);
+if (hero.unchecked.length) console.log(`  ..  : hero strip editorial entries (not dataset counts): ${hero.unchecked.join(", ")}`);
+
+// Dataset invariants — properties that must hold for the displayed values to
+// mean anything, independent of what those values happen to be.
+for (const inv of checkInvariants()) check(inv.ok, `${inv.name} (${inv.detail})`);
+
+/* Invariants over the LAZY datasets. These live here rather than in
+   publicMetrics.js on purpose: that module is imported by the eager bundle, and
+   importing legislation/GO/gazette/debates from it pulled ~315KB of lazy data
+   into the initial download (main chunk 842KB -> 1,157KB). Node pays no such
+   cost, so the heavy cross-checks belong in the validator. */
 const goDepts = Object.keys(GO_META.byDept || {}).length;
-check(goDepts === 36, `GO departments = 36 (got ${goDepts})`);
-check(GO_LINKS.length === 186, `embedded GO links = 186 (got ${GO_LINKS.length})`);
-check(GO_META.total === 3501, `GO archive total = 3501 (got ${GO_META.total})`);
-const measured = DEBATE_SESSIONS.flatMap((s) => s.sittings).filter((s) => s.pages != null).length;
-const sittings = DEBATE_SESSIONS.flatMap((s) => s.sittings).length;
-check(sittings === 138 && measured === 38, `debates: 138 links, 38 measured (got ${sittings}/${measured})`);
-check(LEGISLATION_META.acts + LEGISLATION_META.bills + LEGISLATION_META.ordinances === LEGISLATION.length,
-  `legislation stages sum to total (${LEGISLATION.length})`);
+check(GO_META.departments === goDepts, `GO department META matches byDept (${GO_META.departments} vs ${goDepts})`);
+check(GO_META.mapped === GO_LINKS.length, `embedded GO META matches GO_LINKS (${GO_META.mapped} vs ${GO_LINKS.length})`);
+check(GO_META.total > GO_LINKS.length, `catalogued GOs exceed embedded (${GO_META.total} vs ${GO_LINKS.length})`);
+const acts = LEGISLATION.filter((l) => l.kind === "Act").length;
+const bills = LEGISLATION.filter((l) => l.kind === "Bill").length;
+const ords = LEGISLATION.filter((l) => l.kind === "Ordinance").length;
+check(acts + bills + ords === LEGISLATION.length, `legislation stages sum to total (${acts}+${bills}+${ords} = ${LEGISLATION.length})`);
+check(LEGISLATION_META.total === LEGISLATION.length && LEGISLATION_META.acts === acts
+  && LEGISLATION_META.bills === bills && LEGISLATION_META.ordinances === ords,
+  `legislation META matches the data (${LEGISLATION_META.total}/${LEGISLATION_META.acts}/${LEGISLATION_META.bills}/${LEGISLATION_META.ordinances})`);
+const allSittings = DEBATE_SESSIONS.flatMap((s) => s.sittings || []);
+const measuredSittings = allSittings.filter((s) => s.pages > 0).length;
+check(measuredSittings <= allSittings.length, `measured sittings within sitting links (${measuredSittings} of ${allSittings.length})`);
+
+console.log(`  ..  : derived — ${DERIVED.achievements} achievements, ${DERIVED.domains} domains, ${DERIVED.promises} promises`);
+console.log(`  ..  : derived — GOs ${GO_META.total} catalogued / ${GO_LINKS.length} embedded across ${goDepts} departments`);
+console.log(`  ..  : derived — sittings ${allSittings.length} linked / ${measuredSittings} measured; legislation ${LEGISLATION.length} (${acts}A/${bills}B/${ords}O)`);
 
 // 4. no invalid dates where dates are expected (dd-mm-yyyy)
 const dre = /^\d{2}-\d{2}-\d{4}$/;
@@ -59,8 +91,10 @@ const badGrades = DATA.filter((r) => !GRADES[gradeRecord(r).grade]).length;
 check(badGrades === 0, `all grades are in the defined ladder`);
 
 // 7. headline fulfilled count is inspectable (every fulfilled promise present in list)
-const fulfilled = PROMISES.filter((p) => p.status === "fulfilled").length;
-check(fulfilled === 400, `fulfilled promises = 400, all inspectable in dataset (got ${fulfilled})`);
+const fulfilled = DERIVED.promisesFulfilled;
+const fulfilledListed = PROMISES.filter((p) => p.status === "fulfilled" && p.text).length;
+check(fulfilled === fulfilledListed,
+  `every fulfilled promise is inspectable in the dataset (${fulfilled} fulfilled, ${fulfilledListed} with text)`);
 
 // 8. no silent ID drift vs baseline
 try {
