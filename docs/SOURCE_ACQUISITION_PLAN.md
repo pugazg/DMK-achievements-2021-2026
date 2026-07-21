@@ -113,5 +113,8 @@ volume, so a reader cannot spot-check them. This is the largest provenance gap i
 the project and is independent of the source pipeline: it needs the souvenir and
 minister-by-minister volumes re-checked page by page.
 
-The queue for this should be emitted as `docs/remediation_queue.json`. It has
-**not** been generated yet.
+The queue is emitted as `docs/remediation_queue.json` (`npm run remediation-queue`),
+ordered by leverage: **27** of the 247 already have a Government Order or Act
+behind them and can be resolved from that document; **5** are mixed-status records
+needing their components split first; the remaining **215** need the printed
+souvenir or minister-by-minister volume re-checked page by page.

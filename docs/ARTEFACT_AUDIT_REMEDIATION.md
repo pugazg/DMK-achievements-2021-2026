@@ -26,7 +26,7 @@ asserts no verdict field can reappear. Documented in
 
 ### P0.2 — Correct misleading coverage statements
 **Finding:** several public labels overstated coverage or used incorrect totals.
-**Status: Done in the UI; README still Open (see below).**
+**Status: Done** — in the UI and in the README.
 
 | Label | Was | Now |
 |---|---|---|
@@ -49,8 +49,9 @@ asserting no record is graded above D.
 
 **Open:** 247 of 438 records still carry `page: null` — no page reference back to
 the source volume, so a reader cannot spot-check them. The structured
-`EvidenceRecord[]` store is designed but unpopulated, and
-`docs/remediation_queue.json` has not been generated. See `docs/EVIDENCE_MODEL.md`.
+`EvidenceRecord[]` store is designed but unpopulated. The remediation queue for
+those 247 records **is** now generated (`docs/remediation_queue.json`, prioritised
+27 / 5 / 215). See `docs/EVIDENCE_MODEL.md`.
 
 ### P0.4 — Clean the data and status taxonomy
 **Status: Done.**
@@ -64,8 +65,8 @@ record ID; no ID changed. See `docs/DATA_QUALITY_REPORT.md`.
 ### P0.5 — Produce a clean, reproducible release package
 **Status: Partial.**
 
-Done: `.gitignore` / `.npmignore` / `.nvmrc`, `engines.node >=20`, and
-`test` / `validate` / `baseline` / `a11y` npm scripts.
+Done: `.gitignore` / `.npmignore` / `.nvmrc`, `engines.node >=20`, and the
+`test` / `validate` / `baseline` / `a11y` / `docs` npm scripts.
 **Open:** `source-package` and `deploy-package` scripts; licensing.
 
 ---
@@ -122,7 +123,7 @@ Done: `.gitignore` / `.npmignore` / `.nvmrc`, `engines.node >=20`, and
 | `EVIDENCE_MODEL.md`, `CLAIM_SEARCH_LIMITATIONS.md`, `MANIFESTO_ASSESSMENT_METHODOLOGY.md` | Done — the code already linked to these; they now exist |
 | `DATA_QUALITY_REPORT.md`, `SOURCE_COVERAGE_MATRIX.md` | Done — generated from JSON, so they cannot drift |
 | `ACCESSIBILITY_REPORT.md`, `SOURCE_ACQUISITION_PLAN.md`, `RTI_GAP_REGISTER.md` | Done |
-| `README.md` corrections | **Open** — still says 12 domains and "who actually started it" |
+| `README.md` corrections | Done — 11 domains, catalogue vs embedded totals separated, Node version, gate commands, Limitations and corrections-policy sections added |
 | `RELEASE_CHECKLIST.md`, `CHANGELOG.md` | Done |
 | Licensing and attribution | **Open** |
 

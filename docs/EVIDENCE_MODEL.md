@@ -95,7 +95,8 @@ Consequences to be honest about:
 - Nothing in the dataset can currently move above D, because nothing in the dataset cites
   an independent counter.
 
-The remediation queue for the page-less records and the design of the evidence store are
+The remediation queue for the page-less records is `docs/remediation_queue.json`
+(`npm run remediation-queue`). The design of the evidence store and the wider gaps are
 tracked in `docs/SOURCE_ACQUISITION_PLAN.md` and `docs/RTI_GAP_REGISTER.md`.
 
 ## 6. Rules for anyone extending this

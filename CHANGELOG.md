@@ -137,4 +137,3 @@ Carried forward and disclosed rather than closed:
 - No textual data-table alternative for charts; no testing with real assistive
   technology.
 - Publisher identity, funding disclosure and licensing are not yet written.
-- `README.md` still carries pre-remediation figures.
