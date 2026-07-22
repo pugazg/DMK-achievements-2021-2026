@@ -1,0 +1,714 @@
+{
+ "generated": "2026-07-21T03:37:32.157Z",
+ "totalIssues": 70,
+ "compoundDoneRecords": [
+  "edu3",
+  "hea4",
+  "inf5",
+  "eco_b2_tidel",
+  "her_b2_temples",
+  "env_b4_thoonmai"
+ ],
+ "issues": [
+  {
+   "file": "promises.js",
+   "id": "#10",
+   "field": "note",
+   "original": "World Books to Tamil - Over 260 books from world languages (including Spanish, French, and German) have been translated into Tamil as of 2026. Focus areas inclu",
+   "proposed": "World Books to Tamil - Over 260 books from world languages (including Spanish, French, and German) have been translated into Tamil as of 2026. Focus areas inclu",
+   "confidence": "high",
+   "status": "detected",
+   "reason": "rupee sign lost in transcoding ('?' before amount)"
+  },
+  {
+   "file": "promises.js",
+   "id": "#26",
+   "field": "note",
+   "original": "Establishment of EAC June 2021 The Economic Advisory Council (including Nobel laureate Esther Duflo and Raghuram Rajan) was tasked with PSU productivity as a co",
+   "proposed": "Establishment of EAC June 2021 The Economic Advisory Council (including Nobel laureate Esther Duflo and Raghuram Rajan) was tasked with PSU productivity as a co",
+   "confidence": "high",
+   "status": "detected",
+   "reason": "rupee sign lost in transcoding ('?' before amount)"
+  },
+  {
+   "file": "promises.js",
+   "id": "#70",
+   "field": "note",
+   "original": "Agri-Tech Grant Scheme 2024–2025 Launched a specialized grant providing Rs 10 lakh for early-stage agri-tech startups and ?25 lakh for market expansion. Biotech",
+   "proposed": "Agri-Tech Grant Scheme 2024–2025 Launched a specialized grant providing Rs 10 lakh for early-stage agri-tech startups and ₹25 lakh for market expansion. Biotech",
+   "confidence": "high",
+   "status": "detected",
+   "reason": "rupee sign lost in transcoding ('?' before amount)"
+  },
+  {
+   "file": "promises.js",
+   "id": "#87",
+   "field": "note",
+   "original": "Tamil Nadu State Budget Speech 2025-2026 (Finance Minister Thangam Thennarasu). Project-based management is active with a ?400 crore allocation. Creating a high",
+   "proposed": "Tamil Nadu State Budget Speech 2025-2026 (Finance Minister Thangam Thennarasu). Project-based management is active with a ₹400 crore allocation. Creating a high",
+   "confidence": "high",
+   "status": "detected",
+   "reason": "rupee sign lost in transcoding ('?' before amount)"
+  },
+  {
+   "file": "promises.js",
+   "id": "#162",
+   "field": "note",
+   "original": "GO (Ms) No 132 August 2021 Initial budgetary commitment to prioritize menstrual hygiene in the first DMK budgetHigher Ed Directive May 25, 2023 Ordered the inst",
+   "proposed": "GO (Ms) No 132 August 2021 Initial budgetary commitment to prioritize menstrual hygiene in the first DMK budgetHigher Ed Directive May 25, 2023 Ordered the inst",
+   "confidence": "high",
+   "status": "detected",
+   "reason": "rupee sign lost in transcoding ('?' before amount)"
+  },
+  {
+   "file": "promises.js",
+   "id": "#178",
+   "field": "note",
+   "original": "GO (Ms) No 148 Nov 25, 2021 RD & PR Dept: Sanctioned ?9175 crore for the first phase of reviving 4,116 rural libraries, including staff provisions. GO (Ms) No 1",
+   "proposed": "GO (Ms) No 148 Nov 25, 2021 RD & PR Dept: Sanctioned ₹9175 crore for the first phase of reviving 4,116 rural libraries, including staff provisions. GO (Ms) No 1",
+   "confidence": "high",
+   "status": "detected",
+   "reason": "rupee sign lost in transcoding ('?' before amount)"
+  },
+  {
+   "file": "promises.js",
+   "id": "#182",
+   "field": "note",
+   "original": "GO (Ms) No 148 Dec 14, 2021 RD & PR Dept: Sanctioned ?9175 crore for the first phase of reviving 4,116 rural libraries/ GO (Ms) No 136 Nov 17, 2022 Sanctioned a",
+   "proposed": "GO (Ms) No 148 Dec 14, 2021 RD & PR Dept: Sanctioned ₹9175 crore for the first phase of reviving 4,116 rural libraries/ GO (Ms) No 136 Nov 17, 2022 Sanctioned a",
+   "confidence": "high",
+   "status": "detected",
+   "reason": "rupee sign lost in transcoding ('?' before amount)"
+  },
+  {
+   "file": "promises.js",
+   "id": "#261",
+   "field": "note",
+   "original": "Limit raised to â‚¹20L",
+   "proposed": "Limit raised to ₹20L",
+   "confidence": "high",
+   "status": "detected",
+   "reason": "UTF-8 rupee sign read as Windows-1252 (mojibake)"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row1",
+   "field": "abstract",
+   "original": "Water Resources Department - Announcement made by the Honble Minister (Water Resources) f the year 2025 - 2026 - Construction of 4 Check dams in Chennai Region ",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row1",
+   "field": "abstract",
+   "original": "Water Resources Department - Announcement made by the Honble Minister (Water Resources) f the year 2025 - 2026 - Construction of 4 Check dams in Chennai Region ",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR/typo in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row2",
+   "field": "abstract",
+   "original": "Water Resources Department - Announcement made by the Honble Minister for Finance and Environment and Climate Change during Budget Speech 2025 - 2026 - Formatio",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row7",
+   "field": "abstract",
+   "original": "Micro, Small Medium Enterprises Department – TANCOIR - Announcement made by the Honble Minister (MS and ME) fforthe year 2025-26 - Scheme for “Promotion of Valu",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row9",
+   "field": "abstract",
+   "original": "Micro, Small Medium Enterprises Department – TANSIM – Announcement made by the Honble Minister (MSME) f the year 2025-26 - Implementation of the “Gramam Thum Pu",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row12",
+   "field": "abstract",
+   "original": "Micro, Small Medium Enterprises Department – Entrepreneurship Development Innovation Institute - Tamil Nadu (EDII-TN) - Innovation Voucher Programme (IVP) - Ann",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row13",
+   "field": "abstract",
+   "original": "Micro, Small Medium Enterprises Department – Industrial Cooperatives - Irula Snake Catchers Industrial Co-operative Society Ltd., Chengalpattu District - Announ",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row15",
+   "field": "abstract",
+   "original": "MSME - Micro, Small Medium Enterprises Department – Entrepreneurship Development Innovative Institute-Tamil Nadu (EDII-TN) – Strategic Plan Phase II (2025-2030)",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row21",
+   "field": "abstract",
+   "original": "Police - Announcement of the Honble Chief Minister of Tamil Nadu during the Budget Session 2023-2024 - Creation of Social Media Cell in Intelligence Section of ",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row23",
+   "field": "abstract",
+   "original": "Pay Ward – Fmation of Pay wards in Kalaignar Centenary Super Speciality Hospital, Guindy, Chennai – Permission accded – Orders - Issued.",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR/typo in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "G.O.Ms.No.649",
+   "field": "abstract",
+   "original": "Police - Announcement made by the Honble Chief Minister of Tamil Nadu during the Budget Session 2024 - 2025 on Demand No.22 Police - Training Programme Magilchi",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row27",
+   "field": "abstract",
+   "original": "Courts - Pudukkottai Judicial District - Announcement made by the Honble Minister for Law on the floor of the Tamil Nadu Legislative Assembly on 24.06.2024 - Bi",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "G.O.Ms.No.563",
+   "field": "abstract",
+   "original": "Courts - Kallakurichi Judicial District - Announcement made by the Honble Minister for law on the floor of the Tamil Nadu Legislative Assembly on 24.06.2024 - s",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row31",
+   "field": "abstract",
+   "original": "Courts - Announcement made by the Honble Minister for Law on the floor of the Tamil Nadu Legislative Assembly on 24.06.2024 - sanction for constitution of an Ad",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "G.O.Ms.No.537",
+   "field": "abstract",
+   "original": "Courts - Kanniyakumari Judicial District - Announcement made by the Honble Minister for law on the floor of the Tamil Nadu legislative Assembly on 24.06.2024 - ",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row35",
+   "field": "abstract",
+   "original": "Courts - Dindigul Judicial District - Announcement made by the Honble Minister for Law on the floor of the Tamil Nadu Legislative Assembly on 24.06.2024 - sanct",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row36",
+   "field": "abstract",
+   "original": "Micro Small Medium Enterprises Department - Announcement made by the Honble Minister for MSME- 2024- 2025- Bifurcation of Micro Small Enterprises Facilitation C",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row41",
+   "field": "abstract",
+   "original": "Water Resources Department – Announcement made by the Honble Minister (Water Resources) for the year 2024-2025 – Rehabilitation, Restoration and Renovation of d",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row45",
+   "field": "abstract",
+   "original": "Micro Small Medium Enterprises Department Announcement made by the Honble Minister for MSME on 28.06.2024 Extending subsidy for availing quality certification t",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "G.O.Ms.No.226",
+   "field": "abstract",
+   "original": "Prisons and Correctional Services - Announcement made by the Honble Minister Law on the floor of Legislative Assembly on 10.04.2023 - Purchase of 28 Nos. of the",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "G.O.Ms.No.223",
+   "field": "abstract",
+   "original": "Prisons and Correctional Services - Announcement made by the Honble Minister Law on the floor of Legislative Assembly on 10.04.2023 - Purchase of 28 Numbers of ",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "G.O.Ms.No.227",
+   "field": "abstract",
+   "original": "Prisons and Correctional Service - Announcement made by the Honble Minister Law on the floor of Legislative Assembly on 10.04.2023 - Purchase of 28 numbers of F",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "G.O.Ms.No.224",
+   "field": "abstract",
+   "original": "Prisons and Correctional Services - Announcement made by the Honble Minister law on the floor of Legislative Assembly on 10.04.2023 - Purchase of 13 Numbers of ",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row57",
+   "field": "abstract",
+   "original": "Announcement - Announcement No.27, made by Honble Minister (Finance and Human Resources Management) in the Budget Speech - Mudalvarin Grama Salaigal Membattu Th",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row90",
+   "field": "abstract",
+   "original": "School Education-Announcement made by the Honble Chief Minister on 07.05.2022 under Rule 110 of Tamil Nadu Legislative Assembly-Establishment of 28 Schools of E",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row98",
+   "field": "abstract",
+   "original": "Courts - Civil and Criminal - Announcement made by the Honble Minister for law on the floor of the Legislative Assembly - Constitution of 4 district Munsif-cum-",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row102",
+   "field": "abstract",
+   "original": "Police - Honble Chief Minister Announcement during the Budget Session on 13.09.2021 - Formation of Marina Beach life guard unit in Chennai - Orders - Issued.",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row108",
+   "field": "abstract",
+   "original": "Transport Department - Tamil Nadu Motor Vehicles Rules, 1989 - Announcement made by the Honble Minister for Transport on the floor of the Assembly for the year ",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row109",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister for Law on the floor of the Assembly - Constitution of a Sub court at Srivaikuntam in Thoothukudi Dist",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row110",
+   "field": "abstract",
+   "original": "Courts - civil - Announcement made by the Honble Minister for law on the floor of the Assembly - constitution of a Sub court at Kodumudi in Erode District - Ord",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row111",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister for Law on the floor of the assembly - Consitution of a Sub Court at Sankarapuram in villupuram distri",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row112",
+   "field": "abstract",
+   "original": "Motor Vehicles - Tamil Nadu Motor Vehicles (Regulation and Control of School Buses) Special Rules, 2012 - Announcement made by the Honble Minister for Transport",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row119",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister for Law on the floor of the Assembly - Constitution of a Sub Court at Vandavasi in Tiruvannamalai Dist",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row120",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister for Law on the floor of the Assembly - Constitution of a Sub Court at Sirkali in Nagapattinam District",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row121",
+   "field": "abstract",
+   "original": "Transport Department - Announcement made by the Honble Minister for Transport for the year 2022-2023 on the floor of the Assembly on 05.05.2022 - Implementation",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row122",
+   "field": "abstract",
+   "original": "Courts - Civil and Criminal - Announcement made by the Honble Minister for Law - Constitution of a District Munsif-cum-Judicial Magistrate Court at Anaicut in V",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row123",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister for Law on the floor of the Assembly - Constitution of a Sub Court at Bodinayakanur in Theni District ",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row124",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister for Law on the floor of the Assembly - Constitution of a Sub Court at Musiri in Tiruchirappalli Distri",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row128",
+   "field": "abstract",
+   "original": "Motor Vehicles - Transport Department - Announcement made by the Honble Minister for Transport on the floor of the Assembly for the year 2021-2022 - Constructio",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row131",
+   "field": "abstract",
+   "original": "Road safety - Innuyir Kappom Thittam - Announcement made by the Honble Chief Minister during the Meeting on Road Safety - Constitution of Special Task Force on ",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row132",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister for Law on the Floor of the Assembly - Constitution of a Sub Court at Thirumayam in Pudukkottai Distri",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row135",
+   "field": "abstract",
+   "original": "Courts - Criminal - Announcement made by the Honble Minister for Law on the Floor of the Legislative Assembly - Constitution of new Chief Judicial Magistrate Co",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row143",
+   "field": "abstract",
+   "original": "Highways Department - Announcement made by the Honble Minister (Public works) during Budget session 2021-2022 - Preparation of Detailed Project Report for the w",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row147",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister for Law on the Floor of the Assembly - Constitution of a Sub Court at Polur in Tiruvannamalai District",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row148",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister for Law on the Floor of the Assembly - Constitution of an Additional District Court at Aruppukottai in",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row154",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister for Law on the Floor of the Assembly - Constitution of a Sub Court at Thiruthuraipoondi in Tiruvarur D",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row167",
+   "field": "abstract",
+   "original": "Micro, Small and Medium Enterprises Department - Announcement made by the Honble Minister for Rural Industries on the floor of Assembly - Relaxation of the educ",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row169",
+   "field": "abstract",
+   "original": "Law Department-Announcement made by the Honble Minister-Organizing of Legal History Congress at Tamil Nadu National Law University, Tiruchirappalli during the y",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row174",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister (Law, Courts and Prisons) on the Floor of the Assembly - Constitution of an Additional District Court ",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row178",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister (Law, Courts and Prisons) on the Floor of the Assembly - Constitution of a Sub Court at Thiruvottiyur ",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row179",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister (Law, Courts and Prisons) on the Floor of the Assembly - Constitution of an Additional District Munsif",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row181",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister (Law, Courts and Prisons) on the Floor of the Assembly - Constitution of a Sub Court at keeranur in Pu",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row182",
+   "field": "abstract",
+   "original": "Courts - Civil - Announcement made by the Honble Minister (Law, Courts and Prisons) on the Floor of the Assembly - Constitution of one more Additional District ",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "govorders.js",
+   "id": "row183",
+   "field": "abstract",
+   "original": "Courts - Civil and Criminal - Announcement made by the Honble Minister for Law, Courts and Prisons - Constitution of a District Munsif-cum-Judicial Magistrate C",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR defect 'Honble' in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "legislation.js",
+   "id": "Bill-6-2026",
+   "field": "title",
+   "original": "The Tamil Nadu Water Resources (Regulation, Management and Augmentaion) Act, 2026, Bill No. 7 of 2026--The Tamil Nadu Panchayats (Amendment) Act, 2026, Bill No.",
+   "proposed": null,
+   "confidence": "low",
+   "status": "detected",
+   "reason": "OCR/typo in quoted source text - flag only, wording preserved"
+  },
+  {
+   "file": "records.js",
+   "id": "rur_b2_schools+rur_b6_schools",
+   "field": "name",
+   "original": "Rural school infrastructure",
+   "proposed": null,
+   "confidence": "high",
+   "status": "detected",
+   "reason": "duplicate visible title"
+  },
+  {
+   "file": "records.js",
+   "id": "edu3",
+   "field": "status",
+   "original": "done",
+   "proposed": "ongoing",
+   "confidence": "review",
+   "status": "detected",
+   "reason": "marked done but detail mentions planned/ongoing components - assess components separately"
+  },
+  {
+   "file": "records.js",
+   "id": "hea4",
+   "field": "status",
+   "original": "done",
+   "proposed": "ongoing",
+   "confidence": "review",
+   "status": "detected",
+   "reason": "marked done but detail mentions planned/ongoing components - assess components separately"
+  },
+  {
+   "file": "records.js",
+   "id": "inf5",
+   "field": "status",
+   "original": "done",
+   "proposed": "ongoing",
+   "confidence": "review",
+   "status": "detected",
+   "reason": "marked done but detail mentions planned/ongoing components - assess components separately"
+  },
+  {
+   "file": "records.js",
+   "id": "eco_b2_tidel",
+   "field": "status",
+   "original": "done",
+   "proposed": "ongoing",
+   "confidence": "review",
+   "status": "detected",
+   "reason": "marked done but detail mentions planned/ongoing components - assess components separately"
+  },
+  {
+   "file": "records.js",
+   "id": "her_b2_temples",
+   "field": "status",
+   "original": "done",
+   "proposed": "ongoing",
+   "confidence": "review",
+   "status": "detected",
+   "reason": "marked done but detail mentions planned/ongoing components - assess components separately"
+  },
+  {
+   "file": "records.js",
+   "id": "env_b4_thoonmai",
+   "field": "status",
+   "original": "done",
+   "proposed": "ongoing",
+   "confidence": "review",
+   "status": "detected",
+   "reason": "marked done but detail mentions planned/ongoing components - assess components separately"
+  }
+ ]
+}

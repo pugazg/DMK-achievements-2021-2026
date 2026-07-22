@@ -1,0 +1,46 @@
+{
+ "generated": "2026-07-21T06:24:07.857Z",
+ "file": "src/data/records.js",
+ "changes": [
+  {
+   "id": "rur_b2_schools",
+   "applied": true,
+   "note": "disambiguated title: \"Rural school infrastructure\" -> \"Rural school classrooms (CESIDS)\""
+  },
+  {
+   "id": "rur_b6_schools",
+   "applied": true,
+   "note": "disambiguated title: \"Rural school infrastructure\" -> \"Rural school classrooms (RD dept)\""
+  },
+  {
+   "id": "edu3",
+   "applied": true,
+   "note": "detail text mixes completed + planned/ongoing components"
+  },
+  {
+   "id": "hea4",
+   "applied": true,
+   "note": "detail text mixes completed + planned/ongoing components"
+  },
+  {
+   "id": "inf5",
+   "applied": true,
+   "note": "detail text mixes completed + planned/ongoing components"
+  },
+  {
+   "id": "eco_b2_tidel",
+   "applied": true,
+   "note": "detail text mixes completed + planned/ongoing components"
+  },
+  {
+   "id": "her_b2_temples",
+   "applied": true,
+   "note": "detail text mixes completed + planned/ongoing components"
+  },
+  {
+   "id": "env_b4_thoonmai",
+   "applied": true,
+   "note": "detail text mixes completed + planned/ongoing components"
+  }
+ ]
+}

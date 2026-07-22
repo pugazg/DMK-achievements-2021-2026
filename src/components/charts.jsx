@@ -33,7 +33,8 @@ export function CompareBars({ spec, accent }) {
   const barW = 66, gap = 78;
   const x1 = W / 2 - gap, x2 = W / 2 + gap - barW + 12;
   const h = (v) => (shown ? ((v / max) * (baseY - top)) : 0);
-  const badge = deltaBadge(a.v, b.v, lowerIsBetter, spec.deltaAsPoints, decimals);
+  let badge = deltaBadge(a.v, b.v, lowerIsBetter, spec.deltaAsPoints, decimals);
+  if (badge && spec.neutral) badge = { ...badge, neutralTone: true };
   const bars = [
     { x: x1, v: a.v, tt: a.t, color: t.faint, dim: true },
     { x: x2, v: b.v, tt: b.t, color: accent, dim: false },
@@ -65,9 +66,9 @@ export function CompareBars({ spec, accent }) {
         {badge && (
           <g transform={`translate(${W / 2 - 2}, ${top + 4})`} style={{ opacity: shown ? 1 : 0, transition: "opacity .5s .9s" }}>
             <rect x={-badge.text.length * 4.4 - 8} y={-13} width={badge.text.length * 8.8 + 16} height={22} rx={11}
-              fill={t.panel} stroke={(badge.good ? t.green : t.red) + "55"} strokeWidth="1" />
+              fill={t.panel} stroke={(badge.neutralTone ? t.grey : badge.good ? t.green : t.red) + "55"} strokeWidth="1" />
             <text textAnchor="middle" y={3} fontSize="13.5" fontWeight="800"
-              fill={badge.good ? t.green : t.red} fontFamily="ui-monospace,monospace">{badge.text}</text>
+              fill={badge.neutralTone ? t.grey : badge.good ? t.green : t.red} fontFamily="ui-monospace,monospace">{badge.text}</text>
           </g>
         )}
       </svg>
@@ -104,7 +105,7 @@ export function SeriesBars({ spec, accent }) {
                 style={{ transition: `height .9s cubic-bezier(.22,1,.36,1) ${i * 0.08}s, y .9s cubic-bezier(.22,1,.36,1) ${i * 0.08}s` }} />
               <text x={cx} y={baseY - bh - 6} textAnchor="middle" fontSize="11" fontWeight="700" fill={accent}
                 style={{ opacity: shown ? 1 : 0, transition: `opacity .5s ${0.5 + i * 0.08}s` }}>{fmt(p.v, decimals)}</text>
-              <text x={cx} y={baseY + 14} textAnchor="middle" fontSize="9.5" fill={t.mute}>{p.t}</text>
+              <text x={cx} y={baseY + 14} textAnchor="middle" fontSize="10.5" fill={t.mute}>{p.t}</text>
             </g>
           );
         })}
@@ -172,7 +173,7 @@ export function ProgressRing({ value, total, size = 128, thickness = 12, color, 
             strokeDasharray={`${len} ${c - len}`} style={{ transition: "stroke-dasharray 1.1s cubic-bezier(.22,1,.36,1)" }} />
         </g>
         <text x={size / 2} y={size / 2 - 1} textAnchor="middle" fontSize="26" fontWeight="800" fill={t.text}>{Math.round(frac * 100)}%</text>
-        <text x={size / 2} y={size / 2 + 17} textAnchor="middle" fontSize="9.5" fill={t.mute} fontFamily="ui-monospace,monospace">{value}/{total}</text>
+        <text x={size / 2} y={size / 2 + 17} textAnchor="middle" fontSize="10.5" fill={t.mute} fontFamily="ui-monospace,monospace">{value}/{total}</text>
       </svg>
       {label && <span style={{ fontSize: 11, color: t.textDim }}>{label}</span>}
     </div>

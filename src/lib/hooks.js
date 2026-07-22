@@ -116,3 +116,35 @@ export function scrollToId(id, navH = 64) {
   const y = el.getBoundingClientRect().top + window.scrollY - navH;
   window.scrollTo({ top: y, behavior: matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
 }
+
+/* Modal a11y: trap focus, restore on close, Escape to close.
+   Attach the returned ref to the dialog container. */
+export function useModalA11y(open, onClose) {
+  const ref = useRef(null);
+  const prevFocus = useRef(null);
+  useEffect(() => {
+    if (!open) return;
+    prevFocus.current = document.activeElement;
+    const el = ref.current;
+    const focusable = () => Array.from(el?.querySelectorAll(
+      'a[href],button:not([disabled]),input,textarea,select,[tabindex]:not([tabindex="-1"])') || []);
+    // move focus into the dialog
+    const first = focusable()[0] || el;
+    first && first.focus?.();
+    const onKey = (e) => {
+      if (e.key === "Escape") { e.preventDefault(); onClose?.(); return; }
+      if (e.key !== "Tab") return;
+      const f = focusable();
+      if (f.length === 0) return;
+      const a = f[0], z = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); }
+      else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      prevFocus.current && prevFocus.current.focus?.();
+    };
+  }, [open, onClose]);
+  return ref;
+}

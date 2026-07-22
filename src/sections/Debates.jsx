@@ -14,16 +14,17 @@ function SessionBlock({ s, defaultOpen }) {
           <span style={{ color: t.faint, fontSize: 12, marginLeft: 10 }}>{s.span} · {s.from} → {s.to}</span>
         </span>
         <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span style={{ color: t.mute, fontSize: 11.5, fontFamily: "ui-monospace,monospace" }}>{s.count} sittings</span>
+          <span style={{ color: t.mute, fontSize: 11.5, fontFamily: "ui-monospace,monospace" }}>{s.count} sittings{s.pages ? ` · ${s.pages.toLocaleString("en-IN")} pp` : ""}</span>
           <span style={{ color: t.faint, fontSize: 12, display: "inline-block", transform: open ? "rotate(180deg)" : "none", transition: "transform .2s" }}>▼</span>
         </span>
       </button>
       {open && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8, marginLeft: 2 }}>
           {s.sittings.map((d) => (
-            <a key={d.iso} href={d.url} target="_blank" rel="noopener noreferrer" title={`Open the official debate record for ${d.date}`}
+            <a key={d.iso} href={d.url} target="_blank" rel="noopener noreferrer"
+              title={`${d.date}${d.pages ? ` · ${d.pages} pages` : ""}${d.words ? ` · ~${d.words.toLocaleString("en-IN")} words` : ""} — opens the official record`}
               style={{ fontSize: 12, padding: "6px 11px", background: t.panel, border: `1px solid ${t.line}`, color: t.textDim, borderRadius: 8, textDecoration: "none", whiteSpace: "nowrap" }}>
-              {d.date} <span style={{ color: t.gold }}>↗</span>
+              {d.date}{d.pages ? <span style={{ color: t.mute }}> · {d.pages}pp</span> : null} <span style={{ color: t.gold }}>↗</span>
             </a>
           ))}
         </div>
@@ -32,19 +33,25 @@ function SessionBlock({ s, defaultOpen }) {
   );
 }
 
+const fmtWords = (w) => (w >= 1e6 ? (w / 1e6).toFixed(w >= 1e7 ? 0 : 1) + "M" : w >= 1e3 ? Math.round(w / 1e3) + "K" : "" + w);
+
 export default function Debates() {
   const t = useT();
+  const M = DEBATES_META;
+  const allSit = DEBATE_SESSIONS.flatMap((s) => s.sittings);
+  const measured = allSit.filter((s) => s.pages != null).length;
   const stats = [
-    { n: DEBATES_META.sittings, l: "sitting days on record" },
-    { n: DEBATES_META.sessions, l: "assembly sessions" },
-    { n: "2021–25", l: "May 2021 → Oct 2025" },
+    { n: M.sittings, l: "sitting links indexed" },
+    { n: measured, l: `transcripts downloaded & measured (of ${M.sittings})` },
+    { n: M.totalPages ? M.totalPages.toLocaleString("en-IN") : "—", l: `pages measured — ${measured} sittings only` },
+    { n: M.totalWords ? fmtWords(M.totalWords) : "—", l: `words extracted — ${measured} sittings only` },
   ];
   return (
     <Section id="debates">
       <SectionHead
         eyebrow="The primary record"
         title="Every word, on the record"
-        lede="Beyond the government's own achievement record, the fullest primary source is the House itself. These are the verbatim debate transcripts of the 16th Tamil Nadu Legislative Assembly — 138 sitting days from May 2021 to October 2025 — indexed here and linked to the official Assembly digital library, where each day's proceedings can be read in full."
+        lede="Beyond the government's own achievement record, the fullest primary source is the House itself. All 138 sitting days of the 16th Assembly (11 May 2021 – 15 Oct 2025, the archive's current extent) are linked to the official Assembly digital library. Page and word measurements exist only for the sittings whose transcripts have been downloaded and text-extracted so far — coverage is shown below, and measurement of the remainder is a resumable queue."
       />
 
       <Reveal>
@@ -67,7 +74,7 @@ export default function Debates() {
       {DEBATE_SESSIONS.map((s, i) => <SessionBlock key={s.session} s={s} defaultOpen={i === DEBATE_SESSIONS.length - 1} />)}
 
       <p style={{ marginTop: 16, color: t.mute, fontSize: 11.5, lineHeight: 1.6 }}>
-        Source: Tamil Nadu Legislative Assembly Digital Library (tnlasdigital.tn.gov.in) · 16th Assembly, 2021–2026. Links open each sitting's official record page.
+        Source: Tamil Nadu Legislative Assembly Digital Library (tnlasdigital.tn.gov.in) · 16th Assembly, 2021–2026. Page/word figures are measured directly from downloaded transcripts and cover only the measured sittings (crawl of 18–19 Jul 2026; remainder queued). Links open each sitting's official record page.
       </p>
     </Section>
   );

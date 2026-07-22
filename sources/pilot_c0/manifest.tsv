@@ -1,0 +1,7 @@
+name	url	http	bytes	sha256	content_type	note
+cag_ag1_tn_audit_reports.html	https://cag.gov.in/ag1/tamil-nadu/en/audit-report	200	77436	aaba524760314f88759bd88387bfde85e8f0cbb98e306ea2e89614de0829c9ef	text/html; charset=UTF-8	CAG AG1 TN audit report listing
+cag_ag2_tn_audit_reports.html	https://cag.gov.in/ag2/tamil-nadu/en/audit-report	200	78704	83737bd5d853bed5f170760f64bb6ab0eb432bc3d1347aaaadebb876d20b7b5a	text/html; charset=UTF-8	CAG AG2 TN audit report listing
+cag_tn_state_reports.html	https://cag.gov.in/en/audit-report/listing?state=32	404	1695	21a789ffb646ed4dd38c497bef98a056c853b6928030ca713fa1dd995dbd4e25	text/html; charset=UTF-8	CAG state-wise report listing (TN)
+fin_policy_notes.html	https://financedept.tn.gov.in/en/policy-notes/	200	360061	043b1e5a92018065d5d3dd3627a06cf8fb4ab557c2bf97bdf24c72ba22a98973	text/html; charset=UTF-8	TN Finance policy notes index
+fin_budget_publications.html	https://financedept.tn.gov.in/en/budget-publications/	200	965730	3e07b0665aa7e3efdb00fcfa6730a41471597e19cba323af67ba217558f83ab5	text/html; charset=UTF-8	TN Finance budget publications index
+tn_press_index.html	https://www.tn.gov.in/press_release.php	200	116643	43ef7b01c93a6e9ad899f7d3f51333d7427a126afc8258a15f65d7bf2238b00c	text/html; charset=UTF-8	TN press release index

@@ -1,0 +1,62 @@
+name: CI
+
+# The four gates this project relies on. Until now they only ever ran on the
+# maintainer's machine, so nothing stopped a broken commit reaching main.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    name: gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          # .nvmrc says ">=20", which setup-node cannot parse as a version.
+          node-version: 20
+          cache: npm
+
+      - name: Install (clean, lockfile-exact)
+        run: npm ci
+
+      # Order matters: tests and validation are cheap and catch the most, so
+      # they run before the build.
+      - name: Tests
+        run: npm test
+
+      - name: Dataset & displayed-metric validation
+        run: npm run validate
+
+      - name: Accessibility — WCAG AA contrast, both themes
+        run: npm run a11y
+
+      - name: Production build
+        run: npm run build
+
+      # The generated docs are derived from the data. If they drift, the
+      # repository is telling readers something the datasets no longer say.
+      - name: Generated docs are in sync with the data
+        run: |
+          npm run docs
+          if ! git diff --quiet -- docs/; then
+            echo "::error::Generated docs are stale. Run 'npm run docs' and commit the result."
+            git diff --stat -- docs/
+            exit 1
+          fi
+          echo "Generated docs match the data."

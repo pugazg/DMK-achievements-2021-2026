@@ -1,3 +1,5 @@
+import { DERIVED } from "../lib/publicMetrics.js";
+
 /* ============================================================
    DASHBOARD, NARRATIVE & TIMELINE DATA
    Curated from the Tamil Nadu Government 2021–26 record and the
@@ -14,12 +16,21 @@ export const HERO_FIGURES = [
   { value: 2.59, decimals: 2, suffix: " cr", label: "People reached at their door", note: "Makkalai Thedi Maruthuvam" },
 ];
 
-/* ---- HERO strip: smaller supporting counters ---- */
+/* ---- HERO strip: smaller supporting counters ----
+   Values are DERIVED from the datasets, never written as literals: a
+   hard-coded "438 verified records" survived a dataset change once and
+   no gate caught it. `metric` names the DERIVED key each counter claims
+   to show, and scripts/validate.mjs + test/metrics.test.mjs reconcile
+   the two. Entries with no `metric` are editorial, not dataset counts.
+
+   Wording note: these are records of what the government reported, not
+   verified outcomes — no record in the corpus is graded above D. The
+   labels must not say "verified". See docs/EVIDENCE_MODEL.md. */
 export const HERO_STRIP = [
-  { value: 438, suffix: "", label: "verified records" },
-  { value: 505, suffix: "", label: "manifesto promises tracked" },
-  { value: 12, suffix: "", label: "domains of governance" },
-  { value: 0, suffix: "", label: "facts invented", accent: true },
+  { metric: "achievements", value: DERIVED.achievements, suffix: "", label: "government-recorded achievements" },
+  { metric: "promises", value: DERIVED.promises, suffix: "", label: "manifesto promises tracked" },
+  { metric: "domains", value: DERIVED.domains, suffix: "", label: "domains of governance" },
+  { value: 0, suffix: "", label: "figures invented", accent: true },
 ];
 
 /* ---- CHARTS ----
@@ -83,7 +94,7 @@ export const CHART_GROUPS = [
         caption: "SRS 2021–23. Infant mortality fell 10.4 → 6.9.",
       },
       {
-        kind: "compare", unit: "", label: "Total fertility rate", lowerIsBetter: true, decimals: 1,
+        kind: "compare", unit: "", label: "Total fertility rate", neutral: true, decimals: 1,
         a: { t: "national", v: 2.0 }, b: { t: "Tamil Nadu", v: 1.3 },
         caption: "Well below the replacement-level national figure.",
       },
@@ -151,7 +162,7 @@ export const CHART_GROUPS = [
         caption: "10 lakh AI-ready laptops added for UG/diploma students (2026).",
       },
       {
-        kind: "compare", unit: "cr", label: "Ambedkar overseas scholars", decimals: 0, unitOverride: "students",
+        kind: "compare", unit: "students", label: "Ambedkar overseas scholars", decimals: 0,
         a: { t: "—", v: 0 }, b: { t: "5 yrs", v: 385 },
         caption: "₹162 cr sent 385 students to Oxford, Cambridge, MIT & more.",
       },
@@ -223,7 +234,7 @@ export const REFERENCES = [
   { t: "Economic Survey of Tamil Nadu 2025–26", meta: "GSDP, per-capita income, exports, sectoral growth." },
   { t: "DMK Election Manifesto 2021 (English)", meta: "The 505 promises tracked in the Manifesto section." },
   { t: "Tamil Nadu Legislative Assembly Digital Library — 16th Assembly debates (2021–2026)", meta: "138 verbatim sitting-day transcripts, indexed in the Debates section." },
-  { t: "Government Orders — Government of Tamil Nadu (tn.gov.in)", meta: "~3,500 GOs indexed across 38 departments; the evidence layer in the Orders section." },
+  { t: "Government Orders — Government of Tamil Nadu (tn.gov.in)", meta: "3,501 GOs catalogued in the archive listing across 36 departments; 186 embedded and linked in the Orders section." },
   { t: "Tamil Nadu Government Gazette (Extraordinary), Part IV — Dept. of Stationery & Printing", meta: "Acts, Bills and Ordinances 2021–2026, in the Laws section." },
   { t: "Sample Registration System (SRS) 2021–23", meta: "Maternal mortality and fertility figures." },
   { t: "StartupTN / TANSIM published data", meta: "Startup registrations, incubators, seed fund." },

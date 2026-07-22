@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useT } from "../lib/theme.js";
+import { useT, textSafe } from "../lib/theme.js";
 import { DATA, CATEGORIES, CAT } from "../data/records.js";
 import { CHART_GROUPS } from "../data/dashboard.js";
 import { Section, SectionHead, Reveal } from "../components/layout.jsx";
@@ -39,7 +39,7 @@ export default function Dashboard() {
           return (
             <Reveal key={g.id}>
               <div style={{ background: t.panel, border: `1px solid ${t.line}`, borderLeft: `3px solid ${accent}`, borderRadius: 16, padding: "22px 22px 20px", boxShadow: t.cardShadow }}>
-                <div style={{ fontSize: 10.5, color: accent, fontFamily: "ui-monospace,monospace", letterSpacing: ".16em", textTransform: "uppercase", marginBottom: 7 }}>{(CAT[g.cat] || {}).emoji} {g.cat}</div>
+                <div style={{ fontSize: 10.5, color: textSafe(accent, t.name), fontFamily: "ui-monospace,monospace", letterSpacing: ".16em", textTransform: "uppercase", marginBottom: 7 }}>{(CAT[g.cat] || {}).emoji} {g.cat}</div>
                 <h3 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: t.text, letterSpacing: "-.01em" }}>{g.title}</h3>
                 <p style={{ margin: "8px 0 20px", fontSize: 13.5, color: t.textDim, lineHeight: 1.65, maxWidth: 680 }}>{g.lede}</p>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: "24px 30px" }}>

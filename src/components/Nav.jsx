@@ -8,11 +8,14 @@ export const SECTIONS = [
   { id: "dashboard", label: "Dashboard" },
   { id: "method", label: "The Method" },
   { id: "explore", label: "Explore" },
-  { id: "claim", label: "Fact-check" },
+  { id: "claim", label: "Claim lookup" },
   { id: "manifesto", label: "Manifesto" },
   { id: "legislation", label: "Laws" },
   { id: "govorders", label: "Orders" },
   { id: "debates", label: "Debates" },
+  { id: "about", label: "About" },
+  { id: "evidence-pilot", label: "Evidence pilot" },
+  { id: "transparency", label: "Transparency" },
 ];
 
 export default function Nav({ onSearch, theme, onToggleTheme }) {
@@ -45,9 +48,9 @@ export default function Nav({ onSearch, theme, onToggleTheme }) {
         </nav>
 
         <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: "auto" }}>
-          <button onClick={onSearch} aria-label="Search" title="Search everything" style={{ ...btn, fontSize: 15, padding: "6px 9px" }}>🔍</button>
+          <button onClick={onSearch} aria-label="Search" title="Search records & promises" style={{ ...btn, fontSize: 15, padding: "6px 9px" }}>🔍</button>
           <button onClick={onToggleTheme} aria-label="Toggle theme" title="Light / dark" style={{ ...btn, fontSize: 15, padding: "6px 9px" }}>{theme === "dark" ? "☀️" : "🌙"}</button>
-          <button className="nav-burger" onClick={() => setOpen((o) => !o)} aria-label="Menu" style={{ ...btn, fontSize: 17, padding: "4px 8px", display: "none" }}>☰</button>
+          <button className="nav-burger" onClick={() => setOpen((o) => !o)} aria-label="Menu" aria-expanded={open} aria-controls="nav-mobile-menu" style={{ ...btn, fontSize: 17, padding: "4px 8px", display: "none" }}>☰</button>
         </div>
       </div>
 
@@ -58,7 +61,7 @@ export default function Nav({ onSearch, theme, onToggleTheme }) {
 
       {/* mobile dropdown */}
       {open && (
-        <div className="nav-mobile" style={{ borderTop: `1px solid ${t.line2}`, padding: "6px 14px 12px", display: "flex", flexWrap: "wrap", gap: 6, background: t.panel2 }}>
+        <div id="nav-mobile-menu" className="nav-mobile" style={{ borderTop: `1px solid ${t.line2}`, padding: "6px 14px 12px", display: "flex", flexWrap: "wrap", gap: 6, background: t.panel2 }}>
           {SECTIONS.map((s) => (
             <button key={s.id} onClick={() => { scrollToId(s.id); setOpen(false); }} style={{
               ...btn, background: active === s.id ? `${t.gold}18` : t.panel, border: `1px solid ${t.line}`,

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useT } from "../lib/theme.js";
+import { useT, textSafe } from "../lib/theme.js";
 import { DATA, CAT } from "../data/records.js";
 import { GO_META, GO_LINKS } from "../data/govorders.js";
 import { GAZETTE_GO_META, GAZETTE_GOS } from "../data/gazettegos.js";
@@ -25,16 +25,16 @@ function GoCard({ g, onPickRecord }) {
         <div style={{ minWidth: 0 }}>
           {g.no && <span style={{ color: t.text, fontSize: 12.5, fontWeight: 700, fontFamily: "ui-monospace,monospace" }}>{g.no}</span>}
           {g.date && <span style={{ color: t.mute, fontSize: 11, fontFamily: "ui-monospace,monospace", marginLeft: 8 }}>{g.date}</span>}
-          {g.budget && <span style={{ marginLeft: 8, fontSize: 10, color: t.red, border: `1px solid ${t.red}55`, borderRadius: 5, padding: "1px 6px", fontFamily: "ui-monospace,monospace" }}>◆ Budget announcement</span>}
+          {g.budget && <span style={{ marginLeft: 8, fontSize: 10, color: textSafe(t.red, t.name), border: `1px solid ${t.red}55`, borderRadius: 5, padding: "1px 6px", fontFamily: "ui-monospace,monospace" }}>◆ Budget announcement</span>}
         </div>
-        <span style={{ fontSize: 10.5, color: c.color, fontFamily: "ui-monospace,monospace", whiteSpace: "nowrap" }}>{c.emoji} {c.en}</span>
+        <span style={{ fontSize: 10.5, color: textSafe(c.color, t.name), fontFamily: "ui-monospace,monospace", whiteSpace: "nowrap" }}>{c.emoji} {c.en}</span>
       </div>
       <p style={{ color: t.textDim, fontSize: 12.5, lineHeight: 1.6, margin: "8px 0 0" }}>{g.abstract}</p>
       <div style={{ fontSize: 10.5, color: t.mute, marginTop: 6 }}>{g.dept}</div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 9, alignItems: "center" }}>
         <a href={g.pdf} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, padding: "3px 10px", background: "transparent", border: `1px solid ${t.gold}55`, color: t.gold, borderRadius: 14, textDecoration: "none", fontFamily: "ui-monospace,monospace" }}>G.O. PDF ↗</a>
         {recs.map((r) => (
-          <button key={r.id} onClick={() => onPickRecord(r)} style={{ fontSize: 11, padding: "3px 9px", background: "transparent", border: `1px solid ${(CAT[r.cat] || {}).color || t.gold}55`, color: (CAT[r.cat] || {}).color || t.gold, borderRadius: 14, cursor: "pointer" }}>{r.name} →</button>
+          <button key={r.id} onClick={() => onPickRecord(r)} style={{ fontSize: 11, padding: "3px 9px", background: "transparent", border: `1px solid ${(CAT[r.cat] || {}).color || t.gold}55`, color: textSafe((CAT[r.cat] || {}).color || t.gold, t.name), borderRadius: 14, cursor: "pointer" }}>{r.name} →</button>
         ))}
         {(g.laws || []).map((l, i) => (
           <span key={i} style={{ fontSize: 10.5, padding: "3px 9px", border: `1px solid ${t.line}`, color: t.faint, borderRadius: 14 }}>⚖ {l.kind} {l.no ? `${l.no}/` : ""}{l.year}</span>
@@ -56,14 +56,14 @@ function GazetteCard({ g, onPickRecord }) {
           {goLabel && <span style={{ color: t.text, fontSize: 12.5, fontWeight: 700, fontFamily: "ui-monospace,monospace" }}>{goLabel}</span>}
           {g.date && <span style={{ color: t.mute, fontSize: 11, fontFamily: "ui-monospace,monospace", marginLeft: 8 }}>{g.date}</span>}
         </div>
-        {g.inPortal && <span style={{ fontSize: 9.5, color: t.green, border: `1px solid ${t.green}55`, borderRadius: 5, padding: "1px 6px", fontFamily: "ui-monospace,monospace", whiteSpace: "nowrap" }}>✓ in portal</span>}
+        {g.inPortal && <span style={{ fontSize: 10.5, color: textSafe(t.green, t.name), border: `1px solid ${t.green}55`, borderRadius: 5, padding: "1px 6px", fontFamily: "ui-monospace,monospace", whiteSpace: "nowrap" }}>✓ in portal</span>}
       </div>
       <p style={{ color: t.textDim, fontSize: 12, lineHeight: 1.55, margin: "8px 0 0" }}>{g.subject}</p>
       {g.dept && <div style={{ fontSize: 10.5, color: t.mute, marginTop: 6 }}>{g.dept}</div>}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 9, alignItems: "center" }}>
         <a href={g.pdf} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, padding: "3px 10px", background: "transparent", border: `1px solid ${t.gold}55`, color: t.gold, borderRadius: 14, textDecoration: "none", fontFamily: "ui-monospace,monospace" }}>Gazette PDF ↗</a>
         {recs.map((r) => (
-          <button key={r.id} onClick={() => onPickRecord(r)} style={{ fontSize: 11, padding: "3px 9px", background: "transparent", border: `1px solid ${(CAT[r.cat] || {}).color || t.gold}55`, color: (CAT[r.cat] || {}).color || t.gold, borderRadius: 14, cursor: "pointer" }}>{r.name} →</button>
+          <button key={r.id} onClick={() => onPickRecord(r)} style={{ fontSize: 11, padding: "3px 9px", background: "transparent", border: `1px solid ${(CAT[r.cat] || {}).color || t.gold}55`, color: textSafe((CAT[r.cat] || {}).color || t.gold, t.name), borderRadius: 14, cursor: "pointer" }}>{r.name} →</button>
         ))}
         {(g.laws || []).map((l, i) => (
           <span key={i} style={{ fontSize: 10.5, padding: "3px 9px", border: `1px solid ${t.line}`, color: t.faint, borderRadius: 14 }}>⚖ {l.kind} {l.no ? `${l.no}/` : ""}{l.year}</span>
@@ -144,11 +144,12 @@ export default function GovOrders({ onPickRecord }) {
   const shown = list.slice(0, limit);
 
   const topDepts = Object.entries(M.byDept || {}).slice(0, 8);
+  const deptCount = Object.keys(M.byDept || {}).length;
   const stats = [
-    { n: fmtK(M.total), l: "Government Orders indexed" },
-    { n: M.departments, l: "departments" },
+    { n: fmtK(M.total), l: "GOs catalogued in the archive listing" },
+    { n: GO_LINKS.length, l: "GOs embedded & linked in this app" },
+    { n: deptCount, l: "departments" },
     { n: M.budget, l: "budget-announcement orders" },
-    { n: "2021–26", l: M.from + " → " + M.to },
   ];
 
   return (
@@ -156,7 +157,7 @@ export default function GovOrders({ onPickRecord }) {
       <SectionHead
         eyebrow="The machinery of delivery"
         title="From announcement to order"
-        lede="A promise becomes real through a Government Order. This layer indexes GOs across all 38 departments — and surfaces the ones that name a scheme, implement an Act, or carry out an announcement made on the floor of the Assembly during the budget. Two sources are indexed here — the department portal and the Government Gazette — each linking to its official PDF."
+        lede={`A promise becomes real through a Government Order. This layer catalogues the archive\u2019s GO listings across ${Object.keys(GO_META.byDept || {}).length} departments, and embeds the subset that names a scheme, implements an Act, or carries out a budget announcement. Two sources are shown \u2014 the department portal and the Government Gazette \u2014 each linking to its official PDF.`}
       />
 
       {/* source toggle */}

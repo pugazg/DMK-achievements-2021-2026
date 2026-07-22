@@ -21,21 +21,21 @@ export default function Hero() {
 
         <Reveal delay={0.05}>
           <h1 style={{ margin: 0, fontSize: "clamp(30px,6vw,60px)", fontWeight: 800, color: t.text, lineHeight: 1.05, letterSpacing: "-.03em", maxWidth: 900 }}>
-            A five-year record,<br /><span style={{ color: t.gold }}>verified line by line.</span>
+            A five-year record,<br /><span style={{ color: t.gold }}>sourced line by line.</span>
           </h1>
         </Reveal>
 
         <Reveal delay={0.1}>
           <p style={{ margin: "20px 0 0", fontSize: "clamp(15px,1.9vw,19px)", color: t.textDim, lineHeight: 1.65, maxWidth: 640 }}>
             An interactive report on what the DMK government did — and who actually started it.
-            Every figure comes only from the official Tamil Nadu record. No AI, no internet, nothing invented.
+            Figures are quoted from the official sources listed in References — not invented. Data as of 18 July 2026.
           </p>
         </Reveal>
 
         <Reveal delay={0.15}>
           <div style={{ display: "flex", gap: 12, marginTop: 30, flexWrap: "wrap" }}>
             <button onClick={() => scrollToId("dashboard")} style={{ padding: "13px 22px", background: t.gold, color: t.name === "dark" ? "#1a1206" : "#fff", border: "none", borderRadius: 10, fontSize: 14.5, fontWeight: 700, cursor: "pointer" }}>See the numbers →</button>
-            <button onClick={() => scrollToId("claim")} style={{ padding: "13px 22px", background: "transparent", color: t.text, border: `1px solid ${t.line}`, borderRadius: 10, fontSize: 14.5, fontWeight: 600, cursor: "pointer" }}>Fact-check a claim</button>
+            <button onClick={() => scrollToId("claim")} style={{ padding: "13px 22px", background: "transparent", color: t.text, border: `1px solid ${t.line}`, borderRadius: 10, fontSize: 14.5, fontWeight: 600, cursor: "pointer" }}>Look up a claim</button>
           </div>
         </Reveal>
 

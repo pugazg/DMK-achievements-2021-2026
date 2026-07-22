@@ -1,0 +1,41 @@
+DATA AND CONTENT LICENCE
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Copyright (c) 2026 Pugazhendhi R
+
+The data compilation in this repository is licensed under CC BY 4.0:
+https://creativecommons.org/licenses/by/4.0/
+
+WHAT THIS COVERS
+
+The compilation and editorial work — the structuring of records, the links
+between records, Government Orders, Acts and manifesto promises, the domain
+categorisation, the evidence grades, and the generated reports in docs/.
+
+WHAT THIS DOES NOT COVER
+
+The underlying source documents themselves. Tamil Nadu Government Orders,
+Gazette notifications, Acts, Bills, Assembly proceedings and the government's
+published achievement volumes belong to their issuing authorities and carry
+their own terms. This project claims no ownership of them and grants no rights
+over them. Text quoted from those documents is reproduced for reference and
+remains the property of the issuing authority.
+
+The manifesto promise statuses are reproduced from an external tracker and
+remain that tracker's assessment, not this project's.
+
+ATTRIBUTION
+
+If you reuse this compilation, attribute it as:
+
+  "The Dravidian Model - Tamil Nadu 2021-2026", compiled by Pugazhendhi R,
+  https://github.com/pugazg/DMK-achievements-2021-2026 (data as of 2026-07-18)
+
+PLEASE CARRY THE CAVEATS
+
+Attribution is a legal requirement; the following is a request. This dataset
+records what the Tamil Nadu government reported about itself. No record in it
+is independently verified: no record is graded above D (sanctioned), and 376 of
+438 rest solely on government-published summaries. If you reuse the numbers,
+please carry that qualification with them. Presenting this data as verified
+fact would reproduce exactly the problem this project was rebuilt to fix.

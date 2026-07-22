@@ -1,0 +1,55 @@
+{
+ "generated": "2026-07-21T12:00:38.467Z",
+ "file": "src/data/promises.js",
+ "changeCount": 8,
+ "changes": [
+  {
+   "id": "#10",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph"
+  },
+  {
+   "id": "#26",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph"
+  },
+  {
+   "id": "#70",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph"
+  },
+  {
+   "id": "#87",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph"
+  },
+  {
+   "id": "#162",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph (2 occurrences); missed by the first pass because the unit match was case-sensitive and the text reads \"Cr\", not \"cr\""
+  },
+  {
+   "id": "#178",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph"
+  },
+  {
+   "id": "#182",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph"
+  },
+  {
+   "id": "#261",
+   "field": "note",
+   "type": "currency-encoding",
+   "note": "restored corrupted rupee glyph"
+  }
+ ]
+}

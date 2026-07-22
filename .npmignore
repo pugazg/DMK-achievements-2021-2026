@@ -1,0 +1,7 @@
+sources/
+scripts/verify_progress.log
+scripts/source_verification.tsv
+node_modules/
+dist/
+*.zip
+.DS_Store

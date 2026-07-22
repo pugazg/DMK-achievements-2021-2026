@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useT } from "../lib/theme.js";
+import { useT, textSafe } from "../lib/theme.js";
 import { DATA, CATEGORIES, CAT } from "../data/records.js";
 import { searchRecords } from "../lib/search.js";
 import { Section, SectionHead } from "../components/layout.jsx";
@@ -27,7 +27,7 @@ export default function Explore({ onCard }) {
       <SectionHead
         eyebrow="The evidence"
         title="Explore every record"
-        lede="438 verified schemes across 12 domains. Filter by area, search a topic or scheme, and turn any record into a shareable card."
+        lede={`${DATA.length} records across ${CATEGORIES.length - 1} domains, quoted from the government\u2019s published 2021\u20132026 record. Filter by area, search a topic or scheme, and turn any record into a shareable card.`}
       />
 
       {/* category chips */}
@@ -37,7 +37,7 @@ export default function Explore({ onCard }) {
             padding: "5px 12px", fontSize: 12, cursor: "pointer", borderRadius: 20,
             background: cat === c.id ? c.color + "22" : t.panel,
             border: `1px solid ${cat === c.id ? c.color + "77" : t.line}`,
-            color: cat === c.id ? c.color : t.faint,
+            color: cat === c.id ? textSafe(c.color, t.name) : t.faint,
           }}>{c.emoji} {c.en}{c.id !== "all" && counts[c.id] ? ` ${counts[c.id]}` : ""}</button>
         ))}
       </div>
@@ -45,6 +45,7 @@ export default function Explore({ onCard }) {
       {/* search */}
       <div style={{ position: "relative", marginBottom: 12 }}>
         <input value={query} onChange={(e) => { setQuery(e.target.value); setLimit(12); }}
+          aria-label="Search the achievement records by scheme, topic or number"
           placeholder="Search a scheme, topic or number…"
           style={{ width: "100%", padding: "14px 16px", background: t.panel, border: `1px solid ${t.line}`, borderRadius: 12, color: t.text, fontSize: 15, outline: "none" }} />
       </div>
