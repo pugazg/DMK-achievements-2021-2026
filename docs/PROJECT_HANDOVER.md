@@ -45,15 +45,15 @@ npm run dev
 
 ## 2. Git state (IMPORTANT)
 
-- **Branch:** `audit-remediation`, 18 commits ahead of `origin/main`. Tree clean, pushed.
-- **PR #7** open, `MERGEABLE`, `gates` check **SUCCESS**. **Not merged** — the single
-  outstanding decision, deliberately left to the owner.
+- **PR #7 was merged on 21 July 2026.** `audit-remediation` was auto-deleted with it
+  (`deleteBranchOnMerge` is on) and no longer exists locally or on the remote.
+- **Branch:** work from `main`, now at `5ed748f` — the PR #7 merge commit. Tree clean.
 - **`main` is protected**: requires a PR, requires the `gates` check, blocks
   force-push and deletion. 0 required approvals (solo maintainer); `enforce_admins`
-  off so there is an escape hatch.
-- **Local `main` is 18 commits behind** with nothing unique — `git pull` before using it.
-- Remote branches: `main`, `audit-remediation`, `backup-pre-expansion-20260718`.
-  Six merged feature branches deleted; `deleteBranchOnMerge` is on.
+  off so there is an escape hatch. **Branch before you commit** — you cannot push
+  to `main` directly.
+- Remote branches: `main`, `backup-pre-expansion-20260718`. Seven merged feature
+  branches deleted.
 - **`debates-content`** is **local-only**, 3 WIP commits, verified superseded (its
   `debates.js` is byte-identical to shipped; its `Debates.jsx` is the
   pre-remediation version). Safe to delete, but it is the only copy.
@@ -94,6 +94,7 @@ Each phase is a commit on `audit-remediation`.
 | **Phase C0.5** | Evidence model v2 — relationship notes, claim components, NG, confidence, document lifecycle |
 | **Phase C0.6** | Adversarial review — blinded packets, second pass, disagreement measurement, reviewer guide |
 | **Infra** | CI workflow (5 checks), `main` protected, stale branches deleted |
+| **Chart data tables** | Every chart plotting more than one value carries a `<table>` in a `<details>` disclosure; `ProgressRing` carries its percentage in the label instead |
 
 ### Findings worth remembering
 
@@ -161,16 +162,18 @@ State this plainly to anyone who asks:
 
 ### Product / engineering
 
-6. **PR #7 merge decision.**
-7. **Chart data tables** — the largest remaining accessibility gap; charts expose
-   values via `aria-label` but have no tabular equivalent.
-8. **Real assistive-technology testing** (VoiceOver/NVDA). Everything so far is
-   computed-style measurement.
-9. **Hero strip counters display 0** — they never animate. Pre-existing, verified
+6. **Real assistive-technology testing** (VoiceOver/NVDA). Everything so far is
+   computed-style measurement — including the chart data tables below, which were
+   verified structurally (DOM, scopes, computed styles) but never heard aloud.
+7. **Hero strip counters display 0** — they never animate. Pre-existing, verified
    not caused by the derivation change; the larger hero figures work. A background
    task chip exists for this.
-10. `source-package` / `deploy-package` scripts; permalinks/URL state; print views.
-11. Two dev-only vulnerabilities (vite/esbuild); fix requires vite 5→8.
+8. **`CompareBars` rounds to whole numbers by default** — `decimals` defaults to 0,
+   so merchandise exports render `26 → 52` for source values `26.15 → 52.07`. The
+   data table inherits the same rounding by design, so chart and table agree. Set
+   `decimals` per spec where the precision is meaningful.
+9. `source-package` / `deploy-package` scripts; permalinks/URL state; print views.
+10. Two dev-only vulnerabilities (vite/esbuild); fix requires vite 5→8.
 
 ### Blocked, not merely undone
 
@@ -233,8 +236,9 @@ a sample of grades.
 
 ## 10. Suggested first message for the new chat
 
-> Continue the DMK Achievements project in `~/Documents/DMK Achievements 2021-2026/app`,
-> branch `audit-remediation`. Read `docs/PROJECT_HANDOVER.md` first, then
+> Continue the DMK Achievements project in `~/Documents/DMK Achievements 2021-2026/app`.
+> Work from `main` and branch before committing — `main` is protected.
+> Read `docs/PROJECT_HANDOVER.md` first, then
 > `docs/EVIDENCE_MODEL_V2.md` and `docs/EVIDENCE_REVIEWER_GUIDE.md`.
 >
 > Do not start bulk ingestion — §7 explains why it is blocked on an independent

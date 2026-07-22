@@ -8,6 +8,54 @@ import { fmt } from "../lib/format.js";
    via useReveal, which resolves immediately when motion reduced).
    ============================================================ */
 
+/* ------------------------------------------------------------
+   TABULAR EQUIVALENTS
+   An aria-label is a short text alternative; it cannot carry a
+   series. Each chart that plots more than one value pairs its SVG
+   with a real <table> inside a native <details> — keyboard-operable
+   without extra JS, exposed to assistive tech, and available to
+   anyone who wants the numbers rather than the shape.
+   ProgressRing is deliberately excluded: it plots a single value,
+   and its label carries the whole of it.
+   ------------------------------------------------------------ */
+function DataTable({ caption, columns, rows }) {
+  const t = useT();
+  const base = { padding: "4px 8px", fontSize: 11, borderBottom: `1px solid ${t.line2}`, textAlign: "left" };
+  const num = { ...base, textAlign: "right", fontFamily: "ui-monospace,monospace", color: t.text };
+  return (
+    <table style={{ borderCollapse: "collapse", width: "100%", margin: "6px 0 0" }}>
+      <caption style={{ captionSide: "top", textAlign: "left", fontSize: 10.5, color: t.mute, paddingBottom: 4 }}>{caption}</caption>
+      <thead>
+        <tr>
+          {columns.map((c, i) => (
+            <th key={c} scope="col" style={{ ...(i === 0 ? base : num), color: t.mute, fontWeight: 600 }}>{c}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr key={r[0]}>
+            <th scope="row" style={{ ...base, color: t.textDim, fontWeight: 500 }}>{r[0]}</th>
+            {r.slice(1).map((v, i) => <td key={i} style={num}>{v}</td>)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function ChartData(props) {
+  const t = useT();
+  return (
+    <details style={{ marginTop: 6 }}>
+      <summary style={{ fontSize: 10.5, color: t.textSoft, cursor: "pointer", fontFamily: "ui-monospace,monospace", letterSpacing: ".06em" }}>
+        Data table
+      </summary>
+      <DataTable {...props} />
+    </details>
+  );
+}
+
 function deltaBadge(a, b, lowerIsBetter, asPoints, decimals = 0) {
   if (a === 0 && b === 0) return null;
   // for rates/percentages a ratio is misleading — show the points change
@@ -45,7 +93,8 @@ export function CompareBars({ spec, accent }) {
         <span style={{ fontSize: 12.5, color: t.text, fontWeight: 600 }}>{label}</span>
         {unit && <span style={{ fontSize: 10.5, color: t.mute, fontFamily: "ui-monospace,monospace" }}>{unit}</span>}
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={`${label}: ${a.t} ${a.v}, ${b.t} ${b.v}`}>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img"
+        aria-label={`${label}${unit ? ` (${unit})` : ""}: ${a.t} ${fmt(a.v, decimals)}, ${b.t} ${fmt(b.v, decimals)}`}>
         <line x1={pad} y1={baseY} x2={W - pad} y2={baseY} stroke={t.line} strokeWidth="1" />
         {bars.map((bar, i) => {
           const bh = h(bar.v);
@@ -73,6 +122,15 @@ export function CompareBars({ spec, accent }) {
         )}
       </svg>
       {spec.caption && <p style={{ margin: "2px 0 0", fontSize: 11, color: t.textSoft, lineHeight: 1.5 }}>{spec.caption}</p>}
+      <ChartData
+        caption={label + (unit ? ` (${unit})` : "")}
+        columns={["Period", unit || "Value"]}
+        rows={[
+          [a.t, fmt(a.v, decimals)],
+          [b.t, fmt(b.v, decimals)],
+          ...(badge ? [["Change", badge.text]] : []),
+        ]}
+      />
     </div>
   );
 }
@@ -83,6 +141,7 @@ export function SeriesBars({ spec, accent }) {
   const [ref, shown] = useReveal();
   const { points, unit, label, decimals = 2 } = spec;
   const max = Math.max(...points.map((p) => p.v), 1);
+  const hasEst = points.some((p) => p.est);
   const H = 130, W = 320, baseY = H - 24, top = 16, pad = 14;
   const slot = (W - pad * 2) / points.length;
   const bw = Math.min(46, slot * 0.62);
@@ -111,12 +170,22 @@ export function SeriesBars({ spec, accent }) {
         })}
       </svg>
       {spec.caption && <p style={{ margin: "2px 0 0", fontSize: 11, color: t.textSoft, lineHeight: 1.5 }}>{spec.caption}</p>}
+      <ChartData
+        caption={label + (unit ? ` (${unit})` : "")}
+        /* the dashed bar marking a projection is visual-only — the
+           Basis column is its text equivalent, and this project does
+           not let a projection read as a measurement */
+        columns={hasEst ? ["Period", unit || "Value", "Basis"] : ["Period", unit || "Value"]}
+        rows={points.map((p) => (hasEst
+          ? [p.t, fmt(p.v, decimals), p.est ? "projected" : "measured"]
+          : [p.t, fmt(p.v, decimals)]))}
+      />
     </div>
   );
 }
 
-/* donut for category distribution */
-export function Donut({ segments, size = 190, thickness = 26, centerLabel, centerSub }) {
+/* donut for domain distribution */
+export function Donut({ segments, size = 190, thickness = 26, centerLabel, centerSub, label = "Records by domain" }) {
   const t = useT();
   const [ref, shown] = useReveal();
   const total = segments.reduce((s, x) => s + x.value, 0) || 1;
@@ -124,34 +193,41 @@ export function Donut({ segments, size = 190, thickness = 26, centerLabel, cente
   const c = 2 * Math.PI * r;
   let offset = 0;
   return (
-    <div ref={ref} style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label="Records by category">
-        <g transform={`rotate(-90 ${size / 2} ${size / 2})`}>
-          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={t.line} strokeWidth={thickness} opacity={0.5} />
-          {segments.map((s, i) => {
-            const frac = s.value / total;
-            const len = shown ? frac * c : 0;
-            const el = (
-              <circle key={i} cx={size / 2} cy={size / 2} r={r} fill="none" stroke={s.color} strokeWidth={thickness}
-                strokeDasharray={`${len} ${c - len}`} strokeDashoffset={-offset} strokeLinecap="butt"
-                style={{ transition: `stroke-dasharray .9s cubic-bezier(.22,1,.36,1) ${i * 0.05}s` }} />
-            );
-            offset += shown ? frac * c : 0;
-            return el;
-          })}
-        </g>
-        <text x={size / 2} y={size / 2 - 2} textAnchor="middle" fontSize="30" fontWeight="800" fill={t.text}>{centerLabel}</text>
-        <text x={size / 2} y={size / 2 + 18} textAnchor="middle" fontSize="10.5" fill={t.mute} fontFamily="ui-monospace,monospace" letterSpacing=".08em">{centerSub}</text>
-      </svg>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px 14px", flex: 1, minWidth: 180 }}>
-        {segments.map((s) => (
-          <div key={s.label} style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 11.5, color: t.textDim }}>
-            <span style={{ width: 9, height: 9, borderRadius: 2, background: s.color, flexShrink: 0 }} />
-            <span style={{ flex: 1 }}>{s.label}</span>
-            <b style={{ color: t.text }}>{s.value}</b>
-          </div>
-        ))}
+    <div ref={ref}>
+      <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={label}>
+          <g transform={`rotate(-90 ${size / 2} ${size / 2})`}>
+            <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={t.line} strokeWidth={thickness} opacity={0.5} />
+            {segments.map((s, i) => {
+              const frac = s.value / total;
+              const len = shown ? frac * c : 0;
+              const el = (
+                <circle key={i} cx={size / 2} cy={size / 2} r={r} fill="none" stroke={s.color} strokeWidth={thickness}
+                  strokeDasharray={`${len} ${c - len}`} strokeDashoffset={-offset} strokeLinecap="butt"
+                  style={{ transition: `stroke-dasharray .9s cubic-bezier(.22,1,.36,1) ${i * 0.05}s` }} />
+              );
+              offset += shown ? frac * c : 0;
+              return el;
+            })}
+          </g>
+          <text x={size / 2} y={size / 2 - 2} textAnchor="middle" fontSize="30" fontWeight="800" fill={t.text}>{centerLabel}</text>
+          <text x={size / 2} y={size / 2 + 18} textAnchor="middle" fontSize="10.5" fill={t.mute} fontFamily="ui-monospace,monospace" letterSpacing=".08em">{centerSub}</text>
+        </svg>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px 14px", flex: 1, minWidth: 180 }}>
+          {segments.map((s) => (
+            <div key={s.label} style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 11.5, color: t.textDim }}>
+              <span style={{ width: 9, height: 9, borderRadius: 2, background: s.color, flexShrink: 0 }} />
+              <span style={{ flex: 1 }}>{s.label}</span>
+              <b style={{ color: t.text }}>{s.value}</b>
+            </div>
+          ))}
+        </div>
       </div>
+      <ChartData
+        caption={`${label} — ${total} in total`}
+        columns={["Domain", "Records", "Share"]}
+        rows={segments.map((s) => [s.label, s.value, Math.round((s.value / total) * 100) + "%"])}
+      />
     </div>
   );
 }
@@ -166,7 +242,10 @@ export function ProgressRing({ value, total, size = 128, thickness = 12, color, 
   const len = shown ? frac * c : 0;
   return (
     <div ref={ref} style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`${label}: ${value} of ${total}`}>
+      {/* one value, so the label is the whole text equivalent — the
+          percentage is rendered in the ring and must appear here too */}
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img"
+        aria-label={`${label}: ${value} of ${total} (${Math.round(frac * 100)}%)`}>
         <g transform={`rotate(-90 ${size / 2} ${size / 2})`}>
           <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={t.line} strokeWidth={thickness} />
           <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={thickness} strokeLinecap="round"

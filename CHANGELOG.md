@@ -7,6 +7,44 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [Unreleased] — Chart data tables
+
+**No data changed. Interface only — no record was added, removed or re-graded.**
+
+### Added — accessibility
+
+- **A tabular equivalent for every chart that plots more than one value**
+  (`src/components/charts.jsx`). `CompareBars`, `SeriesBars` and `Donut` each render
+  a real `<table>` — `<caption>`, `scope="col"` headers, `scope="row"` row headers —
+  inside a native `<details>` disclosure. Keyboard-operable with no added JavaScript,
+  and available to sighted readers who want the numbers rather than the shape.
+  This closes the largest remaining accessibility gap: an `aria-label` is a short
+  text alternative and cannot carry a series.
+- **`SeriesBars` gains a `Basis` column** when a series contains projections. The
+  dashed bar marking a projection was visual-only; the column states `measured` or
+  `projected` in text, so a projection cannot read as a measurement.
+- **`Donut` gains a `Share` column** and states its total in the table caption.
+
+### Changed
+
+- **`Donut`'s `aria-label` no longer says "Records by category."** It says
+  "Records by domain", matching the section heading and the 11-domain vocabulary —
+  "category" was a survival of the 12-vs-11 domain confusion the audit corrected.
+  The label is now a prop rather than a hard-coded string.
+- **`CompareBars`' `aria-label` now formats its values** through `fmt()` and names
+  the unit, instead of reading raw numbers.
+- **`ProgressRing`'s `aria-label` now includes the percentage** shown in the ring.
+  It plots a single value, so it is deliberately given no data table — a three-cell
+  table would be ceremony, and the label carries the whole of it.
+
+### Known limitation
+
+- Verified structurally (DOM, header scopes, computed styles, keyboard focus) and
+  by the existing gates. **Not yet tested with a real screen reader** — see
+  `docs/PROJECT_HANDOVER.md` §7.
+
+---
+
 ## [Unreleased] — Phase B: public transparency and methodology
 
 **Data 2026-07-18 · Methodology v1.0 · Build 2.0.0**
