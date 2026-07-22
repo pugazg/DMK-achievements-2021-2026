@@ -12,6 +12,12 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { EVIDENCE_PILOT, PILOT_META } from "../src/data/evidencePilot.js";
+import { VERSION } from "../src/lib/version.js";
+
+/* Generated documents must be REPRODUCIBLE: regenerating them without a data
+   change must produce byte-identical output, or CI's drift check fails every
+   day the clock rolls over. So the stamp comes from the data's own version,
+   not from the wall clock. */
 
 /* Fields that would anchor a reviewer to the existing judgement. */
 const WITHHELD_RECORD = ["assessment"];
@@ -132,7 +138,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     "docs/reviewer_packets/packets.json",
     JSON.stringify(
       {
-        generated: new Date().toISOString().slice(0, 10),
+        generated: VERSION.dataUpdated,
         pilot_version: PILOT_META.version,
         blinded_fields: { record: WITHHELD_RECORD, component: WITHHELD_COMPONENT, source: WITHHELD_SOURCE },
         note:

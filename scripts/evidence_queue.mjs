@@ -10,6 +10,12 @@ import { GO_LINKS } from "../src/data/govorders.js";
 import { LEGISLATION } from "../src/data/legislation.js";
 import { PROMISE_GO_LINKS } from "../src/data/promiseGoLinks.js";
 import { gradeRecord, EVIDENCE_STAGES, SOURCE_AUTHORITIES } from "../src/lib/evidence.js";
+import { VERSION } from "../src/lib/version.js";
+
+/* Generated documents must be REPRODUCIBLE: regenerating them without a data
+   change must produce byte-identical output, or CI's drift check fails every
+   day the clock rolls over. So the stamp comes from the data's own version,
+   not from the wall clock. */
 
 const GO = new Set(GO_LINKS.flatMap((g) => g.records || []));
 const LAW = new Set(LEGISLATION.flatMap((l) => l.records || []));
@@ -76,7 +82,7 @@ const list = (arr, f, max = 25) =>
 
 const md = `# Evidence Remediation Queue
 
-**Generated:** ${new Date().toISOString().slice(0, 10)} by \`scripts/evidence_queue.mjs\`.
+**Generated:** ${VERSION.dataUpdated} by \`scripts/evidence_queue.mjs\`.
 **Diagnostic only — nothing here has been fixed, and this script changes no data.**
 
 Classifies all ${n} achievement records and ${PROMISES.length} manifesto promises by

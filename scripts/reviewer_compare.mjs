@@ -7,6 +7,12 @@ import { pathToFileURL } from "node:url";
 import { EVIDENCE_PILOT } from "../src/data/evidencePilot.js";
 import { SECOND_PASS, REVIEW_META } from "../src/data/evidenceReview.js";
 import { rollUpGrade, rollUpConfidence } from "../src/lib/evidenceRecord.js";
+import { VERSION } from "../src/lib/version.js";
+
+/* Generated documents must be REPRODUCIBLE: regenerating them without a data
+   change must produce byte-identical output, or CI's drift check fails every
+   day the clock rolls over. So the stamp comes from the data's own version,
+   not from the wall clock. */
 
 /* Disagreement taxonomy from the phase brief. */
 export const CLASSES = {
@@ -90,7 +96,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
 
   const md = `# Evidence Model — Adversarial Review (Phase C0.6)
 
-**Generated:** ${new Date().toISOString().slice(0, 10)} by \`scripts/reviewer_compare.mjs\`.
+**Generated:** ${VERSION.dataUpdated} by \`scripts/reviewer_compare.mjs\`.
 **Do not hand-edit** — re-run the script.
 **Packets:** \`docs/reviewer_packets/packets.json\` (blinded) ·
 **Second pass:** \`src/data/evidenceReview.js\` ·

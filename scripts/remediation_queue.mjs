@@ -10,6 +10,12 @@ import { DATA } from "../src/data/records.js";
 import { GO_LINKS } from "../src/data/govorders.js";
 import { LEGISLATION } from "../src/data/legislation.js";
 import { gradeRecord } from "../src/lib/evidence.js";
+import { VERSION } from "../src/lib/version.js";
+
+/* Generated documents must be REPRODUCIBLE: regenerating them without a data
+   change must produce byte-identical output, or CI's drift check fails every
+   day the clock rolls over. So the stamp comes from the data's own version,
+   not from the wall clock. */
 
 const GO_BACKED = new Set(GO_LINKS.flatMap((g) => g.records || []));
 const LAW_BACKED = new Set(LEGISLATION.flatMap((l) => l.records || []));
@@ -49,7 +55,7 @@ writeFileSync(
   "docs/remediation_queue.json",
   JSON.stringify(
     {
-      generated: new Date().toISOString().slice(0, 10),
+      generated: VERSION.dataUpdated,
       purpose:
         "Achievement records with no page reference to their source volume. Until a page is recorded, a reader cannot spot-check the claim.",
       total_records: DATA.length,

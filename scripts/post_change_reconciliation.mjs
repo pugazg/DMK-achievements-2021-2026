@@ -14,6 +14,12 @@ import { PROMISE_GO_LINKS } from "../src/data/promiseGoLinks.js";
 import { HERO_STRIP } from "../src/data/dashboard.js";
 import { gradeRecord } from "../src/lib/evidence.js";
 import { DERIVED, reconcile } from "../src/lib/publicMetrics.js";
+import { VERSION } from "../src/lib/version.js";
+
+/* Generated documents must be REPRODUCIBLE: regenerating them without a data
+   change must produce byte-identical output, or CI's drift check fails every
+   day the clock rolls over. So the stamp comes from the data's own version,
+   not from the wall clock. */
 
 const reg = JSON.parse(readFileSync("src/data/sourceRegistry.json", "utf8"));
 const sittings = DEBATE_SESSIONS.flatMap((s) => s.sittings || []);
@@ -73,7 +79,7 @@ const unguarded = rows.filter((r) => !r.guarded);
 
 const md = `# Post-Change Data Reconciliation
 
-**Generated:** ${new Date().toISOString().slice(0, 10)} by \`scripts/post_change_reconciliation.mjs\`.
+**Generated:** ${VERSION.dataUpdated} by \`scripts/post_change_reconciliation.mjs\`.
 **Do not hand-edit** — re-run the script.
 
 Every number below is **recomputed from the source data at run time** and compared

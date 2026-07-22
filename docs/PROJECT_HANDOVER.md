@@ -1,178 +1,244 @@
 # Project Handover — DMK Achievements 2021–2026 Evidence Explorer
 
-**Handover date:** 21 July 2026
-**Purpose:** Resume the audit-remediation work in a fresh chat without losing context.
-**Read this first, then `docs/DMK_Achievements_Artefact_Audit_2026-07-19.md` (the reviewer's audit) and the remediation brief.**
+**Handover date:** 21 July 2026 (rewritten after Phase C0.6; supersedes the
+mid-remediation version)
+**Purpose:** resume work in a fresh chat without re-deriving context.
+**Read this first**, then `docs/EVIDENCE_MODEL_V2.md` and `docs/EVIDENCE_REVIEWER_GUIDE.md`.
 
 ---
 
 ## 1. What this project is
 
-An interactive, source-linked React/Vite explorer of the Tamil Nadu (DMK) government's
-2021–2026 record. It started as a promotional dashboard and is being converted into a
-**transparent, source-driven public evidence explorer** per a reviewer's audit + a 12-phase
-remediation brief + a source link-pack.
+An interactive, fully-offline React/Vite **evidence explorer** of the Tamil Nadu
+government's 2021–2026 record. It began as a promotional dashboard, was audited,
+and has been rebuilt into a source-linked artefact that is deliberately careful
+about what it claims.
 
-- **GitHub repo:** `pugazg/DMK-achievements-2021-2026` (authenticated via `gh`, user `pugazg`).
-- **Local working copy:** `~/Documents/DMK Achievements 2021-2026/app` (the app lives in `app/`).
-- **Node:** v22 present; `engines.node >=20`, `.nvmrc` = `>=20`.
-- **Build:** `npm ci` then `npm run build` (Vite). Zero runtime deps beyond React; charts are hand-rolled inline SVG; fully offline/static.
+The one-line description — getting this wrong is the original sin the project has
+spent every phase correcting:
 
-### Key commands
-```
+> A searchable, source-linked index of **what the Tamil Nadu government says it
+> did** between 2021 and 2026 — **not** an assessment of whether it did it.
+
+- **Repo:** https://github.com/pugazg/DMK-achievements-2021-2026 (public, `gh` authenticated as `pugazg`)
+- **Local:** `~/Documents/DMK Achievements 2021-2026/app`
+- **Maintainer:** Pugazhendhi R · independent, no political affiliation, self-funded
+- **Licence:** MIT (code) + CC BY 4.0 (data compilation); government documents not licensed here
+- **Versions:** release 2.0.0 · data cut-off 2026-07-18 · methodology 1.0 · evidence schema v2.1
+
+### Commands
+
+```bash
 cd "~/Documents/DMK Achievements 2021-2026/app"
 npm ci
-npm run build       # vite production build
-npm run test        # node --test  (adversarial claim-lookup tests)
-npm run validate    # scripts/validate.mjs — 19 dataset/label integrity checks
-npm run a11y        # scripts/check_contrast.mjs — WCAG AA contrast, both themes
-npm run docs        # regenerate the three generated docs from the data
-npm run baseline    # regenerate docs/BASELINE_MANIFEST.json (DO NOT overwrite the committed pre-change baseline casually)
+npm test        # 100 tests
+npm run validate
+npm run a11y
+npm run build
+npm run docs    # regenerate derived docs — CI fails if they drift
+npm run dev
 ```
+
+**All gates pass as of this handover.** CI runs them on every PR.
 
 ---
 
 ## 2. Git state (IMPORTANT)
 
-- **Active branch:** `audit-remediation` (branched from `origin/main`).
-- **Last commit:** `0ff9ad0` — "Audit remediation P0-P2 + P4/P7/P9/P10…" (all P0-P2 work committed, working tree clean at handover).
-- **`main`** already has PRs #1–#6 merged (report expansion, Debates, Laws, Orders, Gazette 2nd source, manifesto→GO links).
-- **`audit-remediation` is NOT yet pushed / no PR opened.** Next chat should: continue remaining phases → push branch → open PR → (user merges).
-- Pre-change backups exist: branch `backup-pre-expansion-20260718` + a local zip in the working dir.
-
-### Branch hygiene note
-Earlier feature work used per-feature branches merged into `main`. There is also a local
-`debates-content` branch holding the enriched debates data (38 measured sittings) + earlier
-WIP; the audit branch already pulled `src/data/debates.js` + `src/sections/Debates.jsx` from it.
+- **Branch:** `audit-remediation`, 18 commits ahead of `origin/main`. Tree clean, pushed.
+- **PR #7** open, `MERGEABLE`, `gates` check **SUCCESS**. **Not merged** — the single
+  outstanding decision, deliberately left to the owner.
+- **`main` is protected**: requires a PR, requires the `gates` check, blocks
+  force-push and deletion. 0 required approvals (solo maintainer); `enforce_admins`
+  off so there is an escape hatch.
+- **Local `main` is 18 commits behind** with nothing unique — `git pull` before using it.
+- Remote branches: `main`, `audit-remediation`, `backup-pre-expansion-20260718`.
+  Six merged feature branches deleted; `deleteBranchOnMerge` is on.
+- **`debates-content`** is **local-only**, 3 WIP commits, verified superseded (its
+  `debates.js` is byte-identical to shipped; its `Debates.jsx` is the
+  pre-remediation version). Safe to delete, but it is the only copy.
 
 ---
 
-## 3. Dataset facts (verified from source — use these, they're in tests)
+## 3. Dataset facts (verified, test-guarded)
 
 | Dataset | Count | Notes |
 |---|---|---|
-| Achievement records (`src/data/records.js`) | **438** | unique IDs; 247 have `page: null`; 6 flagged `mixedStatus:true` |
-| Domains (`CATEGORIES`) | **11** | + an "All" filter (do NOT count as a 12th domain) |
-| Manifesto promises (`src/data/promises.js`) | **505** | 400 status=fulfilled; statuses MIRROR the external Pudhiyavan tracker |
-| Assembly sittings (`src/data/debates.js`) | **138 links / 38 measured** | pages=12,720 & words=2.17M are for the **38 measured only** |
-| Government Orders (`src/data/govorders.js`) | **3,501 archive / 186 embedded** | `GO_META.byDept` = **36** departments |
-| Gazette GOs (`src/data/gazettegos.js`) | **788** | 286 weekly issues; ~340KB (lazy-loaded via GovOrders) |
-| Legislation (`src/data/legislation.js`) | **222** | 119 Acts, 95 Bills, 8 Ordinances; 164 unique PDFs |
-| Promise→GO links (`src/data/promiseGoLinks.js`) | 41 links / 38 promises | |
+| Achievement records | **438** | 247 have `page: null`; 6 flagged `mixedStatus` |
+| Domains | **11** | "All" is a filter, not a domain — the original 12-vs-11 bug |
+| Manifesto promises | **505** | 400 "fulfilled" — **an external tracker's assessment**, reproduced |
+| Assembly sittings | **138 links / 38 measured** | 12,720pp and 2.17M words are the 38 only |
+| Government Orders | **3,501 catalogued / 186 embedded** | 36 departments |
+| Gazette GOs | **788** | 286 weekly issues; ~340KB, lazy-loaded |
+| Legislation | **222** | 119 Acts, 95 Bills, 8 Ordinances |
+| Promise→GO links | 41 links / 38 promises | under 8% of the manifesto |
+| Source registry | **108 catalogued / 0 ingested** | 10 pilot documents fetched |
+| Evidence grades (all 438) | **62 D · 376 E · 0 A/B/C** | computed at render time |
 
-Baseline snapshot: `docs/BASELINE_MANIFEST.json`.
-
----
-
-## 4. What has been DONE on `audit-remediation` (committed in 0ff9ad0)
-
-- **Phase 0 baseline:** `scripts/baseline.mjs` → `docs/BASELINE_MANIFEST.json`; clean `npm ci` + build verified.
-- **Phase 1 labels (all corrected & test-guarded):** 12→11 domains (derived); 38→36 GO depts (derived); GO stats now separate "3,501 catalogued" vs "186 embedded"; Debates split "138 links / 38 measured"; Legislation split Acts/Bills/Ordinances by legal stage ("Legislation: introduced and enacted"); Nav "Fact-check"→"Claim lookup"; search title "Search everything"→"Search records & promises"; Hero "verified line by line"→"sourced line by line" + "as of 18 Jul 2026"; Ambedkar chart unit fixed (students not cr); fertility chart made `neutral` (no good/bad colour).
-- **Phase 3 Claim rewrite (KEY):** `src/lib/search.js` `lookupClaim()` + `src/sections/Claim.jsx`. Neutral retrieval only — abstains (`not_found`/`insufficient_match`) on weak matches, flags negation ("cancelled/banned/stopped/…"), requires ≥60% coverage + ≥2 matched terms + one distinctive (≥6-char) term, NEVER returns a verdict. Tests: `test/claim.test.mjs` (8 adversarial cases, all pass).
-- **Phase 4 evidence grades:** `src/lib/evidence.js` — A–F ladder, conservative auto-grade (≤D only; E default for souvenir-sourced, D if a GO/Act names the scheme). Grade chip on every `RecordCard` with rationale tooltip. Validation asserts no record graded A/B/C.
-- **Phase 5 manifesto disclosure:** collapsible "How these statuses were assessed" note in `Manifesto.jsx` (statuses = external tracker's, not this project's verification; texts are condensed English summaries).
-- **Phase 7 data quality:** `scripts/data_quality_scan.mjs` → `docs/data_quality_report.json` (70 issues). Applied + logged: 7 currency-mojibake promise fixes (`docs/migration_currency.json`), duplicate "Rural school infrastructure" titles disambiguated + 6 compound-done records flagged `mixedStatus` (`docs/migration_records.json`). Original wording preserved; IDs unchanged.
-- **Phase 9 accessibility:** `useModalA11y` hook (focus trap + Esc + focus restore); dialog role/aria-modal on SearchOverlay & ShareCard; skip-to-content link; mobile menu `aria-expanded`/`aria-controls`; raised muted-text contrast (dark + light); ShareCard verdict language removed ("VERIFIED RECORD"→"FROM THE STATE RECORD", copy line now says "government-reported; not independently audited"); About/Methodology section added (Footer).
-- **Phase 10 performance:** React.lazy for Legislation/GovOrders/Debates + `ErrorBoundary`. **Main bundle 1,179KB → 840KB** (243KB gzip); GovOrders (with 340KB gazette data) split to a 291KB on-demand chunk.
-- **Phase 6 source registry (partial):** `src/data/sourceRegistry.json` (108 sources from the link pack). Verifier `scripts/verify_sources.sh` → `scripts/source_verification.tsv`: **92/108 reachable (HTTP 200)**, 3×403, 13×000. Pilot ingest `scripts/pilot_ingest.sh` → `sources/pilot/manifest.tsv`: **11/11 sample docs fetched with sha256** (3 Economic-Survey PDFs + finance/CAG/DMK/press/assembly/dept index pages).
-- **Phase 11 packaging:** `.gitignore`, `.npmignore`, `.nvmrc`, `engines`, npm scripts (test/validate/baseline).
-
-**Gate status at handover:** `npm run test` 8/8 pass · `npm run validate` 19/19 pass · `npm run build` passes (840KB main).
+**Every displayed number is derived** via `src/lib/publicMetrics.js` and reconciled
+by `npm run validate`. A hard-coded count now fails the build.
 
 ---
 
-## 5. What REMAINS (next-chat TODO, in priority order)
+## 4. What has been done
 
-**Updated 21 Jul 2026.** Commits since the original handover: `966696d`, `f7a2228`,
-`2fb5c94`, `c58cdc1`, `06a1b4f` — all on `audit-remediation`, tree clean, **not yet pushed**.
+Each phase is a commit on `audit-remediation`.
 
-### Done since handover
+| Phase | Outcome |
+|---|---|
+| **Audit remediation P0–P12** | Claim tool rewritten as neutral retrieval; labels corrected (12→11 domains, 38→36 depts, catalogue vs embedded); evidence grades; manifesto disclosure; data-quality fixes; lazy loading (1,152→842 KB initial) |
+| **Verification audit** | Adversarial re-check. Found 9 residual defects, incl. "438 verified records" still live and `index.html` still advertising "a fact-checker" |
+| **Phase A** | Fixed those. Hero wording, metadata, Tamil claim search, input labels, `lang="ta"`, small-text review, doc corrections |
+| **Phase B** | Publisher transparency completed; in-app `#transparency`; `METHODOLOGY.md`; `CORRECTIONS.md`; MIT + CC BY 4.0; version info |
+| **Phase C0** | 25-subject evidence pilot with real adverse evidence from the CAG |
+| **Phase C0.5** | Evidence model v2 — relationship notes, claim components, NG, confidence, document lifecycle |
+| **Phase C0.6** | Adversarial review — blinded packets, second pass, disagreement measurement, reviewer guide |
+| **Infra** | CI workflow (5 checks), `main` protected, stale branches deleted |
 
-1. ~~Phase 6/12 registry patch~~ — **done**. Registry now carries `http_status` /
-   `accessibility` / `automation_allowed` / `acquisition_mode` / `last_checked_at`.
-   92 reachable · 3 blocked (403) · 6 server_error · 7 unreachable · 40 in the manual
-   queue (`docs/SOURCE_MANUAL_QUEUE.json`). The 6 DES pages moved from timeout to HTTP
-   500 on a 60s re-check — host up, application erroring; worth re-checking periodically.
-2. ~~Phase 12 documentation~~ — **done**. All 11 documents written. Three are generated
-   (`npm run docs`) so they cannot drift: `SOURCE_COVERAGE_MATRIX.md`,
-   `DATA_QUALITY_REPORT.md`, `remediation_queue.json`.
-3. ~~Phase 2 remediation queue~~ — **done**. `docs/remediation_queue.json`, 247 records,
-   prioritised 27 (document-backed) / 5 (mixed-status) / 215 (souvenir only).
-   The structured `EvidenceRecord[]` store is still designed-not-built.
-4. ~~README update~~ — **done**. Rewritten with 11 domains, catalogue-vs-embedded totals,
-   Node version, all gate commands, Limitations, corrections policy.
-5. ~~Phase 9 accessibility~~ — **went well beyond the audit's finding.** A full in-browser
-   audit found **76 contrast failures on dark, 78 on light**. Nearly all were one systemic
-   defect: identity hues (category / grade / origin / kind / status) used verbatim as text
-   in both themes. The grade chip on all 438 cards sat at 2.25:1 in light mode. Fixed with
-   `textSafe()` in `src/lib/theme.js`. **Now 0/0**, guarded by `npm run a11y`.
+### Findings worth remembering
 
-### Still open
-
-1. **Packaging scripts** — `source-package` / `deploy-package` (Phase 11).
-2. **Final deliverables report** — executive summary, file-change report, dataset
-   reconciliation, source coverage, test results, manual-review queue, release
-   recommendation. Recommendation stands: **public beta evidence explorer**, not a
-   fact-checking platform.
-3. **Push `audit-remediation` + open PR.** Not done — deliberately left for the user.
-4. **Publisher identity, political affiliation, funding disclosure, licensing.** Unwritten,
-   and a genuine launch blocker for a politically-charged artefact. Flagged in the README
-   and `docs/RELEASE_CHECKLIST.md`.
-5. **Chart data-table alternatives**, real AT testing, `lang="ta"` tagging, permalinks /
-   URL state, print views, per-value chart citations. All logged as Open in
-   `docs/ARTEFACT_AUDIT_REMEDIATION.md`.
-
-### IMPORTANT compliance finding (new)
-
-`robots.txt` was read for all 60 origins. **`assembly.tn.gov.in` and `tn.data.gov.in`
-publish a blanket `User-agent: * / Disallow: /`.** The outstanding work to measure the
-remaining 100 of 138 Assembly sittings therefore **must not be done by crawling** — the
-resumable-queue plan in the original handover is not available. Needs a manual process or
-permission from the Assembly. The 138 outbound links are unaffected; linking is not
-crawling. A further 30 sources serve an HTML soft-404 at `/robots.txt`, recorded as
-**unknown**, never as permission.
-
-### Correction to the original handover
-
-"11/11 pilot docs fetched" counted the manifest header row. It is **10 documents**.
-Separately: the data-quality scan flagged 8 currency-encoding defects but only 7 had been
-repaired — promise **#162** was skipped because the unit pattern was case-sensitive and
-that note reads "?169 Cr". Fixed and logged (`migration_currency.json`, changeCount 8).
-
-### Deferred / large source-acquisition (Phase 6 priorities 1-14)
-
-Architecture + registry + pilot are done; **0 of 108 registry sources ingested**. Full
-ingestion remains a resumable queue — do NOT claim any source reviewed unless actually
-fetched and hashed. Respect robots/CAPTCHA/ToS; blocked ones go to the manual queue.
-See `docs/SOURCE_ACQUISITION_PLAN.md`.
-
-## 6. Non-negotiable rules (from the brief — keep enforcing)
-
-- Never invent evidence, URLs, pages, dates, amounts, beneficiary counts, or statuses.
-- Don't convert an announcement into a completed achievement. Government souvenir = "announced/gov-reported" (grade E), not verified outcome.
-- Don't silently rewrite records or manifesto wording; log every correction (migration files + CHANGELOG).
-- Preserve stable record IDs (any migration needs a mapping file).
-- Keep uncertain classifications explicitly uncertain; no political verdicts from keyword overlap.
-- UI must not imply more coverage than the embedded data holds.
-- Don't call it a "fact-checking platform" — the claim tool is neutral retrieval.
+- **The contrast defect was systemic**, not cosmetic: 76 dark / 78 light failures,
+  because identity hues were used as text in both themes. `textSafe()` fixes it
+  algorithmically. Now 0/0, guarded by `npm run a11y`.
+- **"438 verified records" survived three phases** in the hero strip while the
+  headline above it had been corrected. Now derived and impossible to hard-code.
+- **Componentisation demoted 4 of 25 pilot subjects** from D to E — in each case the
+  D component was not what the claim asserted.
+- **The C0.6 review disagreed with itself on 8 of 25**, with **zero** Class D
+  (normal expert judgement). Every disagreement traced to a missing or non-binding rule.
+- **CI failed on its first run and was right to**: a generated doc depended on a
+  gitignored manifest, so it was not reproducible from a clean checkout.
 
 ---
 
-## 7. Working artifacts & paths
+## 5. Where the evidence actually stands
 
-- **Scripts:** `app/scripts/` — baseline, data_quality_scan, apply_currency_fixes, apply_record_flags, source_registry_seed, verify_sources, pilot_ingest, validate.
-- **Generated docs/JSON:** `app/docs/BASELINE_MANIFEST.json`, `data_quality_report.json`, `migration_currency.json`, `migration_records.json`, `GAZETTE_SOURCES.md`.
-- **Source data:** `app/src/data/sourceRegistry.json`, `app/scripts/source_verification.tsv`, `app/sources/pilot/manifest.tsv` (+ downloaded pilot files, gitignored).
-- **Scratchpad (this session, ephemeral — may be gone next chat):** `/private/tmp/claude-501/.../03c8cba6-.../scratchpad`. The debates OCR crawl `txt/` from earlier sessions was NOT found at handover (assume the 38-sitting measured data already baked into `debates.js` is the source of truth; the crawl to measure the remaining 100 is a resumable queue).
-- **Reviewer inputs:** `~/Documents/DMK_Achievements_Artefact_Audit_2026-07-19.md` (audit) + the remediation brief + link-pack were pasted into chat.
+State this plainly to anyone who asks:
+
+- **0 of 438 records are independently verified.** No record is graded above D.
+- **376 of 438 (85.8%) are grade E** — the government's own summary only.
+- **192 records are marked complete with no completion evidence.**
+- **247 of 438 have no page reference** and cannot be spot-checked.
+- **0 of 108 catalogued sources have been ingested.** 10 pilot documents exist.
+- **The "400 fulfilled" headline is not reproducible** from this project's evidence:
+  0 outcome-verified, 79 with a GO/Act, 163 record-only, **158 with nothing linked**.
+- **No contrary or adverse evidence has been ingested** beyond the C0 pilot's CAG
+  passages. This is the largest editorial weakness and is disclosed in-app.
 
 ---
 
-## 8. Suggested first message for the new chat
+## 6. Non-negotiable rules (keep enforcing)
 
-> "Continue the DMK Achievements audit-remediation on branch `audit-remediation` in
-> `~/Documents/DMK Achievements 2021-2026/app`. Read `docs/PROJECT_HANDOVER.md` first.
-> Resume at Section 5 TODO: (1) patch source registry with verification results,
-> (2) write the Phase-12 docs, (3) update README, then push the branch and open a PR.
-> Keep the non-negotiable rules. Run `npm run test`, `npm run validate`, `npm run build`
-> before committing."
+1. **Never invent** evidence, URLs, pages, dates, amounts, beneficiary counts or statuses.
+2. **An announcement is not an achievement.** Government souvenir = grade E.
+3. **Never silently rewrite** a record. Log every change with its ID in `CHANGELOG.md`.
+4. **Record IDs are stable** and never reused.
+5. **Quoted source text stays verbatim**, OCR defects included, so it matches the PDF.
+6. **Don't call it fact-checking.** The claim tool is neutral retrieval, structurally.
+7. **Contrary evidence never raises a grade.** It can lower one toward F.
+8. **A parent claim takes its weakest component**, never its strongest.
+9. **Failed extraction is never quoted from.**
+10. **`missing[]` may not be empty** — that would mean nobody looked.
+11. **Respect robots.txt / CAPTCHA / ToS.** Blocked sources go to the manual queue.
+
+---
+
+## 7. Open work, in priority order
+
+### Blocking bulk ingestion
+
+1. **An independent reviewer.** The C0.6 review was the same author in the same
+   session; its agreement rate is near-worthless. **Someone else must grade a
+   sample** before scaling. A person-shaped gap, not a code one.
+2. **Ingest one adverse source properly** — a full CAG performance audit. Would
+   materially change the corpus's shape, currently one-sided by construction.
+
+### Known model gaps (from C0.6, documented in the reviewer guide)
+
+3. Component granularity is under-determined — tests, not an algorithm.
+4. Confidence is uncalibrated; high/medium/low are not probabilities.
+5. NG remains a soft boundary and could be misused for merely-hard claims.
+
+### Product / engineering
+
+6. **PR #7 merge decision.**
+7. **Chart data tables** — the largest remaining accessibility gap; charts expose
+   values via `aria-label` but have no tabular equivalent.
+8. **Real assistive-technology testing** (VoiceOver/NVDA). Everything so far is
+   computed-style measurement.
+9. **Hero strip counters display 0** — they never animate. Pre-existing, verified
+   not caused by the derivation change; the larger hero figures work. A background
+   task chip exists for this.
+10. `source-package` / `deploy-package` scripts; permalinks/URL state; print views.
+11. Two dev-only vulnerabilities (vite/esbuild); fix requires vite 5→8.
+
+### Blocked, not merely undone
+
+12. **100 of 138 Assembly sittings unmeasured** — `assembly.tn.gov.in` publishes
+    `Disallow: /`. Needs a manual process or permission. **Do not crawl it.**
+13. **6 DES endpoints return HTTP 500** — the state's own statistical authority and
+    the natural independent counter for grades A/B. Re-check periodically.
+
+---
+
+## 8. Key files
+
+**Libraries**
+`src/lib/evidenceRecord.js` — evidence schema v2.1 + validators (the heart of it)
+`src/lib/publicMetrics.js` — every displayed number, derived
+`src/lib/theme.js` — `textSafe()` contrast helper, `onColor()`
+`src/lib/search.js` — `lookupClaim()` neutral retrieval + Tamil handling
+`src/lib/evidence.js` — A–F ladder, `gradeRecord()`
+`src/lib/version.js` — release / data / methodology versions
+
+**Data**
+`src/data/evidencePilot.js` — 25-subject pilot corpus (v2)
+`src/data/evidenceReview.js` — C0.6 second-pass assessments
+`src/data/transparency.js` — public transparency copy
+`src/data/sourceRegistry.json` — 108 sources with reachability + robots
+
+**Docs** (23 files in `docs/`) — start with `EVIDENCE_MODEL_V2.md`,
+`EVIDENCE_REVIEWER_GUIDE.md`, `EVIDENCE_ADVERSARIAL_REVIEW.md`, `METHODOLOGY.md`,
+`PUBLISHER_TRANSPARENCY.md`, `RELEASE_CHECKLIST.md`
+
+**Generated — never hand-edit** (`npm run docs`):
+`SOURCE_COVERAGE_MATRIX.md`, `DATA_QUALITY_REPORT.md`,
+`POST_CHANGE_DATA_RECONCILIATION.md`, `EVIDENCE_REMEDIATION_QUEUE.md`,
+`EVIDENCE_ADVERSARIAL_REVIEW.md`, `remediation_queue.json`,
+`reviewer_packets/packets.json`
+
+**Tests** (100): `claim`, `metrics`, `tamil`, `transparency`, `evidencePilot`,
+`evidenceEdgeCases`
+
+**Scratch/ignored:** `sources/pilot/`, `sources/pilot_c0/`, `sources/robots/` —
+fetched documents are gitignored, but their **manifests are tracked** because the
+generated docs depend on them.
+
+---
+
+## 9. Release classification
+
+**Public beta evidence explorer.**
+
+Phase B cleared the last blocker (publisher transparency). It is **not** a
+production evidence explorer and nowhere near a fact-checking platform — those
+would need the evidence store populated, page provenance restored, and at least
+one independent counter ingested.
+
+Two things worth doing before announcing publicly, neither blocking the
+classification: ingest one adverse source, and get one other person to spot-check
+a sample of grades.
+
+---
+
+## 10. Suggested first message for the new chat
+
+> Continue the DMK Achievements project in `~/Documents/DMK Achievements 2021-2026/app`,
+> branch `audit-remediation`. Read `docs/PROJECT_HANDOVER.md` first, then
+> `docs/EVIDENCE_MODEL_V2.md` and `docs/EVIDENCE_REVIEWER_GUIDE.md`.
+>
+> Do not start bulk ingestion — §7 explains why it is blocked on an independent
+> reviewer. Keep the non-negotiable rules in §6.
+>
+> Run `npm test`, `npm run validate`, `npm run a11y`, `npm run build` before
+> committing. CI runs the same gates plus a generated-docs drift check.
